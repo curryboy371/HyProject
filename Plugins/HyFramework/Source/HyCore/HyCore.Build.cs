@@ -3,16 +3,16 @@
 using System.IO;
 using UnrealBuildTool;
 
-public class InventorySystem : ModuleRules
+public class HyCore : ModuleRules
 {
-	public InventorySystem(ReadOnlyTargetRules Target) : base(Target)
+	public HyCore(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicIncludePaths.AddRange(
          new string[]
          {
-            "InventorySystem/Public",
+            "HyCore/Public",
          }
          );
 
@@ -20,7 +20,7 @@ public class InventorySystem : ModuleRules
         PrivateIncludePaths.AddRange(
         new string[]
         {
-            "InventorySystem/Private",
+            "HyCore/Private",
         }
         );
 

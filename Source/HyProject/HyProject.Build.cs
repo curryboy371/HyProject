@@ -11,7 +11,6 @@ public class HyProject : ModuleRules
         PublicIncludePaths.AddRange(
         new string[]
         {
-            "HyProject",
             "HyProject/Public",
         }
         );

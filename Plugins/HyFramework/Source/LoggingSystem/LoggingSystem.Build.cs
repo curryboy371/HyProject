@@ -13,7 +13,6 @@ public class LoggingSystem : ModuleRules
         PublicIncludePaths.AddRange(
 			new string[] 
 			{
-				"LoggingSystem",
 				"LoggingSystem/Public",
 			}
 			);

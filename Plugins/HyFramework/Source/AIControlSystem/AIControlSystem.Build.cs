@@ -12,7 +12,6 @@ public class AIControlSystem : ModuleRules
         PublicIncludePaths.AddRange(
         new string[]
         {
-            "AIControlSystem",
             "AIControlSystem/Public",
         }
         );

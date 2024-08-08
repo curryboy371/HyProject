@@ -13,7 +13,34 @@
 
 ## 1. 모듈 종류
 
-### LoggingSystem
+### Game | HyProject
+- 클래스 접두어 Hy
+- 게임 모듈
+
+
+
+### HyFramework
+- 클래스 접두어 Hy
+- HyFramework Plugin 메인 모듈
+- 게임의 프레임워크를 구현한 것으로 gamemode, gameinstance 등의 base가 존재
+
+
+### HyFramework
+- 클래스 접두어 HyCore
+- HyFramework plugin의 core 기능
+
+
+
+### Plugins | LoggingSystem
+- 클래스 접두어 Logging
 - 로그를 사용하는데 필요한 기능을 가진 모듈
 - 모든 모듈 ( 게임 모듈, 플러그인 모듈)에서 이 모듈을 참조하여 로깅에 활용할 것
 - 로그를 남기는 시간을 줄이기 위해 매크로, variadic template 함수를 활용하였음.
+
+### Plugins | ActionsSystem
+- 클래스 접두어 Actions
+- 캐릭터 상태를 관리할 FSM과 유사하게 사용할 시스템, State = Action
+- GameplayTags로 Action을 구분하여 각 Action을 계층별로 관리할 수 있게 함
+
+
+

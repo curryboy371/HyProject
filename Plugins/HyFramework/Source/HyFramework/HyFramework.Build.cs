@@ -13,7 +13,6 @@ public class HyFramework : ModuleRules
 		PublicIncludePaths.AddRange(
 		new string[] 
 		{
-            "HyFramework",
             "HyFramework/Public",
 		}
 		);
@@ -32,6 +31,9 @@ public class HyFramework : ModuleRules
 			{
 				"Core",
                 "GameplayTags",
+
+				// Custom Modules
+                "HyCore",
 
                 //"LoggingSystem",
 

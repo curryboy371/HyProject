@@ -12,7 +12,6 @@ public class CharacterControlSystem : ModuleRules
         PublicIncludePaths.AddRange(
          new string[]
          {
-            "CharacterControlSystem",
             "CharacterControlSystem/Public",
          }
          );

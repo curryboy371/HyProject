@@ -12,7 +12,6 @@ public class CollisionSystem : ModuleRules
         PublicIncludePaths.AddRange(
          new string[]
          {
-            "CollisionSystem",
             "CollisionSystem/Public",
          }
          );

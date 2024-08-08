@@ -12,7 +12,6 @@ public class SoundSystem : ModuleRules
         PublicIncludePaths.AddRange(
          new string[]
          {
-            "SoundSystem",
             "SoundSystem/Public",
          }
          );
