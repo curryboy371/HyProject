@@ -1,0 +1,29 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{CA5C28A3-42E4-E963-65AE-DF931E1A1652}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "HyProject",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"CoreUObject"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "HyFramework",
+			"Enabled": true
+		}
+	]
+}
