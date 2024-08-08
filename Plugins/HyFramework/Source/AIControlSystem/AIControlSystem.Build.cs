@@ -8,24 +8,25 @@ public class AIControlSystem : ModuleRules
 	public AIControlSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] 
-			{
-                Path.Combine(ModuleDirectory, "Public")
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] 
-			{
-				
-			}
-			);
-			
-		
-		PublicDependencyModuleNames.AddRange(
+
+        PublicIncludePaths.AddRange(
+        new string[]
+        {
+            "AIControlSystem",
+            "AIControlSystem/Public",
+        }
+        );
+
+
+        PrivateIncludePaths.AddRange(
+        new string[]
+        {
+            "AIControlSystem/Private",
+        }
+        );
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",

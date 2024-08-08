@@ -9,25 +9,31 @@ public class HyFramework : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-		new string[]
+
+		PublicIncludePaths.AddRange(
+		new string[] 
 		{
-					Path.Combine(ModuleDirectory, "Public")
+            "HyFramework",
+            "HyFramework/Public",
 		}
 		);
+				
 		
 		PrivateIncludePaths.AddRange(
-			new string[] {
-				// ... add other private include paths required here ...
-			}
-			);
-			
+		new string[] 
+		{
+            "HyFramework/Private",
+        }
+        );
+   
 		
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
                 "GameplayTags",
+
+                //"LoggingSystem",
 
 				// ... add other public dependencies that you statically link with here ...
 			}
@@ -42,6 +48,11 @@ public class HyFramework : ModuleRules
 				"Slate",
 				"SlateCore",
                 "DeveloperSettings",
+
+
+
+				// Custom Modules
+                "LoggingSystem",
 
 				// ... add private dependencies that you statically link with here ...	
 			}

@@ -8,24 +8,25 @@ public class CollisionSystem : ModuleRules
 	public CollisionSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] 
-			{
-                Path.Combine(ModuleDirectory, "Public")
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] 
-			{
-				
-			}
-			);
-			
-		
-		PublicDependencyModuleNames.AddRange(
+
+        PublicIncludePaths.AddRange(
+         new string[]
+         {
+            "CollisionSystem",
+            "CollisionSystem/Public",
+         }
+         );
+
+
+        PrivateIncludePaths.AddRange(
+        new string[]
+        {
+            "CollisionSystem/Private",
+        }
+        );
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",

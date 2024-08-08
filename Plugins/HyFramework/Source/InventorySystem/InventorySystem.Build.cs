@@ -8,24 +8,25 @@ public class InventorySystem : ModuleRules
 	public InventorySystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] 
-			{
-                Path.Combine(ModuleDirectory, "Public")
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] 
-			{
-				
-			}
-			);
-			
-		
-		PublicDependencyModuleNames.AddRange(
+
+        PublicIncludePaths.AddRange(
+         new string[]
+         {
+            "InventorySystem",
+            "InventorySystem/Public",
+         }
+         );
+
+
+        PrivateIncludePaths.AddRange(
+        new string[]
+        {
+            "InventorySystem/Private",
+        }
+        );
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",

@@ -8,11 +8,13 @@ public class LoggingSystem : ModuleRules
 	public LoggingSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
+
+
+        PublicIncludePaths.AddRange(
 			new string[] 
 			{
-                Path.Combine(ModuleDirectory, "Public")
+				"LoggingSystem",
+				"LoggingSystem/Public",
 			}
 			);
 				
@@ -20,9 +22,9 @@ public class LoggingSystem : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] 
 			{
-				
-			}
-			);
+                "LoggingSystem/Private",
+            }
+            );
 			
 		
 		PublicDependencyModuleNames.AddRange(
@@ -40,9 +42,10 @@ public class LoggingSystem : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+                "DeveloperSettings",
 
-			}
-			);
+            }
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

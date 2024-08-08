@@ -2,5 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+//#include "CoreMinimal.h"
+#include "EngineMinimal.h"
+
+#include "LoggingTypes.h"
+
 

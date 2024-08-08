@@ -7,8 +7,23 @@ public class HyProject : ModuleRules
 	public HyProject(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { 
+
+        PublicIncludePaths.AddRange(
+        new string[]
+        {
+            "HyProject",
+            "HyProject/Public",
+        }
+        );
+
+        PrivateIncludePaths.AddRange(
+        new string[]
+        {
+            "HyProject/Private",
+        }
+        );
+
+        PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core",
 			"CoreUObject",
 			"Engine",

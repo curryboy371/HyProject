@@ -8,24 +8,25 @@ public class SoundSystem : ModuleRules
 	public SoundSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] 
-			{
-                Path.Combine(ModuleDirectory, "Public")
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] 
-			{
-				
-			}
-			);
-			
-		
-		PublicDependencyModuleNames.AddRange(
+
+        PublicIncludePaths.AddRange(
+         new string[]
+         {
+            "SoundSystem",
+            "SoundSystem/Public",
+         }
+         );
+
+
+        PrivateIncludePaths.AddRange(
+        new string[]
+        {
+            "SoundSystem/Private",
+        }
+        );
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",

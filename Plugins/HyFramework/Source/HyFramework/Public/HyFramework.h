@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+#include "LoggingTypes.h"
+
 class FHyFrameworkModule : public IModuleInterface
 {
 public:

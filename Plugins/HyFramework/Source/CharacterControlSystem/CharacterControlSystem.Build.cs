@@ -8,24 +8,25 @@ public class CharacterControlSystem : ModuleRules
 	public CharacterControlSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] 
-			{
-                Path.Combine(ModuleDirectory, "Public")
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] 
-			{
-				
-			}
-			);
-			
-		
-		PublicDependencyModuleNames.AddRange(
+
+        PublicIncludePaths.AddRange(
+         new string[]
+         {
+            "CharacterControlSystem",
+            "CharacterControlSystem/Public",
+         }
+         );
+
+
+        PrivateIncludePaths.AddRange(
+        new string[]
+        {
+            "CharacterControlSystem/Private",
+        }
+        );
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
