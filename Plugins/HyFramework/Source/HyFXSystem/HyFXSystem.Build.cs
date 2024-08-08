@@ -3,26 +3,16 @@
 using System.IO;
 using UnrealBuildTool;
 
-public class SoundSystem : ModuleRules
+public class HyFXSystem : ModuleRules
 {
-	public SoundSystem(ReadOnlyTargetRules Target) : base(Target)
+	public HyFXSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-         new string[]
-         {
-            "SoundSystem/Public",
-         }
-         );
 
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
-        PrivateIncludePaths.AddRange(
-        new string[]
-        {
-            "SoundSystem/Private",
-        }
-        );
 
 
         PublicDependencyModuleNames.AddRange(
@@ -30,8 +20,8 @@ public class SoundSystem : ModuleRules
 			{
 				"Core",
 
-			}
-			);
+            }
+            );
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -40,9 +30,10 @@ public class SoundSystem : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+                "Niagara",
 
-			}
-			);
+            }
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

@@ -1,20 +1,20 @@
 // Copyright (C) Developed by Pask, Published by Dark Tower Interactive SRL 2021. All Rights Reserved. 
 
-#include "SoundSystem.h"
+#include "HyFXSystem.h"
 
 #include "Modules/ModuleManager.h"
 
-#define LOCTEXT_NAMESPACE "FSoundSystem"
+#define LOCTEXT_NAMESPACE "FHyFXSystem"
 
-void FSoundSystem::StartupModule()
+void FHyFXSystem::StartupModule()
 {
 }
 
-void FSoundSystem::ShutdownModule()
+void FHyFXSystem::ShutdownModule()
 {
 	
 }
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FSoundSystem, SoundSystem);
+IMPLEMENT_MODULE(FHyFXSystem, HyFXSystem);

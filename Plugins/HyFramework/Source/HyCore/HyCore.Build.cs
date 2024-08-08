@@ -9,20 +9,8 @@ public class HyCore : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-         new string[]
-         {
-            "HyCore/Public",
-         }
-         );
-
-
-        PrivateIncludePaths.AddRange(
-        new string[]
-        {
-            "HyCore/Private",
-        }
-        );
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
 
         PublicDependencyModuleNames.AddRange(
@@ -40,9 +28,10 @@ public class HyCore : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+                "GameplayTags",
 
-			}
-			);
+            }
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

@@ -21,6 +21,15 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "HyCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac"
+			]
+		},
+		{
 			"Name": "ActionsSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
@@ -75,7 +84,7 @@
 			]
 		},
 		{
-			"Name": "SoundSystem",
+			"Name": "HyFXSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [

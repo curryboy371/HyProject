@@ -10,23 +10,11 @@ public class LoggingSystem : ModuleRules
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
 
-        PublicIncludePaths.AddRange(
-			new string[] 
-			{
-				"LoggingSystem/Public",
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] 
-			{
-                "LoggingSystem/Private",
-            }
-            );
-			
-		
-		PublicDependencyModuleNames.AddRange(
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",

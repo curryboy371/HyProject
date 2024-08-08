@@ -10,23 +10,12 @@ public class HyFramework : ModuleRules
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
 
-		PublicIncludePaths.AddRange(
-		new string[] 
-		{
-            "HyFramework/Public",
-		}
-		);
-				
-		
-		PrivateIncludePaths.AddRange(
-		new string[] 
-		{
-            "HyFramework/Private",
-        }
-        );
-   
-		
-		PublicDependencyModuleNames.AddRange(
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
+
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",

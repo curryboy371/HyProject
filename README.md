@@ -25,7 +25,7 @@
 - 게임의 프레임워크를 구현한 것으로 gamemode, gameinstance 등의 base가 존재
 
 
-### HyFramework
+### HyCore
 - 클래스 접두어 HyCore
 - HyFramework plugin의 core 기능
 
@@ -43,4 +43,6 @@
 - GameplayTags로 Action을 구분하여 각 Action을 계층별로 관리할 수 있게 함
 
 
-
+### Plugins | HyFXSystem
+- 클래스 접두어 FX
+- 이펙트, 사운드 등을 한 모듈에서만 관리하기 위해 생성함.

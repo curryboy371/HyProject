@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class HyProject : ModuleRules
@@ -8,19 +9,27 @@ public class HyProject : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-        new string[]
-        {
-            "HyProject/Public",
-        }
-        );
 
-        PrivateIncludePaths.AddRange(
-        new string[]
-        {
-            "HyProject/Private",
-        }
-        );
+        /*       
+         *       아래와 같이 include 하는 경우, 모듈 경로가 정확히 추가되지 않아 모호해짐
+         *       엔진 경로에서 Public을 찾게되므로 ModuleDirectory를 넣어 Add 해주자
+         *       PublicIncludePaths.AddRange(
+                new string[]
+                {
+                    "HyProject/Public",
+                }
+                );
+
+                PrivateIncludePaths.AddRange(
+                new string[]
+                {
+                    "HyProject/Private",
+                }
+                );*/
+
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
+
 
         PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core",

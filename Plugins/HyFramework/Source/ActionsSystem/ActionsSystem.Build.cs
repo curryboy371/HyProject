@@ -3,27 +3,15 @@
 using System.IO;
 using UnrealBuildTool;
 
+
 public class ActionsSystem : ModuleRules
 {
 	public ActionsSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-        new string[]
-        {
-            "ActionsSystem/Public",
-        }
-        );
-
-
-        PrivateIncludePaths.AddRange(
-        new string[]
-        {
-            "ActionsSystem/Private",
-        }
-        );
-
+		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
         PublicDependencyModuleNames.AddRange(
 			new string[]
@@ -42,8 +30,14 @@ public class ActionsSystem : ModuleRules
 				"CoreUObject",
 				"Engine",
                 "DeveloperSettings",
+                "GameplayTags",
 
-			}
+				//Custom Module
+				"LoggingSystem",
+                "HyCore",
+				"HyFXSystem",
+
+            }
             );
 		
 		

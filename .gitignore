@@ -78,3 +78,6 @@ Binaries/*
 
 Content/__*
 *HLOD0_Instancing.uasset
+
+#Backup
+*.bak

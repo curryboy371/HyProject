@@ -9,20 +9,10 @@ public class CharacterControlSystem : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-         new string[]
-         {
-            "CharacterControlSystem/Public",
-         }
-         );
 
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
-        PrivateIncludePaths.AddRange(
-        new string[]
-        {
-            "CharacterControlSystem/Private",
-        }
-        );
 
 
         PublicDependencyModuleNames.AddRange(

@@ -9,20 +9,10 @@ public class AIControlSystem : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-        new string[]
-        {
-            "AIControlSystem/Public",
-        }
-        );
 
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
-        PrivateIncludePaths.AddRange(
-        new string[]
-        {
-            "AIControlSystem/Private",
-        }
-        );
 
 
         PublicDependencyModuleNames.AddRange(

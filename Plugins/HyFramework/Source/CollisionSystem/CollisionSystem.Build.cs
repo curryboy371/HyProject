@@ -9,20 +9,10 @@ public class CollisionSystem : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(
-         new string[]
-         {
-            "CollisionSystem/Public",
-         }
-         );
 
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
-        PrivateIncludePaths.AddRange(
-        new string[]
-        {
-            "CollisionSystem/Private",
-        }
-        );
 
 
         PublicDependencyModuleNames.AddRange(
@@ -40,9 +30,10 @@ public class CollisionSystem : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+                "GameplayTags",
 
-			}
-			);
+            }
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(
