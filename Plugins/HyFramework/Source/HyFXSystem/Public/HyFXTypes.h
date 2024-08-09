@@ -10,6 +10,7 @@
  * 
  */
 
+#pragma region HyFXEnum
 
 UENUM(BlueprintType)
 enum class ESpawnFXLocation : uint8
@@ -19,6 +20,11 @@ enum class ESpawnFXLocation : uint8
 	ESpawnAtLocation UMETA(DisplayName = "Spawn On Provided Tranform")
 };
 
+#pragma endregion
+
+
+
+#pragma region HyFXStruct
 
 // 이펙트 사운드를 하나로 처리하기 위한 Base 구조체
 USTRUCT(BlueprintType)
@@ -42,13 +48,13 @@ public:
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | FX")
-	TObjectPtr<class USoundBase> ActionSound;
+		TObjectPtr<class USoundBase> ActionSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | FX")
-	TObjectPtr<class UNiagaraSystem> NiagaraParticle;
+		TObjectPtr<class UNiagaraSystem> NiagaraParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | FX")
-	TObjectPtr<class UParticleSystem> PSParticle;
+		TObjectPtr<class UParticleSystem> PSParticle;
 };
 
 
@@ -56,7 +62,7 @@ public:
 
 
 USTRUCT(BlueprintType)
-struct FActionFX : public FBaseFX 
+struct FActionFX : public FBaseFX
 {
 	GENERATED_BODY()
 
@@ -81,24 +87,24 @@ public:
 	FGuid GetGuid() const { return Guid; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | FX")
-	FName SocketOrBoneName = NAME_None;
+		FName SocketOrBoneName = NAME_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | FX")
-	ESpawnFXLocation SpawnLocation;
+		ESpawnFXLocation SpawnLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | FX")
-	float NoiseEmitted = 0.f;
+		float NoiseEmitted = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | FX")
-	FTransform RelativeOffset;
+		FTransform RelativeOffset;
 
 private:
 	UPROPERTY()
-	FGuid Guid;
+		FGuid Guid;
 };
 
 USTRUCT(BlueprintType)
-struct FDispatchFX : public FBaseFX 
+struct FDispatchFX : public FBaseFX
 {
 	GENERATED_BODY()
 
@@ -132,7 +138,7 @@ public:
 	}
 
 	UPROPERTY(BlueprintReadWrite, Category = "Hy | FX")
-	FTransform SpawnLocation;
+		FTransform SpawnLocation;
 };
 
 USTRUCT(BlueprintType)
@@ -149,24 +155,15 @@ public:
 	}
 
 	UPROPERTY()
-	TObjectPtr<class UParticleSystemComponent> CascadeComp;
+		TObjectPtr<class UParticleSystemComponent> CascadeComp;
 
 	UPROPERTY()
-	TObjectPtr<class UNiagaraComponent> NiagaraComp;
+		TObjectPtr<class UNiagaraComponent> NiagaraComp;
 
 	UPROPERTY()
-	TObjectPtr<class UAudioComponent> AudioComp;
+		TObjectPtr<class UAudioComponent> AudioComp;
 };
 
 
+#pragma endregion
 
-
-//UCLASS()
-//class HyFXSystem_API UFXTypes : public UObject
-//{
-//	GENERATED_BODY()
-//	
-//	
-//	
-//	
-//};

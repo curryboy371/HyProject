@@ -15,6 +15,8 @@
  */
 
 
+#pragma region ActionsEnum
+
  // Action 종료 타입
 UENUM(BlueprintType)
 enum class EActionHandleExitType : uint8
@@ -34,12 +36,17 @@ enum class EActionHandleExitType : uint8
 UENUM(BlueprintType)
 enum class EActionPriority : uint8 
 {
+	EEmpty UMETA(DisplayName = "None Priority"),
 	ENone UMETA(DisplayName = "Very Low"),
 	ELow UMETA(DisplayName = "Low"),
 	EMedium UMETA(DisplayName = "Medium"),
 	EHigh UMETA(DisplayName = "High"),
 	EHighest UMETA(DisplayName = "Highest"),
 };
+
+
+
+
 
 // Action 변경시 블렌드를 설정하기 위한 타입
 UENUM(BlueprintType)
@@ -58,6 +65,11 @@ enum class EMontageBlendType : uint8
 	EMontageBlend_Both UMETA(DisplayName = "EMontageBlend_Both"),
 };
 
+#pragma endregion
+
+
+
+#pragma region ActionsStruct
 
 USTRUCT(BlueprintType)
 struct FActionConfig 
@@ -73,7 +85,6 @@ public:
         MontageBlend = EMontageBlendType::EMontageBlend_Both;
 
         SkillRange = 0.0f;
-        //MontageReproductionType = EMontageReproductionType::ERootMotion;
     }
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Actions")
@@ -86,17 +97,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Actions")
     bool bAutoExecute;
 
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Actions")
-    //EMontageReproductionType MontageReproductionType;
-
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "MontageReproductionType == EMontageReproductionType::ERootMotionScaled"), Category = "Hy | Actions")
-    //float RootMotionScale = 1.f;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Actions")
     EMontageBlendType MontageBlend;
-
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "MontageReproductionType == EMontageReproductionType::EMotionWarped"), "Hy | Actions")
-    //FNPWarpInfo WarpInfo;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Actions")
     float SkillRange;
@@ -157,23 +159,48 @@ public:
     UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
     EMontageBlendType MontageBlend;
 
-    //UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
-    //float ReproductionSpeed;
-
     UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
     FName StartSectionName;
 
-    //UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
-    //EMontageReproductionType ReproductionType;
-
-    //UPROPERTY(BlueprintReadWrite, meta = (EditCondition = "MontageReproductionType == EMontageReproductionType::ERootMotionScaled"), Category = "Hy | Actions")
-    //float RootMotionScale;
-    //
-    //UPROPERTY(BlueprintReadWrite, meta = (EditCondition = "MontageReproductionType == EMontageReproductionType::EMotionWarped"), Category = "Hy | Actions")
-    //FNPWarpReproductionInfo WarpInfo;
 };
 
 
+USTRUCT(BlueprintType)
+struct FActionExcuteData : public FTagBase
+{
+    GENERATED_BODY()
+
+    FActionExcuteData()
+    {
+        ActionPriority = EActionPriority::EEmpty;
+        ActionContext = FString();
+    }
+
+    FActionExcuteData(const FGameplayTag& InGameplayTag, const EActionPriority InPriority, const FString& InActionContext)
+        :FTagBase(InGameplayTag), ActionPriority(InPriority), ActionContext(InActionContext)
+    {
+
+    }
+
+    void ResetData(const bool bIncludeTag = true)
+    {
+        if (bIncludeTag)
+        {
+            TagName = FGameplayTag::EmptyTag;
+        }
+
+        ActionPriority = EActionPriority::EEmpty;
+        ActionContext = FString();
+    }
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hy | Actions")
+    EActionPriority ActionPriority;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hy | Actions")
+    FString ActionContext;
+};
+
+#pragma endregion
 
 UCLASS()
 class ACTIONSSYSTEM_API UActionsTypes : public UObject

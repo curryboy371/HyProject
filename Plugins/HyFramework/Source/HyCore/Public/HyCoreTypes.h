@@ -13,6 +13,13 @@
  * 
  */
 
+#pragma region HyCoreEnum
+
+#pragma endregion
+
+
+
+#pragma region HyCoreStruct
 
 USTRUCT(BlueprintType)
 struct FTagBase {
@@ -20,6 +27,16 @@ struct FTagBase {
     GENERATED_BODY()
 
 public:
+    FTagBase()
+    {
+        TagName = FGameplayTag::EmptyTag;
+    }
+
+    FTagBase(const FGameplayTag& InTagName)
+        :TagName(InTagName)
+    {
+    }
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | HyCore")
     FGameplayTag TagName;
 
@@ -43,6 +60,9 @@ public:
         return TagName == Other.TagName;
     }
 };
+
+#pragma endregion
+
 
 UCLASS()
 class HYCORE_API UHyCoreTypes : public UObject
