@@ -34,12 +34,17 @@
 
 
 ### Plugins | ActionsSystem
-- 클래스 접두어 Actions
+- 클래스 접두어 Actions , Hy
 - 캐릭터 상태를 관리할 FSM과 유사하게 사용할 시스템, State = Action
 - GameplayTags로 Action을 구분하여 각 Action을 계층별로 관리할 수 있게 함
 
 
 ### Plugins | HyFXSystem
-- 클래스 접두어 HyFX
+- 클래스 접두어 HyFX, Hy
 - 이펙트, 사운드 등을 한 모듈에서만 관리하기 위해 생성함.
 
+
+### Plugins | CharacterControlSystem
+- 클래스 접두어 CControl, Hy
+- 캐릭터 컨트롤과 관련된 시스템을 관리
+- 애니메이션인스턴스, 애님 레이어, 무브먼트 등 

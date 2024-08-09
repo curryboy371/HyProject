@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/HyPlayerBase.h"
+#include "Actors/Character/HyPlayerBase.h"
 #include "HyMyPlayerBase.generated.h"
 
 /**

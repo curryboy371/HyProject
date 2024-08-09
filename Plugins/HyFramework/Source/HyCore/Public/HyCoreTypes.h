@@ -15,6 +15,17 @@
 
 #pragma region HyCoreEnum
 
+
+UENUM(BlueprintType)
+enum class EHyDirection : uint8
+{
+    Front = 0,
+    Back = 1,
+    Left = 2,
+    Right = 3
+};
+
+
  // HyFramework Module Category Enum
 UENUM(BlueprintType)
 enum class ELogPrintType : uint8
