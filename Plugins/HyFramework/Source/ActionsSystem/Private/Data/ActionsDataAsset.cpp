@@ -3,7 +3,7 @@
 
 #include "Data/ActionsDataAsset.h"
 
-#include "LoggingTypes.h"
+#include "HyCoreLogging.h"
 
 void UActionsDataAsset::AddActionState(const FActionState& InActionState)
 {

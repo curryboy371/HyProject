@@ -3,14 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "LoggingSystem.h"
-#include "LoggingTypes.generated.h"
 
 /**
  * 
  */
-
 
 
 #pragma region Log
@@ -18,11 +14,11 @@
 
 #define LoggingTag LogTemp
 
- // LOG_I : 클래스::함수(라인) 출력
- // LOG_V("text %d", num... ) : 클래스::함수(라인)  + "..." 출력
- // LOG_GUARD : lockgard처럼 log 출력
+// LOG_I : 클래스::함수(라인) 출력
+// LOG_V("text %d", num... ) : 클래스::함수(라인)  + "..." 출력
+// LOG_GUARD : lockgard처럼 log 출력
 
- // 유틸리티 함수 정의
+// 유틸리티 함수 정의
 inline FString GetCleanFilename(const char* FilePath)
 {
 	FString FilePathStr = FString(ANSI_TO_TCHAR(FilePath)).Replace(TEXT("\\"), TEXT("/"));
@@ -92,13 +88,3 @@ private:
 
 
 #pragma endregion
-
-
-UCLASS()
-class LOGGINGSYSTEM_API ULoggingTypes : public UObject
-{
-	GENERATED_BODY()
-	
-	
-	
-};

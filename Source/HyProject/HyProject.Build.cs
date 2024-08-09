@@ -41,7 +41,8 @@ public class HyProject : ModuleRules
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { 
-			"LoggingSystem",
+			"HyCore",
+			//"LoggingSystem",
 
 
         });

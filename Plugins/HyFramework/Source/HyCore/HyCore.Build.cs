@@ -29,6 +29,9 @@ public class HyCore : ModuleRules
 				"CoreUObject",
 				"Engine",
                 "GameplayTags",
+                "DeveloperSettings",
+
+
 
             }
             );

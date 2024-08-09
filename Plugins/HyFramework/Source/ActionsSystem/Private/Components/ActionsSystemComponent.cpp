@@ -3,7 +3,7 @@
 
 #include "Components/ActionsSystemComponent.h"
 
-#include "LoggingTypes.h"
+#include "HyCoreLogging.h"
 
 
 #include "GameFramework/Character.h"

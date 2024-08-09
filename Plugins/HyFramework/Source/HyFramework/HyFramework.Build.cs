@@ -43,7 +43,8 @@ public class HyFramework : ModuleRules
 
 
 				// Custom Modules
-                "LoggingSystem",
+                //"LoggingSystem",
+                "HyCore",
 
 				// ... add private dependencies that you statically link with here ...	
 			}

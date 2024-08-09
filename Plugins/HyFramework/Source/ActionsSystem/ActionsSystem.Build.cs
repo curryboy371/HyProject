@@ -18,8 +18,9 @@ public class ActionsSystem : ModuleRules
 			{
 				"Core",
 
+                "HyCore",
 
-			}
+            }
             );
 			
 		
@@ -33,7 +34,7 @@ public class ActionsSystem : ModuleRules
                 "GameplayTags",
 
 				//Custom Module
-				"LoggingSystem",
+				//"LoggingSystem",
                 "HyCore",
 				"HyFXSystem",
 

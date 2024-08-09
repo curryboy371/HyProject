@@ -6,30 +6,30 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 
-#include "LoggingDeveloperSettings.h"
+#include "HyCoreDeveloperSettings.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
 
-#include "LoggingFunctionLibrary.generated.h"
+#include "HyCoreFunctionLibrary.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOGGINGSYSTEM_API ULoggingFunctionLibrary : public UBlueprintFunctionLibrary
+class HYCORE_API UHyCoreFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	
 
 		
-	UFUNCTION(BlueprintCallable, Category = "Logging | Debug")
+	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")
 	static void DrawArrow(UObject* World, const FVector& LineStart, const FVector& LineEnd, float ArrowSize = 30.f, FLinearColor Color = FLinearColor::Green, float Duration = 0.f, float Tickness = 3.f)
 	{
 		if (World)
 		{
-			if (const ULoggingDeveloperSettings* DevSetting = ULoggingDeveloperSettings::GetDeveloperSetting())
+			if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 			{
 				if (DevSetting->IsDebugDraw())
 				{
@@ -40,10 +40,10 @@ class LOGGINGSYSTEM_API ULoggingFunctionLibrary : public UBlueprintFunctionLibra
 		}
 	}
 	
-	UFUNCTION(BlueprintCallable, Category = "Logging | Debug")
+	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")
 	static void DrawSphere(UWorld* World, const FVector Center, float Radius, int32 Segments = 12, const FLinearColor Color = FLinearColor::Green, float LifeTime = 0.0f, float Thickness = 3.0f)
 	{
-		if (const ULoggingDeveloperSettings* DevSetting = ULoggingDeveloperSettings::GetDeveloperSetting())
+		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
 			if (DevSetting->IsDebugDraw())
 			{
@@ -52,10 +52,10 @@ class LOGGINGSYSTEM_API ULoggingFunctionLibrary : public UBlueprintFunctionLibra
 		}
 	}
 	
-	UFUNCTION(BlueprintCallable, Category = "Logging | Debug")
+	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")
 	static void DrawPointer(UWorld* World, const FVector Position, float Size, const FLinearColor Color = FLinearColor::Green, float LifeTime = 0.0f)
 	{
-		if (const ULoggingDeveloperSettings* DevSetting = ULoggingDeveloperSettings::GetDeveloperSetting())
+		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
 			if (DevSetting->IsDebugDraw())
 			{
@@ -65,10 +65,10 @@ class LOGGINGSYSTEM_API ULoggingFunctionLibrary : public UBlueprintFunctionLibra
 	}
 	
 	
-	UFUNCTION(BlueprintCallable, Category = "Logging | Debug")
+	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")
 	static void DrawBox(UWorld* World, const FVector BoxLocation, const FVector BoxExtent, const FRotator Rotation = FRotator::ZeroRotator, const FColor Color = FColor::Green,  float LifeTime = 0.0f, float Thickness = 3.0f)
 	{
-		if (const ULoggingDeveloperSettings* DevSetting = ULoggingDeveloperSettings::GetDeveloperSetting())
+		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
 			if (DevSetting->IsDebugDraw())
 			{
@@ -78,10 +78,10 @@ class LOGGINGSYSTEM_API ULoggingFunctionLibrary : public UBlueprintFunctionLibra
 	}
 	
 	
-	UFUNCTION(BlueprintCallable, Category = "Logging | Debug")
+	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")
 	static void DrawCapsule(UWorld* World, const FVector Center, const float HalfHeight, const float Radius, const FRotator Rotation, const FLinearColor Color = FLinearColor::Green, float LifeTime = 0.0f, float Thickness = 3.0f)
 	{
-		if (const ULoggingDeveloperSettings* DevSetting = ULoggingDeveloperSettings::GetDeveloperSetting())
+		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
 			if (DevSetting->IsDebugDraw())
 			{
@@ -90,10 +90,10 @@ class LOGGINGSYSTEM_API ULoggingFunctionLibrary : public UBlueprintFunctionLibra
 		}
 	}
 	
-	UFUNCTION(BlueprintCallable, Category = "Logging | Debug")
+	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")
 	static void DrawCapsuleQuat(UWorld* World, const FVector Center, const float HalfHeight, const float Radius, const FQuat Rotation, const FColor Color = FColor::Green, float LifeTime = 0.0f, float Thickness = 3.0f)
 	{
-		if (const ULoggingDeveloperSettings* DevSetting = ULoggingDeveloperSettings::GetDeveloperSetting())
+		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
 			if (DevSetting->IsDebugDraw())
 			{

@@ -19,23 +19,22 @@
 
 
 
-### HyFramework
+### Plugins | Main | HyFramework
 - 클래스 접두어 Hy
 - HyFramework Plugin 메인 모듈
 - 게임의 프레임워크를 구현한 것으로 gamemode, gameinstance 등의 base가 존재
 
 
-### HyCore
+### Plugins | Core | HyCore
 - 클래스 접두어 HyCore
 - HyFramework plugin의 core 기능
 
-
+- 로깅 클래스를 가지고 있어 모든 모듈 ( 게임 모듈, 플러그인 모듈)에서 이 모듈을 참조하여 로깅에 활용할 것
+- 로그를 남기는 시간을 줄이기 위해 매크로, variadic template 함수를 활용하였음.
 
 ### Plugins | LoggingSystem
 - 클래스 접두어 Logging
-- 로그를 사용하는데 필요한 기능을 가진 모듈
-- 모든 모듈 ( 게임 모듈, 플러그인 모듈)에서 이 모듈을 참조하여 로깅에 활용할 것
-- 로그를 남기는 시간을 줄이기 위해 매크로, variadic template 함수를 활용하였음.
+
 
 ### Plugins | ActionsSystem
 - 클래스 접두어 Actions
@@ -44,5 +43,6 @@
 
 
 ### Plugins | HyFXSystem
-- 클래스 접두어 FX
+- 클래스 접두어 HyFX
 - 이펙트, 사운드 등을 한 모듈에서만 관리하기 위해 생성함.
+

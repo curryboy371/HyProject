@@ -75,15 +75,6 @@
 			]
 		},
 		{
-			"Name": "LoggingSystem",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
-				"Mac"
-			]
-		},
-		{
 			"Name": "HyFXSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
