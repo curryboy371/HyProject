@@ -32,9 +32,6 @@
 - 로깅 클래스를 가지고 있어 모든 모듈 ( 게임 모듈, 플러그인 모듈)에서 이 모듈을 참조하여 로깅에 활용할 것
 - 로그를 남기는 시간을 줄이기 위해 매크로, variadic template 함수를 활용하였음.
 
-### Plugins | LoggingSystem
-- 클래스 접두어 Logging
-
 
 ### Plugins | ActionsSystem
 - 클래스 접두어 Actions

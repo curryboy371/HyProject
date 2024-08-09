@@ -2,7 +2,12 @@
 
 #include "HyFramework.h"
 
+#include "HyCoreLogging.h"
+
 #define LOCTEXT_NAMESPACE "FHyFrameworkModule"
+
+DEFINE_LOG_CATEGORY(HyFramework);
+
 
 void FHyFrameworkModule::StartupModule()
 {

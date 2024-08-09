@@ -4,7 +4,12 @@
 
 #include "Modules/ModuleManager.h"
 
+#include "HyCoreLogging.h"
+
 #define LOCTEXT_NAMESPACE "FActionsSystem"
+
+// 로그 카테고리 정의는 각 모듈에서 한번만 정의되도록
+DEFINE_LOG_CATEGORY(ActionsSystem);
 
 void FActionsSystem::StartupModule()
 {

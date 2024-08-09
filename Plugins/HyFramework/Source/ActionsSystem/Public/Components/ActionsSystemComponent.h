@@ -120,7 +120,7 @@ protected:
 
 protected:
 	UPROPERTY()
-	TObjectPtr<class UAnimInstance> animInst;
+	TObjectPtr<class UAnimInstance> AnimInst;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Hy | Actions")
 	TObjectPtr<class ACharacter> CharacterOwner;

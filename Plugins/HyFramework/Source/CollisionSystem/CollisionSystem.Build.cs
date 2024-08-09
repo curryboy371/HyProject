@@ -9,6 +9,7 @@ public class CollisionSystem : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+        //PrivatePCHHeaderFile = "Public/CollisionPch.h";
 
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
@@ -32,6 +33,11 @@ public class CollisionSystem : ModuleRules
 				"Engine",
                 "GameplayTags",
 
+
+
+				
+				// Custom Modules
+                "HyCore",
             }
             );
 		

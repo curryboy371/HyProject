@@ -9,6 +9,8 @@ public class AIControlSystem : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+        //PrivatePCHHeaderFile = "Public/AIControlPch.h";
+        PrivateDefinitions.Add($"{Name.ToUpper()}_LOGGING_DEFINED=1");
 
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
@@ -31,7 +33,11 @@ public class AIControlSystem : ModuleRules
 				"CoreUObject",
 				"Engine",
 
-			}
+
+
+				// Custom Modules
+                "HyCore",
+            }
 			);
 		
 		

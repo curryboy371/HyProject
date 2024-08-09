@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-#include "HyCoreLogging.h"
 
 class FHyFrameworkModule : public IModuleInterface
 {

@@ -2,12 +2,9 @@
 
 
 #include "Components/ActionsSystemComponent.h"
-
-#include "HyCoreLogging.h"
-
-
 #include "GameFramework/Character.h"
 
+#include "HyCoreLogging.h"
 
 // Sets default values for this component's properties
 UActionsSystemComponent::UActionsSystemComponent()
@@ -59,10 +56,10 @@ void UActionsSystemComponent::BeginPlay()
     CharacterOwner = Cast<ACharacter>(GetOwner());
     if (CharacterOwner)
     {
-        animInst = CharacterOwner->GetMesh()->GetAnimInstance();
-        if (animInst == nullptr)
+        AnimInst = CharacterOwner->GetMesh()->GetAnimInstance();
+        if (AnimInst == nullptr)
         {
-            ERR_V("Invalid animInst");
+            ERR_V("Invalid AnimInst");
         }
     }
     else
@@ -220,13 +217,13 @@ void UActionsSystemComponent::ActionStopImmeditaley(float InBlendOutTime)
     FActionState ActionState;
     if (GetActionByTag(CurActionExcuteData.TagName, ActionState))
     {
-        if (animInst)
+        if (AnimInst)
         {
-            animInst->Montage_Stop(InBlendOutTime, ActionState.ActionMontage);
+            AnimInst->Montage_Stop(InBlendOutTime, ActionState.ActionMontage);
         }
         else
         {
-            ERR_V("animinst is null");
+            ERR_V("AnimInst is null");
         }
     }
 

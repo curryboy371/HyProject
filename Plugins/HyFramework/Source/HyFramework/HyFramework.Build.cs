@@ -9,6 +9,10 @@ public class HyFramework : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+        //PrivatePCHHeaderFile = "Public/HyPch.h";
+        PrivateDefinitions.Add($"{Name.ToUpper()}_LOGGING_DEFINED=1");
+        PrivateDefinitions.Add($"LOG_CATEGORY_NAME=\"{Name}\"");
+
 
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
@@ -22,9 +26,7 @@ public class HyFramework : ModuleRules
                 "GameplayTags",
 
 				// Custom Modules
-                "HyCore",
 
-                //"LoggingSystem",
 
 				// ... add other public dependencies that you statically link with here ...
 			}
@@ -43,7 +45,6 @@ public class HyFramework : ModuleRules
 
 
 				// Custom Modules
-                //"LoggingSystem",
                 "HyCore",
 
 				// ... add private dependencies that you statically link with here ...	

@@ -9,6 +9,10 @@ public class CharacterControlSystem : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+        //PrivatePCHHeaderFile = "Public/CControlPch.h";
+        PrivateDefinitions.Add($"{Name.ToUpper()}_LOGGING_DEFINED=1");
+        PrivateDefinitions.Add($"LOG_CATEGORY_NAME=\"{Name}\"");
+
 
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
@@ -31,6 +35,10 @@ public class CharacterControlSystem : ModuleRules
 				"CoreUObject",
 				"Engine",
 
+
+
+				// Custom Modules
+                "HyCore",
 			}
 			);
 		
