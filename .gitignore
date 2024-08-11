@@ -81,3 +81,8 @@ Content/__*
 
 #Backup
 *.bak
+
+# Temp
+
+Content/GhostSamurai_Bundle/*
+Content/Mage/*
