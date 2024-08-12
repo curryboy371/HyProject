@@ -8,6 +8,8 @@
 #include "HyCoreTypes.h"
 #include "HyFXTypes.h"
 
+#include "GameplayTagContainer.h"
+
 #include "ActionsTypes.generated.h"
 
 /**
@@ -120,6 +122,18 @@ struct FActionState : public FTagBase
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Actions")
     TObjectPtr<class UAnimMontage> ActionMontage;
 
+    /* Instanced 프로퍼티
+    1.	객체 소유권 관리: 
+        Instanced 특성을 사용하면 소유자 객체가 파괴될 때 해당 객체의 인스턴스도 함께 파괴됩니다. 
+        이를 통해 메모리 누수를 방지하고 객체의 수명을 명확하게 관리할 수 있습니다.
+    2.	블루프린트 편집기에서의 편의성: 
+        Instanced 특성을 사용하면 블루프린트 편집기에서 해당 객체의 인스턴스를 직접 편집할 수 있습니다. 
+        이를 통해 개발자는 블루프린트 에디터 내에서 객체의 속성을 쉽게 설정하고 조정할 수 있습니다.
+    3.	객체의 독립성 보장: 
+        Instanced 특성을 사용하면 객체의 인스턴스가 다른 객체와 독립적으로 존재하지 않도록 보장할 수 있습니다. 
+        이는 객체가 특정 소유자 객체와 강하게 결합되어야 할 때 유용합니다.
+    */
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = "Hy | Actions")
     TObjectPtr<class UActionsBaseAction> Action;
 };
@@ -176,7 +190,7 @@ struct FActionExcuteData : public FTagBase
         ActionContext = FString();
     }
 
-    FActionExcuteData(const FGameplayTag& InGameplayTag, const EActionPriority InPriority, const FString& InActionContext)
+    FActionExcuteData(const FGameplayTag& InGameplayTag, const EActionPriority InPriority = EActionPriority::ENone, const FString& InActionContext = "")
         :FTagBase(InGameplayTag), ActionPriority(InPriority), ActionContext(InActionContext)
     {
 

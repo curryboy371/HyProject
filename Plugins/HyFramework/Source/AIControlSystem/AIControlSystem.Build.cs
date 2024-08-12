@@ -21,9 +21,10 @@ public class AIControlSystem : ModuleRules
 			new string[]
 			{
 				"Core",
+                "GameplayTags",
 
             }
-			);
+            );
 			
 		
 		PrivateDependencyModuleNames.AddRange(

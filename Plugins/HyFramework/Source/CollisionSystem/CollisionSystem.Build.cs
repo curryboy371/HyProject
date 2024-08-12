@@ -20,9 +20,10 @@ public class CollisionSystem : ModuleRules
 			new string[]
 			{
 				"Core",
+                "GameplayTags",
 
-			}
-			);
+            }
+            );
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -31,7 +32,6 @@ public class CollisionSystem : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
-                "GameplayTags",
 
 
 

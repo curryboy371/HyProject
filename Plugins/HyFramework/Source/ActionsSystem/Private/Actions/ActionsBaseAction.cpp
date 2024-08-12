@@ -15,7 +15,20 @@
 #include "Kismet/KismetMathLibrary.h"
 #include <Kismet/GameplayStatics.h>
 
+#include "HyCoreLogging.h"
 
+
+UActionsBaseAction::UActionsBaseAction()
+{
+    ActionSystemCom = nullptr;
+
+
+    CharacterOwner = nullptr;
+    animMontage = nullptr;
+
+    ActionTag = FGameplayTag::EmptyTag;
+    
+}
 
 void UActionsBaseAction::ExecuteAction()
 {
@@ -233,4 +246,5 @@ void UActionsBaseAction::PlayEffects_Implementation()
     //    }
     //}
 }
+
 

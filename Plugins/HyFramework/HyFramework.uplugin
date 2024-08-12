@@ -15,11 +15,13 @@
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
+
 		{
 			"Name": "HyFramework",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
+
 		{
 			"Name": "HyCore",
 			"Type": "Runtime",
@@ -29,6 +31,7 @@
 				"Mac"
 			]
 		},
+
 		{
 			"Name": "ActionsSystem",
 			"Type": "Runtime",
@@ -38,6 +41,7 @@
 				"Mac"
 			]
 		},
+
 		{
 			"Name": "AIControlSystem",
 			"Type": "Runtime",
@@ -87,6 +91,17 @@
 	"Plugins": [
 		{
 			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+
+
+
+		{
+			"Name": "HyTable",
 			"Enabled": true
 		}
 	]

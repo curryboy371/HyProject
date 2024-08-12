@@ -24,6 +24,7 @@ public class HyFXSystem : ModuleRules
 			new string[]
 			{
 				"Core",
+                "GameplayTags",
 
             }
             );

@@ -21,9 +21,10 @@ public class InventorySystem : ModuleRules
 			new string[]
 			{
 				"Core",
+                "GameplayTags",
 
-			}
-			);
+            }
+            );
 			
 		
 		PrivateDependencyModuleNames.AddRange(

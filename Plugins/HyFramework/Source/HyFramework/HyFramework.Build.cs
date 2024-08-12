@@ -24,8 +24,10 @@ public class HyFramework : ModuleRules
 			{
 				"Core",
                 "GameplayTags",
+                "EnhancedInput",
 
 				// Custom Modules
+                //"ActionsSystem",
 
 
 				// ... add other public dependencies that you statically link with here ...
@@ -46,6 +48,11 @@ public class HyFramework : ModuleRules
 
 				// Custom Modules
                 "HyCore",
+                "CharacterControlSystem",
+                "ActionsSystem",
+                "HyFXSystem",
+                "CollisionSystem",
+
 
 				// ... add private dependencies that you statically link with here ...	
 			}

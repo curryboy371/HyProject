@@ -13,5 +13,6 @@ UCLASS()
 class CHARACTERCONTROLSYSTEM_API UHyAnimEquipLayer : public UHyAnimLayer
 {
 	GENERATED_BODY()
-	
+
+
 };

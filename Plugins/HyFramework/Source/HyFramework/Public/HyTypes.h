@@ -4,7 +4,40 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
+
+#include "GameplayTagContainer.h"
+
+
 #include "HyTypes.generated.h"
+
+
+
+#pragma region HyFrameworkStruct
+
+USTRUCT(BlueprintType)
+struct FCharacterInitTagSet
+{
+	GENERATED_BODY()
+
+public:
+	FCharacterInitTagSet()
+	{
+		EquipTag = FGameplayTag::EmptyTag;
+		ActionTag = FGameplayTag::EmptyTag;
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init | Tags")
+	FGameplayTag EquipTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init | Tags")
+	FGameplayTag ActionTag;
+};
+
+
+#pragma endregion
+
+
 
 /**
  * 

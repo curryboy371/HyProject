@@ -23,9 +23,10 @@ public class HyCore : ModuleRules
 			new string[]
 			{
 				"Core",
+                "GameplayTags",
 
-			}
-			);
+            }
+            );
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -34,7 +35,6 @@ public class HyCore : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
-                "GameplayTags",
                 "DeveloperSettings",
 
 				// Custom Modules

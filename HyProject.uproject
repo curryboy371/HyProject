@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.4",
+	"EngineAssociation": "{CA5C28A3-42E4-E963-65AE-DF931E1A1652}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -21,8 +21,18 @@
 				"Editor"
 			]
 		},
+
+
+
+
+
+
 		{
 			"Name": "HyFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "HyTable",
 			"Enabled": true
 		}
 	]

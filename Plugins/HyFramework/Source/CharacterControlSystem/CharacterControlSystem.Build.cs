@@ -23,9 +23,10 @@ public class CharacterControlSystem : ModuleRules
 			new string[]
 			{
 				"Core",
+                "GameplayTags",
 
             }
-			);
+            );
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -39,6 +40,7 @@ public class CharacterControlSystem : ModuleRules
 
 				// Custom Modules
                 "HyCore",
+                "HyFramework",
 			}
 			);
 		

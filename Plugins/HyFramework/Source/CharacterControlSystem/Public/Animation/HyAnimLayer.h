@@ -13,8 +13,11 @@ UCLASS()
 class CHARACTERCONTROLSYSTEM_API UHyAnimLayer : public UAnimInstance
 {
 	GENERATED_BODY()
-	
-	
+public:
+    /*레이어가 활성화되면 호출되는 함수*/
+    UFUNCTION(BlueprintNativeEvent, Category = "Hy | CControl | Layer")
+    void OnActivated();
+    virtual void OnActivated_Implementation() {};
 	
 	
 };

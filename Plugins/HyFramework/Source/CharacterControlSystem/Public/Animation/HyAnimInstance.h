@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 
+#include "GameplayTagContainer.h"
+
 #include "CControlTypes.h"
 
 #include "HyAnimInstance.generated.h"
@@ -25,7 +27,11 @@ public:
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 	
 	
-	
+public:
+	UFUNCTION(BlueprintCallable, Category = "Hy | CControl | Layer")
+	void SetEquipLayer(const FGameplayTag& InEquipTag);
+
+
 protected:
 // Animaion Valus Update Functions 
 	void UpdateLeaning(const float& DeltaSeconds);
@@ -43,7 +49,16 @@ protected:
 
 protected:
 // Animation Values Update On Off
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
 	FCControlUpdates AnimationUpdateSwitch;
 
+
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Layer")
+	TArray<FHyAnimEquipLayerSet> EquipLayers;
+
+	// Instances
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | Layer")
+	TObjectPtr<class UHyAnimEquipLayer> CurEquipLayerInst;
 };

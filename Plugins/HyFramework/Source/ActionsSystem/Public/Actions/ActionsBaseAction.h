@@ -8,6 +8,8 @@
 #include "ActionsTypes.h"
 #include "GameplayTagContainer.h"
 
+
+
 #include "ActionsBaseAction.generated.h"
 
 /**
@@ -25,68 +27,71 @@ class ACTIONSSYSTEM_API UActionsBaseAction : public UObject
 	GENERATED_BODY()
 	
 public:
+    UActionsBaseAction();
+
+
     /*Called when the action is successfully triggered*/
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     void OnActionStarted(const FString& InContext = FString());
     virtual void OnActionStarted_Implementation(const FString& InContext = FString()) {};
 
 
     /*Called when the action montage setup completed*/
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     void OnActionSetupCompleted(const FString& InContext = FString());
     virtual void OnActionSetupCompleted_Implementation(const FString& InContext = FString()) {};
 
     /*Called when the action is finished. Normally if BindActionToAnimation is set to true
     this is called when the animation is finished*/
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     void OnActionEnded();
     virtual void OnActionEnded_Implementation() {};
 
     /*Called when the action is successfully triggered and BEFORE the OnActionStarted.*/
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     void OnActionTransition(class UActionsBaseAction* InpreAction);
     virtual void OnActionTransition_Implementation(class UActionsBaseAction* InpreAction) {};
 
     /*Called every frame if the ActionsManagerComponent of this character has bCanTick set to true*/
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     void OnTick(float DeltaTime);
-    virtual void OnTick_Implementation(float DeltaTime) {};
+    virtual void OnTick_Implementation(float DeltaTime) {  };
 
 
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     bool IsStopConditional();
     virtual bool IsStopConditional_Implementation() { return true; };
 
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Actions")
     void PlayEffects();
     virtual void PlayEffects_Implementation();
 
     /*Implement this to select the name of the montage section that should be played when executing this action */
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     FName GetMontageSectionName();
     virtual FName GetMontageSectionName_Implementation() { return NAME_None; };
 
     /*Implement this to select the name of the montage section that should be played when executing this action */
-    UFUNCTION(BlueprintCallable, Category = "Hy | Actions")
+    UFUNCTION(BlueprintCallable, Category = "Actions")
     void SetActionMontageInfo(const FActionMontageInfo& InMontageInfo) {};
 
     /*Interrupt current action AND animation Immediately*/
-    UFUNCTION(BlueprintCallable, Category = "Hy | Actions")
+    UFUNCTION(BlueprintCallable, Category = "Actions")
     void StopActionImmediately() {};
 
 
-    UFUNCTION(BlueprintNativeEvent, Category = "Hy | Actions")
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     float GetPlayRate();
     virtual float GetPlayRate_Implementation() { return AnimRate; };
 
     /*Play the animation montage related to this action. Called automatically by default*/
-    UFUNCTION(BlueprintCallable, Category = "Hy | Actions")
+    UFUNCTION(BlueprintCallable, Category = "Actions")
     void ExecuteAction();
 
     /*Called to force the end of the action. Does not stop the animation but allows the trigger of eventually stored
     actions or set the actual state to the default one*/
-    UFUNCTION(BlueprintCallable, Category = "Hy | Actions")
+    UFUNCTION(BlueprintCallable, Category = "Actions")
     void ExitAction();
 
     virtual void Internal_OnActivated(TObjectPtr<class UActionsSystemComponent> InActionSystemCom, TObjectPtr<class UAnimMontage> InAnimMontage, const FString& InContext);
@@ -125,29 +130,29 @@ public:
     TObjectPtr<class ACharacter> GetCharacterOwner() { return CharacterOwner; }
     void SetCharacterOwner(TObjectPtr<class ACharacter> InOwner) { CharacterOwner = InOwner; }
 
-    UFUNCTION(BlueprintPure, Category = "Hy | Actions")
+    UFUNCTION(BlueprintPure, Category = "Actions")
     FGameplayTag GetActionTag() const { return ActionTag ; }
 
 protected:
-    UPROPERTY(BlueprintReadOnly, Category = "Hy | Actions")
+    UPROPERTY(BlueprintReadOnly, Category = "Actions")
     TObjectPtr<class UActionsSystemComponent> ActionSystemCom;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hy | Actions")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Actions")
     FActionConfig ActionConfig;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hy | Actions")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Actions")
     bool bBindMontageEvent = true; // true is Montage Animation event Bind
 
-    UPROPERTY(BlueprintReadOnly, Category = "Hy | Actions")
+    UPROPERTY(BlueprintReadOnly, Category = "Actions")
     TObjectPtr<class ACharacter> CharacterOwner;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Hy | Actions")
+    UPROPERTY(BlueprintReadOnly, Category = "Actions")
     TObjectPtr<class UAnimMontage> animMontage;
 
-    UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
+    UPROPERTY(BlueprintReadWrite, Category = "Actions")
     FActionMontageInfo MontageInfo;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Hy | Actions")
+    UPROPERTY(BlueprintReadOnly, Category = "Actions")
     FGameplayTag ActionTag;
 
     bool bIsExecutingAction = false;

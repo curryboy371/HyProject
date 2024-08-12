@@ -3,6 +3,12 @@
 
 #include "Animation/HyAnimInstance.h"
 
+#include "Animation/HyAnimEquipLayer.h"
+#include "Animation/HyAnimLayer.h"
+
+#include "HyCoreLogging.h"
+
+
 
 #include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
@@ -71,6 +77,34 @@ void UHyAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
     {
         UpdateLeaning(DeltaSeconds);
     }
+
+}
+
+void UHyAnimInstance::SetEquipLayer(const FGameplayTag& InEquipTag)
+{
+    if (FHyAnimEquipLayerSet* FindEquipLayer = EquipLayers.FindByKey(InEquipTag))
+    {
+        if (FindEquipLayer->EquipLayer)
+        {
+            //if (CurEquipLayerInst)
+            //{
+            //    // TODO 필요시 종료 sign
+            //}
+
+            LinkAnimClassLayers(FindEquipLayer->EquipLayer);
+
+            CurEquipLayerInst = Cast<UHyAnimEquipLayer>(GetLinkedAnimLayerInstanceByClass(FindEquipLayer->EquipLayer));
+            if (CurEquipLayerInst)
+            {
+                CurEquipLayerInst->OnActivated(); // Layer Active
+            }
+        }
+    }
+    else
+    {
+        ERR_V("EquipLayer is not found");
+    }
+
 
 }
 

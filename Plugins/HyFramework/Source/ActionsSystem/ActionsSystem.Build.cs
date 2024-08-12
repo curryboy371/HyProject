@@ -22,6 +22,7 @@ public class ActionsSystem : ModuleRules
 			new string[]
 			{
 				"Core",
+                "GameplayTags",
 
 
             }
@@ -35,7 +36,6 @@ public class ActionsSystem : ModuleRules
 				"CoreUObject",
 				"Engine",
                 "DeveloperSettings",
-                "GameplayTags",
 
 				//Custom Module
                 "HyCore",
