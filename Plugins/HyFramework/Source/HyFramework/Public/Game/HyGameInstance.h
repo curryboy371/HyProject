@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+
+#include "CControlTypes.h"
+
 #include "HyGameInstance.generated.h"
 
 /**
@@ -19,4 +22,12 @@ public:
 	virtual void Init();
 
 	
+
+public:
+	FInputDataSet& GetInputDataSet() { return InputDataSet; }
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Input")
+	FInputDataSet InputDataSet;
+
 };

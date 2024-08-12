@@ -22,9 +22,14 @@ class HYFRAMEWORK_API AHyMyPlayerBase : public AHyPlayerBase
 	virtual void CharacterDefaultSetup();
 	virtual void ComponenetSetup();
 
+	void InputSetup();
+
 	virtual void BeginPlay() override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+public:
 
 
 protected:
@@ -40,5 +45,5 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
-	TMap<EKeyInput, class UInputAction*> InputActionMap;
+	TMap<EKeyInput, FInputActionData> InputDataMap;
 };

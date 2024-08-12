@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "HyCoreTypes.h"
+#include "InputTriggers.h"
+
+
 #include "UObject/NoExportTypes.h"
 #include "CControlTypes.generated.h"
 
@@ -19,7 +22,9 @@
 UENUM(BlueprintType)
 enum class EKeyInput : uint8
 {
-	IA_Attack = 0,
+    IA_None = 0,
+	IA_Attack,
+    IA_Equip,
 	IA_Skill1,
 	IA_Jump,
 	IA_Move,
@@ -41,11 +46,58 @@ struct FHyAnimEquipLayerSet : public FTagBase
 public:
     FHyAnimEquipLayerSet() {}
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CControl | Layer")
     TSubclassOf<class UHyAnimEquipLayer> EquipLayer;
 };
 
+// Input Structs
 
+
+
+USTRUCT(BlueprintType)
+struct FInputActionData
+{
+    GENERATED_BODY()
+
+public:
+    FInputActionData()
+        : InputAction(nullptr)
+        , TriggerEvent(ETriggerEvent::Triggered)
+        , CharacterClass(nullptr)
+        , ActionMethodName(NAME_None)
+    {
+    }
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+    class UInputAction* InputAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+    ETriggerEvent TriggerEvent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+    TSubclassOf<class ACharacter> CharacterClass;  // The class to bind the action to
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+    FName ActionMethodName;  // Method name to call
+};
+
+USTRUCT(BlueprintType)
+struct FInputDataSet : public FTagBase
+{
+    GENERATED_BODY()
+
+public:
+    FInputDataSet() 
+    {
+        InputContext = nullptr;
+    }
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CControl | Input")
+    class UInputMappingContext* InputContext;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CControl | Input")
+    TMap<EKeyInput, FInputActionData> InputDataMap;
+};
 
 
 USTRUCT(BlueprintType)
@@ -53,28 +105,28 @@ struct FCControlUpdates
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateMovementData = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateLocationData = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateRotationData = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateSpeedData = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateAccelerationData = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateAimData = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateJumpData = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Updates")
     bool bUpdateLeaningData = true;
 };
 

@@ -127,3 +127,30 @@ bool AHyCharacterBase::TriggerAction(const FActionExcuteData& InActionExcuteData
 	return bSuccessAction;
 }
 
+void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
+{
+	LOG_I;
+}
+
+void AHyCharacterBase::InputMove(const FInputActionValue& Value)
+{
+	LOG_I;
+
+}
+
+void AHyCharacterBase::InputJump(const FInputActionValue& Value)
+{
+	LOG_I;
+}
+
+void AHyCharacterBase::InputLook(const FInputActionValue& Value)
+{
+	LOG_I;
+
+}
+
+void AHyCharacterBase::InputEquip(const FInputActionValue& Value)
+{
+	LOG_I;
+}
+

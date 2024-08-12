@@ -10,13 +10,19 @@
 
 
 
+## 0. 주요 모듈
 
-## 1. 모듈 종류
+### GameModule | HyProject
 
-### Game | HyProject
+### Plugin | HyFramework
+
+### Plugin | HyTable
+
+## 1. 모듈 설명
+
+### Game | Main Module |HyProject
 - 클래스 접두어 Hy
 - 게임 모듈
-
 
 
 ### Plugins | Main | HyFramework
@@ -48,3 +54,7 @@
 - 클래스 접두어 CControl, Hy
 - 캐릭터 컨트롤과 관련된 시스템을 관리
 - 애니메이션인스턴스, 애님 레이어, 무브먼트 등 
+
+
+### Plugins | HyTable
+- 테이블 관리하기 위한 플러그인

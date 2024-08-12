@@ -36,6 +36,7 @@ public class HyProject : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"InputCore",
+            "EnhancedInput",
             "GameplayTags",
 
         });

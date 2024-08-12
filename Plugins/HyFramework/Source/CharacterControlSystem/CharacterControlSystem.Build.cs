@@ -24,6 +24,9 @@ public class CharacterControlSystem : ModuleRules
 			{
 				"Core",
                 "GameplayTags",
+                "EnhancedInput",
+
+
 
             }
             );

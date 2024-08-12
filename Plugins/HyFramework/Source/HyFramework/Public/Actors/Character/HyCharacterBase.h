@@ -11,6 +11,7 @@
 #include "ActionsTypes.h"
 
 
+#include "InputActionValue.h"
 
 #include "HyCharacterBase.generated.h"
 
@@ -57,7 +58,11 @@ public:
 	bool TriggerAction(const FActionExcuteData& InActionExcuteData, bool bCanBeStored = false);
 
 protected:
-
+	void InputAttack(const FInputActionValue& Value);
+	void InputMove(const FInputActionValue& Value);
+	void InputJump(const FInputActionValue& Value);
+	void InputLook(const FInputActionValue& Value);
+	void InputEquip(const FInputActionValue& Value);
 
 protected:
 	// Components
