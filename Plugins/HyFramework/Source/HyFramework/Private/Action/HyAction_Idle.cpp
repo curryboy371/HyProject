@@ -5,10 +5,13 @@
 
 #include "Actors/Character/HyCharacterBase.h"
 
+#include "Manager/HyTagManager.h"
+
 
 void UHyAction_Idle::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
+	ResetCombatModeDuration();
 
 }
 
@@ -22,6 +25,7 @@ void UHyAction_Idle::OnActionEnded_Implementation()
 {
 	Super::OnActionEnded_Implementation();
 
+
 }
 
 void UHyAction_Idle::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)
@@ -34,12 +38,23 @@ void UHyAction_Idle::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
 
-	if (ActionDuration > CombatModeCooldownTime)
+	if (HyCharacterOwner && HyTagManager)
 	{
-		// 전투모드 해제
+		if (HyCharacterOwner->IsCombatMode())
+		{
+			CombatModeDuration += DeltaTime;
+
+			if (CombatModeDuration > CombatModeCooldownTime)
+			{
+				HyCharacterOwner->TriggerAction(HyTagManager->ActionExcuteSet.ActionUnEquip);
+				ResetCombatModeDuration();
+			}
+		}
+		else
+		{
+			ResetCombatModeDuration();
+		}
 	}
-
-
 }
 
 bool UHyAction_Idle::IsStopConditional_Implementation()

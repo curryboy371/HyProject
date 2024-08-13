@@ -26,6 +26,9 @@ public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 	
+
+	UFUNCTION(BlueprintCallable, Category = "Hy | Property")
+	UHyAnimInstance* GetOwningAnimInstance() const;
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hy | CControl | Layer")
@@ -45,14 +48,13 @@ protected:
 	void UpdateJump(const float& DeltaSeconds);
 
 
-
+public:
+	void SetCharacterStateData(const FCharacterStateData& InCharacterStateData) { CharacterStateData = InCharacterStateData; }
 
 protected:
 // Animation Values Update On Off
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Updates")
 	FCControlUpdates AnimationUpdateSwitch;
-
-
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | CControl | Layer")
@@ -61,4 +63,9 @@ protected:
 	// Instances
 	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | Layer")
 	TObjectPtr<class UHyAnimEquipLayer> CurEquipLayerInst;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | CharacterData")
+	FCharacterStateData CharacterStateData;
+
 };

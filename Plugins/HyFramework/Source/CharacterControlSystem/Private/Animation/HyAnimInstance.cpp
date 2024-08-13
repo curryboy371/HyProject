@@ -80,6 +80,32 @@ void UHyAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 
 }
 
+UHyAnimInstance* UHyAnimInstance::GetOwningAnimInstance() const
+{
+    // TOOD
+    // 레이어에서 프로퍼티 액세스 하려는 용도인데..
+    // 레이어도 이 클래스를 상속하여 프로퍼티 액세스를 할지
+    // 프로퍼티 액세스 없는 더 좋은 방법이 있는지 고민 필요 
+    
+    if (AActor* OwningActor = GetOwningActor())
+    {
+        ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
+
+        if (OwningCharacter)
+        {
+            if (UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance())
+            {
+                UHyAnimInstance* OwningAnimInstance = Cast<UHyAnimInstance>(AnimInstance);
+                if (OwningAnimInstance)
+                {
+                    return OwningAnimInstance;
+                }
+            }
+        }
+    }
+    return nullptr;
+}
+
 void UHyAnimInstance::SetEquipLayer(const FGameplayTag& InEquipTag)
 {
     if (FHyAnimEquipLayerSet* FindEquipLayer = EquipLayers.FindByKey(InEquipTag))

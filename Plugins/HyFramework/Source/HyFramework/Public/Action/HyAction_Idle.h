@@ -17,6 +17,7 @@ class HYFRAMEWORK_API UHyAction_Idle : public UHyActionBase
 public:
 	UHyAction_Idle()
 	{
+		CombatModeDuration = 0.0f;
 		CombatModeCooldownTime = 10.f;
 	}
 
@@ -28,7 +29,12 @@ public:
 	virtual bool IsStopConditional_Implementation();
 	
 
+	void ResetCombatModeDuration() { CombatModeDuration = 0.0f; }
+
 protected:
 	// 캐릭터가 전투모드에서 비전투모드로 돌아가는 쿨다운 타임
 	float CombatModeCooldownTime;
+
+	// CombatMode 지속 시간
+	float CombatModeDuration = 0.0f;
 };

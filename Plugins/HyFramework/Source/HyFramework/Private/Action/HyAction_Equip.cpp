@@ -2,6 +2,9 @@
 
 
 #include "Action/HyAction_Equip.h"
+#include "Actors/Character/HyCharacterBase.h"
+
+
 
 void UHyAction_Equip::OnActionStarted_Implementation(const FString& InContext)
 {
@@ -19,6 +22,10 @@ void UHyAction_Equip::OnActionEnded_Implementation()
 {
 	Super::OnActionEnded_Implementation();
 
+	if (HyCharacterOwner)
+	{
+		HyCharacterOwner->SetCombatMode(true);
+	}
 }
 
 void UHyAction_Equip::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)

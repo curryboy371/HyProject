@@ -2,6 +2,9 @@
 
 
 #include "Action/HyAction_Move.h"
+#include "Actors/Character/HyCharacterBase.h"
+
+
 
 void UHyAction_Move::OnActionStarted_Implementation(const FString& InContext)
 {

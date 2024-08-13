@@ -7,6 +7,8 @@
 
 #include "GameplayTagContainer.h"
 
+#include "CControlTypes.h"
+#include "ActionsTypes.h"
 
 #include "HyTagManager.generated.h"
 
@@ -17,24 +19,22 @@ struct FGameplayTuple
 	FGameplayTagContainer Container;
 };
 
-struct FNormalActionTagSet
+struct FActionExcuteSet
 {
-	FGameplayTag ActionParent;
+	FGameplayTag NorActionParent;
 
-	FGameplayTag ActionIdle;
-	FGameplayTag ActionSpawn;
-	FGameplayTag ActionWalk;
-	FGameplayTag ActionRun;
-	FGameplayTag ActionJump;
-	FGameplayTag ActionEquip;
-	FGameplayTag ActionUnEquip;
+	FActionExcuteData ActionIdle;
+	FActionExcuteData ActionSpawn;
+	FActionExcuteData ActionWalk;
+	FActionExcuteData ActionRun;
+	FActionExcuteData ActionJump;
+	FActionExcuteData ActionEquip;
+	FActionExcuteData ActionUnEquip;
+
+	FGameplayTag AttActionParent;
+	FActionExcuteData ActionAttack;
 };
 
-struct FAttackActionTagSet
-{
-	FGameplayTag ActionParent;
-	FGameplayTag ActionAttack;
-};
 
 
 /**
@@ -50,16 +50,22 @@ public:
 	void InitManager() override;
 	void ReleaseManager() override;
 
+public:
 
 protected:
 	void InitActionTagSet();
 
 	void AddActionTag(const FName& InTagName, FGameplayTag& InActionTagInst);
-	void AddOtherTag(const FName& InTagName, FGameplayTag& InActionTagInst);
-	void AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple);
+	void AddActionTag(const FName& InTagName, FActionExcuteData& InActionExcuteData, EActionPriority InActionProperty = EActionPriority::EEmpty);
+
+
+	void AddOtherTag(const FName& InTagName, FGameplayTag& InActionTagInst, EActionPriority InActionProperty = EActionPriority::EEmpty);
+	void AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple, EActionPriority InActionProperty = EActionPriority::EEmpty);
 
 
 public:
-	FNormalActionTagSet NorActionTagSet;
-	FAttackActionTagSet AttActionTagSet;
+	FActionExcuteSet ActionExcuteSet;
+
+
+protected:
 };

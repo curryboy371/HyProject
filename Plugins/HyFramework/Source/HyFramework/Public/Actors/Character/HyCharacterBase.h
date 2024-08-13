@@ -15,6 +15,8 @@
 
 #include "InputActionValue.h"
 
+#include "Interface/CControlCharacterInterface.h"
+
 #include "HyCharacterBase.generated.h"
 
 
@@ -22,7 +24,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipLayerChanged, const FGamepla
 
 
 UCLASS()
-class HYFRAMEWORK_API AHyCharacterBase : public ACharacter
+class HYFRAMEWORK_API AHyCharacterBase : public ACharacter, public ICControlCharacterInterface
 {
 	GENERATED_BODY()
 
@@ -46,6 +48,15 @@ public:
 
 	
 
+public:
+	// ICControlCharacterInterface을(를) 통해 상속됨
+	virtual const bool IsDead() override;
+	virtual const bool IsCombatMode() override;
+
+	virtual void SetCombatMode(const bool bCombatMode) override;
+
+
+
 protected:
 	void CharacterSetup();
 
@@ -57,7 +68,7 @@ public:
 	void SetHyAnimInstance();
 public:
 	// Actions System
-	bool TriggerAction(const FActionExcuteData& InActionExcuteData, bool bCanBeStored = false);
+	bool TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false);
 
 
 public:

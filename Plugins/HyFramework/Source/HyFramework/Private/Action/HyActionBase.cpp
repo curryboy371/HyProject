@@ -4,6 +4,9 @@
 #include "Action/HyActionBase.h"
 
 #include "Actors/Character/HyCharacterBase.h"
+#include "Game/HyGameInstance.h"
+#include "Manager/HyTagManager.h"
+
 
 #include "HyCoreLogging.h"
 
@@ -13,10 +16,20 @@ void UHyActionBase::OnActionStarted_Implementation(const FString& InContext)
 
 	ActionDuration = 0.0f;
 
-	HyOwnerCharacter = Cast<AHyCharacterBase>(CharacterOwner);
+	HyCharacterOwner = Cast<AHyCharacterBase>(CharacterOwner);
 
-	if (!HyOwnerCharacter)
+	if (!HyCharacterOwner)
 	{
-		ERR_V("HyOwnerCharacter is nullptr");
+		ERR_V("HyCharacterOwner is nullptr");
+	}
+
+	if (UHyInst* Inst = UHyInst::Get())
+	{
+		HyTagManager = Inst->GetManager<UHyTagManager>();
+	}
+
+	if (!HyTagManager)
+	{
+		ERR_V("HyTagManager is nullptr");
 	}
 }

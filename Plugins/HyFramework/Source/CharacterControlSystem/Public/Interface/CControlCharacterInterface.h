@@ -28,5 +28,10 @@ class CHARACTERCONTROLSYSTEM_API ICControlCharacterInterface
 
 public:
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+	virtual const bool IsDead() = 0;
+	virtual const bool IsCombatMode() = 0;
+
+
+	virtual void SetCombatMode(const bool bCombatMode) = 0;
 
 };

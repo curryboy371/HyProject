@@ -81,6 +81,36 @@ void AHyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
+const bool AHyCharacterBase::IsDead()
+{
+	return CharacterStateData.bIsDead;
+}
+
+const bool AHyCharacterBase::IsCombatMode()
+{
+	return CharacterStateData.CombatMode == ECombatMode::ECombat;
+}
+
+void AHyCharacterBase::SetCombatMode(const bool bCombatMode)
+{
+	if (!HyAnimInstance)
+	{
+		ERR_V("HyAnimInstance is not set.");
+		return;
+	}
+
+	if (bCombatMode)
+	{
+		CharacterStateData.CombatMode = ECombatMode::ECombat;
+	}
+	else
+	{
+		CharacterStateData.CombatMode = ECombatMode::EPeace;
+	}
+
+	HyAnimInstance->SetCharacterStateData(CharacterStateData);
+}
+
 void AHyCharacterBase::CharacterSetup()
 {
 	// BeginPlay에서 Character를 Setup하는 함수
@@ -126,11 +156,12 @@ void AHyCharacterBase::SetHyAnimInstance()
 	}
 }
 
-bool AHyCharacterBase::TriggerAction(const FActionExcuteData& InActionExcuteData, bool bCanBeStored)
+bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext, bool bCanBeStored)
 {
 	bool bSuccessAction = false;
 	if (ActionsSystemCom)
 	{
+		InActionExcuteData.ActionContext = InContext;
 		bSuccessAction = ActionsSystemCom->TriggerAction(InActionExcuteData, bCanBeStored);
 
 		if (bSuccessAction)
@@ -140,6 +171,7 @@ bool AHyCharacterBase::TriggerAction(const FActionExcuteData& InActionExcuteData
 	}
 
 	return bSuccessAction;
+	return false;
 }
 
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
@@ -148,7 +180,7 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 	{
 		if (UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>())
 		{
-			TriggerAction(FActionExcuteData(TagManager->AttActionTagSet.ActionAttack, EActionPriority::EMedium), true);
+			TriggerAction(TagManager->ActionExcuteSet.ActionAttack, FString(), true);
 		}
 		else
 		{
@@ -220,7 +252,7 @@ void AHyCharacterBase::InputJump(const FInputActionValue& Value)
 	{
 		if (UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>())
 		{
-			TriggerAction(FActionExcuteData(TagManager->NorActionTagSet.ActionJump, EActionPriority::EHigh));
+			TriggerAction(TagManager->ActionExcuteSet.ActionJump);
 		}
 		else
 		{
@@ -240,7 +272,15 @@ void AHyCharacterBase::InputEquip(const FInputActionValue& Value)
 	{
 		if (UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>())
 		{
-			TriggerAction(FActionExcuteData(TagManager->NorActionTagSet.ActionEquip, EActionPriority::EMedium));
+			FString Context = TEXT("Auto");
+			if(IsCombatMode())
+			{
+				TriggerAction(TagManager->ActionExcuteSet.ActionUnEquip, Context);
+			}
+			else
+			{
+				TriggerAction(TagManager->ActionExcuteSet.ActionEquip, Context);
+			}
 		}
 		else
 		{
