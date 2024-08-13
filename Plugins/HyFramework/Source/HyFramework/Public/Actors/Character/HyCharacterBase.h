@@ -8,6 +8,8 @@
 
 #include "HyTypes.h"
 
+#include "CControlTypes.h"
+
 #include "ActionsTypes.h"
 
 
@@ -57,6 +59,7 @@ public:
 	// Actions System
 	bool TriggerAction(const FActionExcuteData& InActionExcuteData, bool bCanBeStored = false);
 
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputAttack(const FInputActionValue& Value);
@@ -85,18 +88,28 @@ public:
 	FOnEquipLayerChanged OnEquipLayerChanged;
 
 
+public:
+	
+
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Anim")
 	TObjectPtr<class UHyAnimInstance> HyAnimInstance;
 
 
-
-
-
-
-
 protected:
+	// BlueprintSetting
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init")
 	FCharacterInitTagSet CharacterInitTagSet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Movement")
+	TMap<ECharacterMovementMode, FCharacterMovementData> CharacterMovementDataMap;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Hy | Input")
+	FCharacterInputData CharacterInputData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Hy | Character")
+	FCharacterStateData CharacterStateData;
+
 };

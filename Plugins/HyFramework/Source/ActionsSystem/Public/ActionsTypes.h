@@ -157,6 +157,7 @@ public:
     {
         ActionMontage = nullptr;
         StartSectionName = NAME_None;
+        ReproductionSpeed = 1.f;
         MontageBlend = EMontageBlendType::EMontageBlend_Both;
     }
 
@@ -164,6 +165,7 @@ public:
     {
         ActionMontage = InAnimMontage;
         StartSectionName = NAME_None;
+        ReproductionSpeed = 1.f;
         MontageBlend = EMontageBlendType::EMontageBlend_Both;
     }
 
@@ -172,6 +174,9 @@ public:
 
     UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
     EMontageBlendType MontageBlend;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
+    float ReproductionSpeed;
 
     UPROPERTY(BlueprintReadWrite, Category = "Hy | Actions")
     FName StartSectionName;

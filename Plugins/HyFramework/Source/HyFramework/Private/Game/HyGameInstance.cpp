@@ -3,19 +3,69 @@
 
 #include "Game/HyGameInstance.h"
 
+#include "Manager/HyManagerBase.h"
+
 #include "HyCoreLogging.h"
+
+UHyGameInstance* UHyGameInstance::HyGameInstance = nullptr;
 
 void UHyGameInstance::Init()
 {
 	UGameInstance::Init();
-	LOG_V("LogTest");
+    HyGameInstance = nullptr;
+    InitManager();
+}
 
+void UHyGameInstance::Shutdown()
+{
+    ReleaseManager();
+    HyGameInstance = nullptr;
+    UGameInstance::Shutdown();
+}
 
+void UHyGameInstance::InitManager()
+{
+    UHyManagerBase::ResetManagerID();
+    HyManagerMap.Empty();
 
-	LOG_GUARD;
+    // 모든 UClass를 순회하며 UManagerBase를 상속하는 클래스를 찾음
+    for (TObjectIterator<UClass> It; It; ++It)
+    {
+        UClass* Class = *It;
 
-	LOG_GUARD_V("teset");
+        if (Class->IsChildOf(UHyManagerBase::StaticClass()) && !Class->HasAnyClassFlags(CLASS_Abstract))
+        {
+            // 해당 클래스를 인스턴스화하여 Managers 배열에 추가
+            UHyManagerBase* NewManager = NewObject<UHyManagerBase>(this, Class);
+            if (NewManager)
+            {
+                if (HyManagerMap.Contains(NewManager->GetManagerID()) == false)
+                {
+                    HyManagerMap.Add(NewManager->GetManagerID(), NewManager);
+                }
+                else
+                {
+                    ERR_V("Manager ID %d is already exist", NewManager->GetManagerID());
+                }
+            }
+        }
+    }
 
+    for (auto& manager : HyManagerMap)
+    {
+        manager.Value->InitManager();
+    }
+}
+
+void UHyGameInstance::ReleaseManager()
+{
+	for (auto& manager : HyManagerMap)
+	{
+		manager.Value->ReleaseManager();
+	}
+
+    UHyManagerBase::ResetManagerID();
+	HyManagerMap.Empty();
 }
 
 const bool UHyGameInstance::GetInputDataSet(const FGameplayTag& InInputTag, FInputDataSet& OutInputData)

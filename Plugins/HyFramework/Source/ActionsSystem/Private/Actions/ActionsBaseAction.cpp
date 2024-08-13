@@ -101,6 +101,7 @@ void UActionsBaseAction::PrepareMontageInfo()
 {
     MontageInfo.ActionMontage = animMontage;
     MontageInfo.MontageBlend = ActionConfig.MontageBlend;
+    MontageInfo.ReproductionSpeed = GetPlayRate();
     MontageInfo.StartSectionName = GetMontageSectionName();
 
 }

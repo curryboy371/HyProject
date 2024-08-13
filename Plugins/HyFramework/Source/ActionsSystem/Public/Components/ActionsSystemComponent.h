@@ -59,6 +59,7 @@ protected:
 
 	void TerminateCurrentAction();
 
+	void SetMontageBlendType(const FActionMontageInfo& InMontageInfo);
 public:
 	void SetPerformingActionPriority(EActionPriority InPriority);
 

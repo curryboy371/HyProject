@@ -239,7 +239,8 @@ void UActionsSystemComponent::PlayMontage(const FActionMontageInfo& InMontageInf
 
     if (MontageInfo.ActionMontage && CharacterOwner)
     {
-        //CharacterOwner->PlayAnimMontage_Custom(MontageInfo.MontageAction, MontageInfo.ReproductionSpeed, MontageInfo.MontageBlend, MontageInfo.StartSectionName, StartFrame);
+        SetMontageBlendType(MontageInfo);
+        CharacterOwner->PlayAnimMontage(MontageInfo.ActionMontage, MontageInfo.ReproductionSpeed, MontageInfo.StartSectionName);
     }
 }
 
@@ -278,6 +279,32 @@ void UActionsSystemComponent::TerminateCurrentAction()
         CurActionExcuteData.ResetData();
     }
     bIsPerformingAction = false;
+}
+
+void UActionsSystemComponent::SetMontageBlendType(const FActionMontageInfo& InMontageInfo)
+{
+    if (InMontageInfo.ActionMontage)
+    {
+        switch (InMontageInfo.MontageBlend)
+        {
+        case EMontageBlendType::EMontageBlend_None: // 블렌드 인아웃 모두 안함
+            InMontageInfo.ActionMontage->BlendIn.SetBlendTime(0.0f);
+            InMontageInfo.ActionMontage->BlendOut.SetBlendTime(0.0f);
+            break;
+
+        case EMontageBlendType::EMontageBlend_Start: // 블렌드 아웃 안함
+            InMontageInfo.ActionMontage->BlendOut.SetBlendTime(0.0f);
+            break;
+
+        case EMontageBlendType::EMontageBlend_End: // 블렌드 인 안함
+            InMontageInfo.ActionMontage->BlendIn.SetBlendTime(0.0f);
+            break;
+
+        case EMontageBlendType::EMontageBlend_Both: // 블렌드 인 아웃 모두 함
+            break;
+        }
+
+    }
 }
 
 void UActionsSystemComponent::SetPerformingActionPriority(EActionPriority InPriority)

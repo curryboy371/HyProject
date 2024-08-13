@@ -39,7 +39,7 @@ void AHyMyPlayerBase::ComponenetSetup()
 	if (CameraBoomComp)
 	{
 		CameraBoomComp->SetupAttachment(RootComponent);
-		CameraBoomComp->TargetArmLength = 800.0f;
+		CameraBoomComp->TargetArmLength = 400.0f;
 		CameraBoomComp->bUsePawnControlRotation = true;
 	}
 
