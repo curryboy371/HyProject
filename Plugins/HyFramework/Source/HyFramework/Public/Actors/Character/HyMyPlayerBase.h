@@ -7,13 +7,14 @@
 
 #include "CControlTypes.h"
 
+#include "Interface/CControlInputInterface.h"
 #include "HyMyPlayerBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYFRAMEWORK_API AHyMyPlayerBase : public AHyPlayerBase
+class HYFRAMEWORK_API AHyMyPlayerBase : public AHyPlayerBase, public ICControlInputInterface
 {
 	GENERATED_BODY()
 
@@ -22,11 +23,21 @@ class HYFRAMEWORK_API AHyMyPlayerBase : public AHyPlayerBase
 	virtual void CharacterDefaultSetup();
 	virtual void ComponenetSetup();
 
-	void InputSetup();
-
 	virtual void BeginPlay() override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+protected:
+	// ICControlInputInterface을(를) 통해 상속됨
+	void InputSetup() override;
+
+	void InputFunctionMapping() override;
+
+	void InputActionDataSetup(struct FInputDataSet* InInputDataSet) override;
+
+	void InputActionMapping(class UEnhancedInputComponent* EnhancedInputComponent) override;
+
 
 
 public:
@@ -45,5 +56,9 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
-	TMap<EKeyInput, FInputActionData> InputDataMap;
+	TArray<FInputActionData> InputDatas;
+
+	// Input Function Map
+	TMap<FName, void (AHyMyPlayerBase::*)(const FInputActionValue&)> InputFunctionMap;
+
 };

@@ -6,7 +6,6 @@
 #include "HyCoreTypes.h"
 #include "InputTriggers.h"
 
-
 #include "UObject/NoExportTypes.h"
 #include "CControlTypes.generated.h"
 
@@ -61,12 +60,16 @@ struct FInputActionData
 
 public:
     FInputActionData()
-        : InputAction(nullptr)
+        : 
+          InputKey(EKeyInput::IA_None)
+        , InputAction(nullptr)
         , TriggerEvent(ETriggerEvent::Triggered)
-        , CharacterClass(nullptr)
         , ActionMethodName(NAME_None)
     {
     }
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+    EKeyInput InputKey;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
     class UInputAction* InputAction;
@@ -74,11 +77,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
     ETriggerEvent TriggerEvent;
 
+    // Method name to call
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
-    TSubclassOf<class ACharacter> CharacterClass;  // The class to bind the action to
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
-    FName ActionMethodName;  // Method name to call
+    FName ActionMethodName;  
 };
 
 USTRUCT(BlueprintType)
@@ -96,7 +97,7 @@ public:
     class UInputMappingContext* InputContext;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CControl | Input")
-    TMap<EKeyInput, FInputActionData> InputDataMap;
+    TArray<FInputActionData> InputDatas;
 };
 
 

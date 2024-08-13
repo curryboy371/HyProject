@@ -38,7 +38,6 @@ public class HyCore : ModuleRules
                 "DeveloperSettings",
 
 				// Custom Modules
-                "HyCore",
 
             }
             );

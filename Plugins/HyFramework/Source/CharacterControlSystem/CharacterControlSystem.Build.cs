@@ -43,7 +43,6 @@ public class CharacterControlSystem : ModuleRules
 
 				// Custom Modules
                 "HyCore",
-                "HyFramework",
 			}
 			);
 		

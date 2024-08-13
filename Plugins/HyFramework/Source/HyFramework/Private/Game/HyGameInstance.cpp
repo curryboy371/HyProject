@@ -17,3 +17,18 @@ void UHyGameInstance::Init()
 	LOG_GUARD_V("teset");
 
 }
+
+const bool UHyGameInstance::GetInputDataSet(const FGameplayTag& InInputTag, FInputDataSet& OutInputData)
+{
+	for (const FInputDataSet& InputData : InputDataSet)
+	{
+		if (InputData.TagName == InInputTag)
+		{
+			OutInputData = InputData;
+			return true;
+		}
+	}
+
+	ERR_V("Invalid Input Tag %s", *InInputTag.ToString());
+	return false;
+}

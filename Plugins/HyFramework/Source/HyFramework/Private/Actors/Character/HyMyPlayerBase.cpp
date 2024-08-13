@@ -54,97 +54,156 @@ void AHyMyPlayerBase::ComponenetSetup()
 
 void AHyMyPlayerBase::InputSetup()
 {
+	// Input에 필요한 데이터를 세팅하고, InputContext를 PC에 맵핑함
+
 	// TODO Gameinstance에서 뺄 수도 있음.
-	// 나중에는 GameFramework에서 Input을 관리하도록 할 수도 있고 ( Input은 자유롭게 사용하라고 )
-	// InputMode 관련 Tag는 추가되면 넣어줘야함
+	// 나중에는 GameFramework에서 Input을 관리하도록 할 수도
+	// Input은 프레임워크가 아닌 게임 모듈에서 자유롭게 사용하라고 ( EKeyInput Enum도 종속성을 풀어줘야함)
 
 	if (UHyGameInstance* GameInst = GetWorld()->GetGameInstance<UHyGameInstance>())
 	{
-		// InputContext
-		if (UInputMappingContext * InputContext = GameInst->GetInputDataSet().InputContext)
+		FInputDataSet InputDataSet;
+		if (GameInst->GetInputDataSet(CharacterInitTagSet.InputTag, InputDataSet))
 		{
 			if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 			{
-				if (UEnhancedInputLocalPlayerSubsystem* SubSystem =
-					ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-					SubSystem->AddMappingContext(InputContext, 0);
+				// Input Function Ptr을 먼저 맵핑
+				InputFunctionMapping();
 
+				// InputContext Setting
+				InputContentSetup(InputDataSet.InputContext, PlayerController);
+
+				// InputAction Data Setting
+				InputActionDataSetup(&InputDataSet);
 			}
 			else
 			{
 				ERR_V("No PlayerController");
 			}
 
-
-
 		}
 		else
 		{
-			ERR_V("No InputContext");
+			ERR_V("No InputDataSet %s", *CharacterInitTagSet.InputTag.ToString());
 		}
-
-		// InputAction
-		for (const auto& InputActionEntry : GameInst->GetInputDataSet().InputDataMap)
-		{
-			const FInputActionData& ActionData = InputActionEntry.Value;
-
-			if (ActionData.InputAction && ActionData.CharacterClass)
-			{
-				if (ActionData.CharacterClass->IsChildOf(ACharacter::StaticClass()))
-				{
-					if (UClass* CharacterClass = ActionData.CharacterClass->GetClass())
-					{
-						// Function이 존재하는지 체크
-						UFunction* Function = CharacterClass->FindFunctionByName(ActionData.ActionMethodName);
-						if (Function)
-						{
-							InputDataMap.Add(InputActionEntry.Key, ActionData);
-						}
-						else
-						{
-							ERR_V("Method %s not found in CharacterClass %s", *ActionData.ActionMethodName.ToString(), *ActionData.CharacterClass->GetName());
-						}
-					}
-				}
-				else
-				{
-					ERR_V("CharacterClass %s is not a subclass of ACharacter", *ActionData.CharacterClass->GetName());
-				}
-			}
-			else
-			{
-				//ERR_V("No InputAction or CharacterClass for InputActionKey %s", *InputActionEntry.Key.ToString());
-			}
-		}
-
 	}
 	else
 	{
 		ERR_V("No GameInstance");
 	}
+}
 
+void AHyMyPlayerBase::InputFunctionMapping()
+{
+	// Input 함수 이름과 함수 포인터 맵핑
+	// Input 함수를 함수 이름으로 동적 바인딩 하지만, 실제로 실행시는 정적 바인딩처럼 함수 포인터로 호출하기 위함.
 
+	InputFunctionMap.Add("InputAttack", &AHyMyPlayerBase::InputAttack);
+	InputFunctionMap.Add("InputMove", &AHyMyPlayerBase::InputMove);
+	InputFunctionMap.Add("InputJump", &AHyMyPlayerBase::InputJump);
+	InputFunctionMap.Add("InputLook", &AHyMyPlayerBase::InputLook);
+	InputFunctionMap.Add("InputEquip", &AHyMyPlayerBase::InputEquip);
+}
+
+void AHyMyPlayerBase::InputActionDataSetup(FInputDataSet* InInputDataSet)
+{
+	if (!InInputDataSet)
+	{
+		ERR_V("InInputDataSet is invaild");
+		return;
+	}
+
+	// InputAction
+	for (const FInputActionData& InputActionData : InInputDataSet->InputDatas)
+	{
+		if (InputActionData.InputAction)
+		{
+			if (UClass* CharacterClass = GetClass())
+			{
+				// Function이 존재하는지 체크
+				UFunction* Function = CharacterClass->FindFunctionByName(InputActionData.ActionMethodName);
+				if (Function)
+				{
+					// 함수 포인터 유무 확인.
+					if (void (AHyMyPlayerBase:: * Func)(const FInputActionValue&) = InputFunctionMap.FindRef(InputActionData.ActionMethodName))
+					{
+						InputDatas.Add(InputActionData);
+					}
+					else
+					{
+						ERR_V("FunctionPtr is invaild %s", *InputActionData.ActionMethodName.ToString());
+					}
+
+				}
+				else
+				{
+					ERR_V("Method %s not found in CharacterClass %s", *InputActionData.ActionMethodName.ToString(), *CharacterClass->GetName());
+				}
+			}
+		}
+		else
+		{
+			ERR_V("No InputAction");
+		}
+	}
 }
 
 void AHyMyPlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InputSetup();
 }
 
 void AHyMyPlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	InputSetup();
+
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		for(auto& InputData : InputDataMap)
+		InputActionMapping(EnhancedInputComponent);
+	}
+}
+
+void AHyMyPlayerBase::InputActionMapping(UEnhancedInputComponent* EnhancedInputComponent)
+{
+	// Input Data가 셋업이 완료된 후 호출됨
+	// Input Data에 근거하여 input 함수를 Binding 한다
+	// 동적 바인딩을 하나, 함수 이름이 아닌 함수 포인터로 바인딩을 시도함.
+	// 따라서 인게임에서 정적 바인딩과 동일한 효과를 기대
+
+	if (!EnhancedInputComponent)
+	{
+		ERR_V("EnhancedInputComponent is invaild");
+		return;
+	}
+
+	// InputAction Mapping
+	for (const FInputActionData& InputActionData : InputDatas)
+	{
+		if (InputActionData.InputAction)
 		{
-			if (InputData.Value.InputAction)
+			if (UFunction* Function = FindFunction(InputActionData.ActionMethodName))
 			{
-				EnhancedInputComponent->BindAction(InputData.Value.InputAction, InputData.Value.TriggerEvent, this, InputData.Value.ActionMethodName);
+				// 바인딩시에는 함수 포인터로 바인딩
+				if (void (AHyMyPlayerBase:: * Func)(const FInputActionValue&) = InputFunctionMap.FindRef(InputActionData.ActionMethodName))
+				{
+					EnhancedInputComponent->BindAction(InputActionData.InputAction, InputActionData.TriggerEvent, this, Func);
+				}
+				else
+				{
+					ERR_V("FunctionPtr is invaild %s", *InputActionData.ActionMethodName.ToString());
+				}
 			}
+			else
+			{
+				ERR_V("Method %s not found in CharacterClass %s", *InputActionData.ActionMethodName.ToString(), *GetClass()->GetName());
+			}
+		}
+		else
+		{
+			ERR_V("No InputAction");
 		}
 	}
 }

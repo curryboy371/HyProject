@@ -23,9 +23,13 @@ struct FCharacterInitTagSet
 public:
 	FCharacterInitTagSet()
 	{
+		InputTag = FGameplayTag::EmptyTag;
 		EquipTag = FGameplayTag::EmptyTag;
 		ActionTag = FGameplayTag::EmptyTag;
 	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init | Tags")
+	FGameplayTag InputTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init | Tags")
 	FGameplayTag EquipTag;

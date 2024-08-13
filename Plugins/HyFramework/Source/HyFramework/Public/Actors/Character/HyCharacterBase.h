@@ -57,11 +57,20 @@ public:
 	// Actions System
 	bool TriggerAction(const FActionExcuteData& InActionExcuteData, bool bCanBeStored = false);
 
-protected:
+public:
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputAttack(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputMove(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputJump(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputLook(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputEquip(const FInputActionValue& Value);
 
 protected:

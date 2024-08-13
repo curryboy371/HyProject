@@ -7,6 +7,8 @@
 
 #include "CControlTypes.h"
 
+#include "GameplayTagContainer.h"
+
 #include "HyGameInstance.generated.h"
 
 /**
@@ -24,10 +26,10 @@ public:
 	
 
 public:
-	FInputDataSet& GetInputDataSet() { return InputDataSet; }
+	const bool GetInputDataSet(const FGameplayTag& InInputTag, FInputDataSet& OutInputData);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Input")
-	FInputDataSet InputDataSet;
+	TArray<FInputDataSet> InputDataSet;
 
 };
