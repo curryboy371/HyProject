@@ -13,25 +13,37 @@
 ## 0. 주요 모듈
 
 ### GameModule | HyProject
+-게임 모듈
 
 ### Plugin | HyFramework
+- 프레임워크 플러그인
 
 ### Plugin | HyTable
+- 테이블 플러그인
 
 ## 1. 모듈 설명
 
-### Game | Main Module |HyProject
+### Game 
+
+### HyProject (Game-MainModule)
 - 클래스 접두어 Hy
 - 게임 모듈
 
+###
 
-### Plugins | Main | HyFramework
+
+### Plugin 
+
+### HyFramework (Plugin)
+
+### HyFramework (Plugin-MainModule)
+
 - 클래스 접두어 Hy
 - HyFramework Plugin 메인 모듈
 - 게임의 프레임워크를 구현한 것으로 gamemode, gameinstance 등의 base가 존재
 
 
-### Plugins | Core | HyCore
+### HyCore (Plugin-Module)
 - 클래스 접두어 HyCore
 - HyFramework plugin의 core 기능
 
@@ -39,22 +51,30 @@
 - 로그를 남기는 시간을 줄이기 위해 매크로, variadic template 함수를 활용하였음.
 
 
-### Plugins | ActionsSystem
+### ActionsSystem (Plugin-Module)
 - 클래스 접두어 Actions , Hy
 - 캐릭터 상태를 관리할 FSM과 유사하게 사용할 시스템, State = Action
 - GameplayTags로 Action을 구분하여 각 Action을 계층별로 관리할 수 있게 함
 
 
-### Plugins | HyFXSystem
+### HyFXSystem (Plugin-Module)
+
 - 클래스 접두어 HyFX, Hy
 - 이펙트, 사운드 등을 한 모듈에서만 관리하기 위해 생성함.
 
 
-### Plugins | CharacterControlSystem
+### CharacterControlSystem (Plugin-Module)
+
 - 클래스 접두어 CControl, Hy
 - 캐릭터 컨트롤과 관련된 시스템을 관리
 - 애니메이션인스턴스, 애님 레이어, 무브먼트 등 
+- Input 기능 포함, CharacterBase단에서 상속할 Input Interface 제공
 
+
+###
 
 ### Plugins | HyTable
-- 테이블 관리하기 위한 플러그인
+
+### HyTableSystem (Plugin-MainModule)
+- 클래스 접두어 HyTable
+- Unreal Data를 csv로 관리하기 위한 테이블
