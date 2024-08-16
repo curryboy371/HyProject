@@ -4,7 +4,8 @@
 #include "Components/ActionsSystemComponent.h"
 #include "GameFramework/Character.h"
 
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
+
 
 // Sets default values for this component's properties
 UActionsSystemComponent::UActionsSystemComponent()
@@ -322,8 +323,7 @@ void UActionsSystemComponent::SetStoredActionTag(const FActionExcuteData& InActi
 
 void UActionsSystemComponent::SetDefaultStoredActionTag(const bool bForce)
 {
-    //FGameplayTag DefaultTag = FNPTags::Get().GetDefaultAction(GetPerformingActionTag());
-    //SetStoredActionTag(DefaultTag, EActionPriority::ENone, bForce);
+    SetStoredActionTag(DefaultActionExcuteData, bForce);
 }
 
 void UActionsSystemComponent::ClearPerformingActionState()

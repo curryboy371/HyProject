@@ -68,4 +68,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | CharacterData")
 	FCharacterStateData CharacterStateData;
 
+
 };

@@ -14,6 +14,8 @@ public class ActionsSystem : ModuleRules
 
         PrivateDefinitions.Add($"{Name.ToUpper()}_LOGGING_DEFINED=1");
         PrivateDefinitions.Add($"LOG_CATEGORY_NAME=\"{Name}\"");
+        PrivateDefinitions.Add($"LOG_CATEGORY={Name}");
+
 
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));

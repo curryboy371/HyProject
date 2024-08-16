@@ -12,6 +12,7 @@ public class HyFramework : ModuleRules
         //PrivatePCHHeaderFile = "Public/HyPch.h";
         PrivateDefinitions.Add($"{Name.ToUpper()}_LOGGING_DEFINED=1");
         PrivateDefinitions.Add($"LOG_CATEGORY_NAME=\"{Name}\"");
+        PrivateDefinitions.Add($"LOG_CATEGORY={Name}");
 
 
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
@@ -25,6 +26,9 @@ public class HyFramework : ModuleRules
 				"Core",
                 "GameplayTags",
                 "EnhancedInput",
+				"MotionWarping",
+				"UMG",
+
 
 				// Custom Modules
                 //"ActionsSystem",
@@ -52,6 +56,7 @@ public class HyFramework : ModuleRules
                 "ActionsSystem",
                 "HyFXSystem",
                 "CollisionSystem",
+				"HyUISystem",
 
 
 				// ... add private dependencies that you statically link with here ...	

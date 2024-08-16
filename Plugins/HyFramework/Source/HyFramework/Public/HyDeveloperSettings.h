@@ -9,12 +9,18 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(config = Game, defaultconfig)
 class HYFRAMEWORK_API UHyDeveloperSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 	
+public:
+	static const UHyDeveloperSettings* GetDeveloperSetting();
+	static UHyDeveloperSettings* GetDeveloperSettingRef();
 	
-	
+public:
+
+protected:
+
 	
 };

@@ -66,6 +66,7 @@ public:
 	void SetStoredActionTag(const FActionExcuteData& InActionExcuteData, bool bForce = false);
 	void SetDefaultStoredActionTag(const bool bForce = false);
 
+	void SetDefaultActinoTag(const FActionExcuteData& InActionExcuteData) { DefaultActionExcuteData = InActionExcuteData; };
 
 	void ClearPerformingActionState();
 
@@ -96,6 +97,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hy | Actions")
 	const FGameplayTag GetStoredActionTag() const { return StoredActionExcuteData.TagName; };
 	
+	const FActionExcuteData& GetCurActionData() const { return CurActionExcuteData; };
+	const FActionExcuteData& GetStoredActionData() const { return StoredActionExcuteData; };
+
 
 	const bool IsActionStopCondition() const;
 
@@ -161,6 +165,8 @@ protected:
 	/* Action Tag */
 	FActionExcuteData CurActionExcuteData;
 	FActionExcuteData StoredActionExcuteData;
+
+	FActionExcuteData DefaultActionExcuteData;
 
 	bool bIsPerformingAction;
 

@@ -14,6 +14,8 @@
 
 #include "HyCoreFunctionLibrary.generated.h"
 
+
+
 /**
  * 
  */
@@ -21,7 +23,7 @@ UCLASS()
 class HYCORE_API UHyCoreFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
+public:
 
 		
 	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")

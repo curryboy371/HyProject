@@ -50,7 +50,7 @@ enum class EKeyInput : uint8
 #pragma region CControlStruct
 // Character State Struct 
 USTRUCT(BlueprintType)
-struct FCharacterStateData
+struct FCharacterStateData : public FTagBase
 {
     GENERATED_BODY()
 

@@ -17,7 +17,7 @@
 #include "Game/HyPlayerController.h"
 
 
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
 
 AHyMyPlayerBase::AHyMyPlayerBase()
 {

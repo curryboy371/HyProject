@@ -4,7 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
 
 #define LOCTEXT_NAMESPACE "FActionsSystem"
 

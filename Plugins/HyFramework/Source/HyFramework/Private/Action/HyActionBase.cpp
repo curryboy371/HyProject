@@ -8,7 +8,7 @@
 #include "Manager/HyTagManager.h"
 
 
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
 
 void UHyActionBase::OnActionStarted_Implementation(const FString& InContext)
 {

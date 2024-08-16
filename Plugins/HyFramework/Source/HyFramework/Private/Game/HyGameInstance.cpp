@@ -5,7 +5,7 @@
 
 #include "Manager/HyManagerBase.h"
 
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
 
 UHyGameInstance* UHyGameInstance::HyGameInstance = nullptr;
 
@@ -14,6 +14,10 @@ void UHyGameInstance::Init()
 	UGameInstance::Init();
     HyGameInstance = nullptr;
     InitManager();
+
+
+    LOG_V("Test!!");
+
 }
 
 void UHyGameInstance::Shutdown()

@@ -4,7 +4,12 @@
 
 #include "Modules/ModuleManager.h"
 
+#include "HyCoreMacro.h"
+
 #define LOCTEXT_NAMESPACE "FInventorySystem"
+
+DEFINE_LOG_CATEGORY(InventorySystem);
+
 
 void FInventorySystem::StartupModule()
 {

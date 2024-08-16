@@ -9,7 +9,7 @@
 
 #include "GameFramework/PlayerController.h"
 
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
 
 // Add default functionality here for any ICControlInputInterface functions that are not pure virtual.
 

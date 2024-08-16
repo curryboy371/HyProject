@@ -1,13 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "HyFramework.h"
-
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
 
 #define LOCTEXT_NAMESPACE "FHyFrameworkModule"
 
 DEFINE_LOG_CATEGORY(HyFramework);
-
 
 void FHyFrameworkModule::StartupModule()
 {

@@ -19,14 +19,15 @@ public class HyCore : ModuleRules
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
 
+		// Slate Public-InputCore, Private-SlateCore, Slate
+
         PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
-                "GameplayTags",
-
+				"GameplayTags",
             }
-            );
+			);
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -36,10 +37,12 @@ public class HyCore : ModuleRules
 				"CoreUObject",
 				"Engine",
                 "DeveloperSettings",
+				"Slate",
+				"SlateCore",
 
 				// Custom Modules
+			}
 
-            }
             );
 		
 		

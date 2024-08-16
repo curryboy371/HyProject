@@ -13,5 +13,13 @@ UCLASS()
 class HYFRAMEWORK_API AHyGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
+public:
+	AHyGameMode();
+
+
+public:
+	UFUNCTION(Exec)
+	void SetLogDebugWidgetVisibility(bool bVisiblity);
+
+private:
 };

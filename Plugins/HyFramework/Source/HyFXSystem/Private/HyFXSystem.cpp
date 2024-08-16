@@ -4,7 +4,12 @@
 
 #include "Modules/ModuleManager.h"
 
+#include "HyCoreMacro.h"
+
+
 #define LOCTEXT_NAMESPACE "FHyFXSystem"
+
+DEFINE_LOG_CATEGORY(HyFXSystem);
 
 void FHyFXSystem::StartupModule()
 {

@@ -52,6 +52,7 @@ public:
 	// ICControlCharacterInterface을(를) 통해 상속됨
 	virtual const bool IsDead() override;
 	virtual const bool IsCombatMode() override;
+	virtual FGameplayTag GetEquipTag() override;
 
 	virtual void SetCombatMode(const bool bCombatMode) override;
 
@@ -88,9 +89,28 @@ public:
 	void InputEquip(const FInputActionValue& Value);
 
 protected:
+	// Debug
+	void DebugUpdate();
+
+	void DebugRenderWidget();
+
+protected:
 	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
-	TObjectPtr<class UActionsSystemComponent> ActionsSystemCom;
+	TObjectPtr<class UActionsSystemComponent> ActionsSystemComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComp;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	//TObjectPtr<class UHyFXComponent> FXComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	TObjectPtr<class USceneComponent> HUDLocationComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	TObjectPtr<class UWidgetComponent> DebugWidgetComp;
+
 
 
 

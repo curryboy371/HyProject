@@ -52,9 +52,16 @@
 
 
 ### ActionsSystem (Plugin-Module)
-- 클래스 접두어 Actions , Hy
+- 클래스 접두어 Actions, Hy
 - 캐릭터 상태를 관리할 FSM과 유사하게 사용할 시스템, State = Action
 - GameplayTags로 Action을 구분하여 각 Action을 계층별로 관리할 수 있게 함
+
+### HyUISystem (Plugin-Module)
+
+- 클래스 접두어 HyUI
+- UI 시스템 모듈을 분리하기 위해 사용.
+- UI Base가 되는 추상 클래스들만 넣어두고, 실제 사용하는 UI는 Game or HyFramework 모듈에 넣어 사용할 것
+- UI는 Game과 상호작용하는 부분이 많다보니 단순히 UI의 추상 클래스만 넣어둔다고 보면 됨.
 
 
 ### HyFXSystem (Plugin-Module)

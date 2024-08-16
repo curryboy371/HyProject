@@ -6,7 +6,7 @@
 #include "Animation/HyAnimEquipLayer.h"
 #include "Animation/HyAnimLayer.h"
 
-#include "HyCoreLogging.h"
+#include "HyCoreMacro.h"
 
 
 
@@ -112,10 +112,10 @@ void UHyAnimInstance::SetEquipLayer(const FGameplayTag& InEquipTag)
     {
         if (FindEquipLayer->EquipLayer)
         {
-            //if (CurEquipLayerInst)
-            //{
-            //    // TODO 필요시 종료 sign
-            //}
+            if (CurEquipLayerInst)
+            {
+                CurEquipLayerInst->OnDeactivated(); // Layer Deactive
+            }
 
             LinkAnimClassLayers(FindEquipLayer->EquipLayer);
 

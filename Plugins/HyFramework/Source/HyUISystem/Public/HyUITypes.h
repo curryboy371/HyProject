@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "HyGameModeBase.generated.h"
+#include "UObject/NoExportTypes.h"
+#include "HyUITypes.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYFRAMEWORK_API AHyGameModeBase : public AGameModeBase
+class HYUISYSTEM_API UHyUITypes : public UObject
 {
 	GENERATED_BODY()
 	
