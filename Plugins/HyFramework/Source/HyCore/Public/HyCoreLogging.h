@@ -79,38 +79,38 @@
 //#define __FUNCNAME__  ANSI_TO_TCHAR(__FUNCTION__)
 
 //#if UE_BUILD_SHIPPING
-#if true
-// Shipping에서는 출력을 무시할 log
-#define LOG_V(Fmt, ...)
-#define WAR_V(Fmt, ...)
-#define LOG_I
-#define LOG_D(Fmt, ...)
-#define ERR_V(Fmt, ...)
-
-#define LOG_GUARD
-#define LOG_GUARD_V(str)
-
-#define SCREEN_LOG_V(Fmt, ...)
-#define SCREEN_WAR_V(Fmt, ...)
-#define SCREEN_ERR_V(Fmt, ...)
-
-#else
-
-// LOG_CATEGORY_NAME은 build.cs에서 모듈 이름을 문자열로 넣어준다.
-
-#define LOG_V(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Log, TEXT("[LOG] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__)
-#define WAR_V(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Warning, TEXT("[WAR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__)
-#define LOG_I           if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Log, TEXT("[LOG]  ...[%s::%s(%d)]"), *__FILENAME__, __FUNCNAME__, __LINE__)
-#define LOG_D(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Log, TEXT(Fmt), ##__VA_ARGS__)
-#define ERR_V(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME))UE_LOG(CUR_LOG_CATEGORY, Error, TEXT("[ERR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__)
-
-#define LOG_GUARD			FLogGuard(TEXT("  ...") + FString(__FILENAME__) + TEXT("::") + __FUNCTION__)
-#define LOG_GUARD_V(str) FLogGuard logGuard(FString(str) + TEXT("  ...") + FString(__FILENAME__) + TEXT("::") + __FUNCTION__)
-
-#define SCREEN_LOG_V(Fmt, ...) GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, FString::Printf(TEXT("[LOG] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__))
-#define SCREEN_WAR_V(Fmt, ...) GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("[WAR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__))
-#define SCREEN_ERR_V(Fmt, ...) GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("[ERR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__))
-
-#endif
+//#if true
+//// Shipping에서는 출력을 무시할 log
+//#define LOG_V(Fmt, ...)
+//#define WAR_V(Fmt, ...)
+//#define LOG_I
+//#define LOG_D(Fmt, ...)
+//#define ERR_V(Fmt, ...)
+//
+//#define LOG_GUARD
+//#define LOG_GUARD_V(str)
+//
+//#define SCREEN_LOG_V(Fmt, ...)
+//#define SCREEN_WAR_V(Fmt, ...)
+//#define SCREEN_ERR_V(Fmt, ...)
+//
+//#else
+//
+//// LOG_CATEGORY_NAME은 build.cs에서 모듈 이름을 문자열로 넣어준다.
+//
+//#define LOG_V(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Log, TEXT("[LOG] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__)
+//#define WAR_V(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Warning, TEXT("[WAR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__)
+//#define LOG_I           if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Log, TEXT("[LOG]  ...[%s::%s(%d)]"), *__FILENAME__, __FUNCNAME__, __LINE__)
+//#define LOG_D(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME)) UE_LOG(CUR_LOG_CATEGORY, Log, TEXT(Fmt), ##__VA_ARGS__)
+//#define ERR_V(Fmt, ...) if (IsLogCategoryEnabled(LOG_CATEGORY_NAME))UE_LOG(CUR_LOG_CATEGORY, Error, TEXT("[ERR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__)
+//
+//#define LOG_GUARD			FLogGuard(TEXT("  ...") + FString(__FILENAME__) + TEXT("::") + __FUNCTION__)
+//#define LOG_GUARD_V(str) FLogGuard logGuard(FString(str) + TEXT("  ...") + FString(__FILENAME__) + TEXT("::") + __FUNCTION__)
+//
+//#define SCREEN_LOG_V(Fmt, ...) GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, FString::Printf(TEXT("[LOG] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__))
+//#define SCREEN_WAR_V(Fmt, ...) GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("[WAR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__))
+//#define SCREEN_ERR_V(Fmt, ...) GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("[ERR] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__))
+//
+//#endif
 
 #pragma endregion

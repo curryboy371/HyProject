@@ -7,6 +7,9 @@
 
 #include "Widgets/SCompoundWidget.h"
 
+typedef TSharedPtr<FString> FComboItemType;
+
+
 #define DEF_BUTTON_FONT_NAME     ButtonFontInfo
 
 #define BUTTON_FONT     FCoreStyle::Get().GetFontStyle("EmbossedText")
@@ -21,7 +24,7 @@
         .Padding(BUTTON_PADING) \
 	    [ \
             SNew(SButton) \
-            .OnClicked_Lambda([this]() { return OnButtonClicked(TEXT(#CategoryName)); }) \
+            .OnClicked_Lambda([this]() { return OnLogButtonClicked(TEXT(#CategoryName)); }) \
             [ \
                 SNew(STextBlock) \
                 .Font(DEF_BUTTON_FONT_NAME) \
@@ -38,20 +41,24 @@
 /**
  * 
  */
-class HYCORE_API HyCoreDebugSCompoundWidget : public SCompoundWidget
+class HYCORE_API SHyCoreDebugWidget : public SCompoundWidget
 {
 public:
-    SLATE_BEGIN_ARGS(HyCoreDebugSCompoundWidget) {}
+    SLATE_BEGIN_ARGS(SHyCoreDebugWidget) {}
 	SLATE_ARGUMENT(TWeakObjectPtr<class AHyCoreHUD>, OwnerHUDArg);
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-	FReply OnButtonClicked(const FString& InLogCategoryName);
+	FReply OnLogButtonClicked(const FString& InLogCategoryName);
 	FReply OnExitButtonClicked();
 
     FSlateColor GetButtonTextColor(const FString& InLogCategoryName);
 
+
+    TSharedRef<SWidget> OnGenerateComboBoxWidget(FComboItemType InItem);
+    void OnSelectionComboBoxChanged(FComboItemType NewValue, ESelectInfo::Type SelectInfo);
+    FText GetSelectedComboBoxText() const;
 
 private:
     DEF_BUTTON_FONT_INFO
@@ -61,4 +68,8 @@ private:
     FLinearColor EnableTextColor = FLinearColor::White;
     FLinearColor DisableTextColor = FLinearColor::Gray;
 
+
+    // Select Box
+    TArray<FComboItemType> LogPrintOptions;
+    FComboItemType SelectedItem;
 };

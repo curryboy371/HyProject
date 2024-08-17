@@ -12,8 +12,6 @@
  * 
  */
 
-
-
 UCLASS(config = Game, defaultconfig)
 class HYCORE_API UHyCoreDeveloperSettings : public UDeveloperSettings
 {
@@ -26,12 +24,6 @@ public:
 
 	static const UHyCoreDeveloperSettings* GetDeveloperSetting();
 	static UHyCoreDeveloperSettings* GetDeveloperSettingRef();
-	
-	const bool IsLogCategoryEnabled(FString InLogCategory) const
-	{
-		return true;
-	}
-
 
 public:
 	const bool IsDebugDraw() const { return bDebugDraw; }
@@ -43,12 +35,6 @@ protected:
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "HYCORE | DEBUG | DRAW")
 	bool bDebugWidget;
-
-
-
-	// 빠른 로그 카테고리 설정
-	UPROPERTY(config, EditAnywhere, Category = "HYCORE | DEBUG | LOG")
-	ELogPrintType LogPrintType;
 
 protected:
 };

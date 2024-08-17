@@ -8,10 +8,10 @@
 /**
  * 
  */
-class HYUISYSTEM_API HySCompoundWidgetBase : public SCompoundWidget
+class HYUISYSTEM_API SHyBaseWidget : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(HySCompoundWidgetBase)
+	SLATE_BEGIN_ARGS(SHyBaseWidget)
 	{}
 	SLATE_END_ARGS()
 

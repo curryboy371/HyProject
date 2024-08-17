@@ -39,6 +39,7 @@ public class CharacterControlSystem : ModuleRules
 				"CoreUObject",
 				"Engine",
 
+                "AnimGraphRuntime",
 
 
 				// Custom Modules

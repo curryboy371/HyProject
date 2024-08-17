@@ -48,6 +48,242 @@ enum class EKeyInput : uint8
 
 
 #pragma region CControlStruct
+
+// Character Animation Struct
+
+USTRUCT(BlueprintType)
+struct FAnimationJumpData
+{
+    GENERATED_BODY()
+
+public:
+    FAnimationJumpData()
+        : bIsInAir(false)
+		, bIsJumping(false)
+		, bIsFalling(false)
+        , GroundDistance(-1.0f)
+	{
+	}
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Animation | Jump")
+    bool bIsInAir;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Animation | Jump")
+    bool bIsJumping;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Animation | Jump")
+    bool bIsFalling;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Animation | Jump")
+    float GroundDistance;
+};
+
+USTRUCT(BlueprintType)
+struct FAnimationMovementData
+{
+    GENERATED_BODY()
+
+public:
+    FAnimationMovementData()
+		: bIsCrouching(false)
+		, bWasCrouching(false)
+		, bCrouchChanged(false)
+		, bIsOnGround(false)
+        , bIsWalking(false)
+        , bWasWalking(false)
+        , bWalkStateChanged(false)
+        , bIsStrafing(false)
+        , bIsSwimming(false)
+
+	{
+    }
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bIsCrouching;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bWasCrouching;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bCrouchChanged;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bIsOnGround;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bIsWalking;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bWasWalking;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bWalkStateChanged;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bIsStrafing;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bIsSwimming;
+};
+
+USTRUCT(BlueprintType)
+struct FAnimationLocationData
+{
+    GENERATED_BODY()
+
+public:
+    FAnimationLocationData()
+    {
+        Displacement = 0.f;
+		DisplacementDelta = 0.f;
+		OwnerLocation = FVector::ZeroVector;
+    }
+
+    UPROPERTY(BlueprintReadOnly, Category = "Location")
+    float Displacement;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Location")
+    float DisplacementDelta;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Location")
+    FVector OwnerLocation;
+};
+
+USTRUCT(BlueprintType)
+struct FAnimationAccelerationData
+{
+    GENERATED_BODY()
+
+public:
+    FAnimationAccelerationData()
+    {
+        bIsAccelerating = false;
+		Acceleration = 0.f;
+		Acceleration2D = FVector::ZeroVector;
+		NormalizedAccel = FVector::ZeroVector;
+		LocalAccel2D = FVector::ZeroVector;
+		PivotDirection = FVector::ZeroVector;
+		TimeSinceLastPivot = 0.f;
+    }
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    bool bIsAccelerating;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    float Acceleration;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    FVector Acceleration2D;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    FVector NormalizedAccel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    FVector LocalAccel2D;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    FVector PivotDirection;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Acceleration")
+    float TimeSinceLastPivot;
+};
+
+USTRUCT(BlueprintType)
+struct FAnimationVelocityData
+{
+    GENERATED_BODY()
+
+public:
+    FAnimationVelocityData()
+    {
+        bWasMoving = false;
+        bIsMoving = false;
+        Direction = 0.f;
+        DirectionWithOffset = 0.f;
+        Speed = 0.f;
+        DeltaInputDirection = 0.f;
+        NormalizedSpeed = 0.f;
+        PreviousSpeed = 0.f;
+        NormalizedSwimSpeed = 0.f;
+        WorldSpeed = FVector::ZeroVector;
+        WorldSpeed2D = FVector::ZeroVector;
+        LocalSpeed2D = FVector::ZeroVector;
+
+    }
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    bool bWasMoving;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    bool bIsMoving;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    float Direction;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    float DirectionWithOffset;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    float Speed;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    float DeltaInputDirection;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    float NormalizedSpeed;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    float PreviousSpeed;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    float NormalizedSwimSpeed;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    FVector WorldSpeed;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    FVector WorldSpeed2D;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    FVector LocalSpeed2D;
+};
+
+
+
+USTRUCT(BlueprintType)
+struct FAnimationRotationData
+{
+    GENERATED_BODY()
+
+public:
+    FAnimationRotationData()
+    {
+		OwnerRotation = FRotator::ZeroRotator;
+		PreviousRotation = FRotator::ZeroRotator;
+		YawSpeed = 0.f;
+		YawDelta = 0.f;
+		YawOffset = 0.f;
+    }
+
+    UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+    FRotator OwnerRotation;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+    FRotator PreviousRotation;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+    float YawSpeed = 0.f;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+    float YawDelta = 0.f;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+    float YawOffset = 0.f;
+};
+
+
+
+
 // Character State Struct 
 USTRUCT(BlueprintType)
 struct FCharacterStateData : public FTagBase
@@ -58,15 +294,48 @@ struct FCharacterStateData : public FTagBase
         : bIsDead(false)
         , CombatMode(ECombatMode::EPeace)
     {
-
     }
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Character")
+    void SetCombatMode(const bool bCombatMode)
+	{
+		CombatMode = bCombatMode ? ECombatMode::ECombat : ECombatMode::EPeace;
+	}
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CControl | Character")
     bool bIsDead;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Character")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CControl | Character")
     ECombatMode CombatMode;
 };
+
+// 캐릭터 디폴트 태그
+USTRUCT(BlueprintType)
+struct FCharacterDefaultTagSet
+{
+    GENERATED_BODY()
+
+public:
+    FCharacterDefaultTagSet()
+    {
+        InputTag = FGameplayTag::EmptyTag;
+        CombatEquipTag = FGameplayTag::EmptyTag;
+        PeaceEquipTag = FGameplayTag::EmptyTag;
+        ActionTag = FGameplayTag::EmptyTag;
+    }
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | ControlTag")
+    FGameplayTag InputTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | ControlTag")
+    FGameplayTag CombatEquipTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | ControlTag")
+    FGameplayTag PeaceEquipTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | ControlTag")
+    FGameplayTag ActionTag;
+};
+
 
 
 // Movement Structs
@@ -107,6 +376,19 @@ struct FCharacterMovementData
 };
 
 
+// Character DebugData Set
+USTRUCT(BlueprintType)
+struct FCharacterDebugData
+{
+    GENERATED_BODY()
+    FCharacterDebugData()
+    {
+        DebugWidgetLocation = FVector::ZeroVector;
+    }
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Debug")
+    FVector DebugWidgetLocation;
+};
 
 
 

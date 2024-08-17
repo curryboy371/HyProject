@@ -3,7 +3,7 @@
 
 #include "Debug/HyCoreHUD.h"
 
-#include "Debug/HyCoreDebugSCompoundWidget.h"
+#include "Debug/SHyCoreDebugWidget.h"
 #include "Widgets/SWeakWidget.h" 
 #include "Engine/Engine.h"
 
@@ -12,15 +12,23 @@ void AHyCoreHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HyCoreDebugSWidget = SNew(HyCoreDebugSCompoundWidget).OwnerHUDArg(this);
 
-	GEngine->GameViewport->AddViewportWidgetContent(
-		SAssignNew(HyCoreSWidgetContainer, SWeakWidget).PossiblyNullContent(HyCoreDebugSWidget.ToSharedRef())
-	);
 }
 
 void AHyCoreHUD::SetWidgetVisibility(bool bVisibility)
 {
+	if (bVisibility)
+	{
+		if (!HyCoreDebugSWidget.IsValid())
+		{
+			HyCoreDebugSWidget = SNew(SHyCoreDebugWidget).OwnerHUDArg(this);
+
+			GEngine->GameViewport->AddViewportWidgetContent(
+				SAssignNew(HyCoreSWidgetContainer, SWeakWidget).PossiblyNullContent(HyCoreDebugSWidget.ToSharedRef())
+			);
+		}
+	}
+
 	if (HyCoreDebugSWidget.IsValid())
 	{
 		HyCoreDebugSWidget->SetVisibility(bVisibility ? EVisibility::Visible : EVisibility::Collapsed);

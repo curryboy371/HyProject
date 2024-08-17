@@ -24,6 +24,6 @@ public:
 
 protected:
 	TSharedPtr<class SWidget> HyCoreSWidgetContainer;
-	TSharedPtr<class HyCoreDebugSCompoundWidget> HyCoreDebugSWidget;
+	TSharedPtr<class SHyCoreDebugWidget> HyCoreDebugSWidget;
 
 };

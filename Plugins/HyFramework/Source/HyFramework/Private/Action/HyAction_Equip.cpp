@@ -10,6 +10,10 @@ void UHyAction_Equip::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
 
+	if (HyCharacterOwner)
+	{
+		HyCharacterOwner->SetCombatMode(true);
+	}
 }
 
 void UHyAction_Equip::OnActionSetupCompleted_Implementation(const FString& InContext)
@@ -22,10 +26,7 @@ void UHyAction_Equip::OnActionEnded_Implementation()
 {
 	Super::OnActionEnded_Implementation();
 
-	if (HyCharacterOwner)
-	{
-		HyCharacterOwner->SetCombatMode(true);
-	}
+
 }
 
 void UHyAction_Equip::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)

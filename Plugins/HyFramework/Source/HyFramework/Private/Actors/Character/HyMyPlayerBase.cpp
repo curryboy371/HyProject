@@ -63,7 +63,7 @@ void AHyMyPlayerBase::InputSetup()
 	if (UHyGameInstance* GameInst = GetWorld()->GetGameInstance<UHyGameInstance>())
 	{
 		FInputDataSet InputDataSet;
-		if (GameInst->GetInputDataSet(CharacterInitTagSet.InputTag, InputDataSet))
+		if (GameInst->GetInputDataSet(CharacterDefaultTagSet.InputTag, InputDataSet))
 		{
 			if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 			{
@@ -84,7 +84,7 @@ void AHyMyPlayerBase::InputSetup()
 		}
 		else
 		{
-			ERR_V("No InputDataSet %s", *CharacterInitTagSet.InputTag.ToString());
+			ERR_V("No InputDataSet %s", *CharacterDefaultTagSet.InputTag.ToString());
 		}
 	}
 	else

@@ -71,7 +71,7 @@ void UActionsBaseAction::Internal_OnActivated(TObjectPtr<UActionsSystemComponent
     if (ActionSystemCom)
     {
         CharacterOwner = ActionSystemCom->GetCharacterOwner();
-        ActionTag = ActionSystemCom->GetPerformingActionTag();
+        ActionTag = ActionSystemCom->GetCurActionData().TagName;
     }
 
     // Pre AnimationSet

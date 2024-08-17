@@ -22,11 +22,14 @@
 #include "Manager/HyTagManager.h"
 
 // Widget
-#include "UI/Widget/HyDebugCharacterHudWidget.h"
-
+#include "UI/Debug/SHyCharacterHudDebugWidget.h"
+#include "Widgets/SWeakWidget.h" 
 
 #include "HyCoreDeveloperSettings.h"
 #include "HyCoreMacro.h"
+
+#include "HyTypes.h"
+
 
 
 // Sets default values
@@ -53,6 +56,12 @@ void AHyCharacterBase::CharacterDefaultSetup()
 	// Movement
 	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 500.0f); // ...at this rotation rate
+
+
+	FCharacterMovementData Temp;
+	CharacterMovementDataMap.Add(ECharacterMovementMode::EWalk, Temp);
+	CharacterMovementDataMap.Add(ECharacterMovementMode::ERun, Temp);
+	CharacterMovementDataMap.Add(ECharacterMovementMode::EDash, Temp);
 }
 
 void AHyCharacterBase::ComponenetSetup()
@@ -108,6 +117,9 @@ void AHyCharacterBase::BeginPlay()
 	Super::BeginPlay();
 	
 	CharacterSetup();
+
+	CharacterWidgetSetup();
+
 }
 
 // Called every frame
@@ -148,16 +160,16 @@ void AHyCharacterBase::SetCombatMode(const bool bCombatMode)
 		return;
 	}
 
-	if (bCombatMode)
+	ECombatMode PreMode = CharacterStateData.CombatMode;
+	CharacterStateData.SetCombatMode(bCombatMode);
+
+	if (PreMode != CharacterStateData.CombatMode)
 	{
-		CharacterStateData.CombatMode = ECombatMode::ECombat;
-	}
-	else
-	{
-		CharacterStateData.CombatMode = ECombatMode::EPeace;
+		FGameplayTag NewEquipTag = CharacterStateData.CombatMode == ECombatMode::ECombat ? CharacterDefaultTagSet.CombatEquipTag : CharacterDefaultTagSet.PeaceEquipTag;
+
+		SwitchEquipLayer(NewEquipTag);
 	}
 
-	HyAnimInstance->SetCharacterStateData(CharacterStateData);
 }
 
 void AHyCharacterBase::CharacterSetup()
@@ -165,13 +177,22 @@ void AHyCharacterBase::CharacterSetup()
 	// BeginPlay에서 Character를 Setup하는 함수
 	SetHyAnimInstance();
 
-	SwitchEquipLayer(CharacterInitTagSet.EquipTag);
-
+	//  Bind Change Equip Action(Layer)
+	if (HyAnimInstance)
+	{
+		OnEquipTagChanged.AddDynamic(HyAnimInstance, &UHyAnimInstance::SetEquipLayer);
+	}
 	if (ActionsSystemComp)
 	{
-		ActionsSystemComp->SetEquipActions(CharacterInitTagSet.EquipTag);
+		OnEquipTagChanged.AddDynamic(ActionsSystemComp, &UActionsSystemComponent::SetEquipActions);
+	}
 
-		FActionExcuteData InitActionData(CharacterInitTagSet.ActionTag);
+	SwitchEquipLayer(CharacterDefaultTagSet.PeaceEquipTag);
+
+	// DefaultAction Setting, Trigger Excute
+	if (ActionsSystemComp)
+	{
+		FActionExcuteData InitActionData(CharacterDefaultTagSet.ActionTag);
 		ActionsSystemComp->SetDefaultActinoTag(InitActionData);
 		TriggerAction(InitActionData);
 	}
@@ -181,20 +202,29 @@ void AHyCharacterBase::CharacterSetup()
 	}
 }
 
+void AHyCharacterBase::CharacterWidgetSetup()
+{
+	CharacterDebugHudSetup();
+
+}
+
+void AHyCharacterBase::CharacterDebugHudSetup()
+{
+	// Create the HUD widget
+	if (GEngine && GEngine->GameViewport)
+	{
+		SAssignNew(SCharacterDebugWidget, SHyCharacterHudDebugWidget);
+
+		GEngine->GameViewport->AddViewportWidgetContent(
+			SNew(SWeakWidget).PossiblyNullContent(SCharacterDebugWidget.ToSharedRef())
+		);
+	}
+}
+
 void AHyCharacterBase::SwitchEquipLayer(const FGameplayTag& InEquipTag)
 {
-	if(!HyAnimInstance)
-	{
-		ERR_V("HyAnimInstance is not set.");
-		return;
-	}
-
 	CharacterStateData.TagName = InEquipTag;
-
-	HyAnimInstance->SetEquipLayer(InEquipTag);
-	HyAnimInstance->SetCharacterStateData(CharacterStateData);
-	
-	OnEquipLayerChanged.Broadcast(InEquipTag);
+	OnEquipTagChanged.Broadcast(CharacterStateData.TagName);
 }
 
 void AHyCharacterBase::SetHyAnimInstance()
@@ -202,6 +232,15 @@ void AHyCharacterBase::SetHyAnimInstance()
 	if (GetMesh())
 	{
 		HyAnimInstance = Cast<UHyAnimInstance>(GetMesh()->GetAnimInstance());
+		if (HyAnimInstance)
+		{
+			HyAnimInstance->SetCharacterDefaultTagSet(CharacterDefaultTagSet);
+		}
+		else
+		{
+			ERR_V("HyAnimInstance is not set.");
+		}
+
 	}
 	else
 	{
@@ -376,56 +415,39 @@ void AHyCharacterBase::DebugRenderWidget()
 		return;
 	}
 
-	if (DebugWidgetComp->GetWidget())
+	if (SCharacterDebugWidget.IsValid() && GetWorld()->GetFirstPlayerController())
 	{
-		if (UHyDebugCharacterHudWidget* HyDebugCharacterHudWidget = Cast<UHyDebugCharacterHudWidget>(DebugWidgetComp->GetWidget()))
+		FVector2D ScreenPosition;
+		if (GetWorld()->GetFirstPlayerController()->ProjectWorldLocationToScreen(GetActorLocation() + CharacterDebugData.DebugWidgetLocation, ScreenPosition))
 		{
-			//bool bIsPlayer = false;
-			//if (FNPTags::Get().PlayerTag == CharacterTag)
-			//{
-			//	bIsPlayer = true;
-			//}
-			//HudDebugWidget->SetIsPlayerInfo(bIsPlayer);
-
 			int32 MontageIndex = -1;
-
 			UAnimMontage* CurrentAnimMontage = GetCurrentMontage();
-
 			if (CurrentAnimMontage && HyAnimInstance)
 			{
 				float MontagePosition = HyAnimInstance->Montage_GetPosition(CurrentAnimMontage);
 				MontageIndex = CurrentAnimMontage->GetSectionIndexFromPosition(MontagePosition);
 			}
 
-			ActionsSystemComp->GetCurActionData();
-			ActionsSystemComp->GetStoredActionData();
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_EquipTag, CharacterStateData.TagName.ToString());
 
-			HyDebugCharacterHudWidget->SetActionInfo(CharacterStateData.TagName, ActionsSystemComp->GetCurActionData(), ActionsSystemComp->GetStoredActionData(), MontageIndex);
-			//HyDebugCharacterHudWidget->SetActionState(GetPerformingActionTag());
-			//HyDebugCharacterHudWidget->SetTargetInfo(MyGuid, TargetGuid);
+			FString CurAction = ActionsSystemComp->GetCurActionData().TagName.ToString() + FString::Printf(TEXT("(%d) Index(%d)"), ActionsSystemComp->GetCurActionData().ActionPriority, MontageIndex);
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_CurActionTag, CurAction);
 
-			//FString CharacterVelocityStr = FString::Printf(TEXT("%d %d %d"), (int32)AnimInst->GetCharacterVelocity2D().X, (int32)AnimInst->GetCharacterVelocity2D().Y, (int32)AnimInst->GetCharacterVelocity2D().Z);
-			//FString CharacterAccelerStr = FString::Printf(TEXT("%d %d %d"), (int32)AnimInst->GetAcceleration2D().X, (int32)AnimInst->GetAcceleration2D().Y, (int32)AnimInst->GetAcceleration2D().Z);
-			//
-			//FString InputScaleStr = FString::Printf(TEXT("%.1f"), InputScale);
-			//
-			//FString VelocityToAccRatioStr = FString::Printf(TEXT("%.1f"), AnimInst->GetVelocityToAccelerationRatio());
-			//
-			//
-			//HudDebugWidget->SetMoveInto(CharacterAccelerStr, CharacterVelocityStr, InputScaleStr, VelocityToAccRatioStr);
+			FString StoreAction = ActionsSystemComp->GetStoredActionData().TagName.ToString() + FString::Printf(TEXT("(%d)"), ActionsSystemComp->GetStoredActionData().ActionPriority);
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_StoredActionTag, StoreAction);
 
-			//HudDebugWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-		}
-		else
-		{
-			ERR_V("Casting HudDebugWidget is invalid");
+			FString CombatMode = (IsCombatMode()) ? TEXT("Combat") : TEXT("Peace");
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_CombatMode, CombatMode);
+
+			SCharacterDebugWidget->SetRenderTransform(FSlateRenderTransform(ScreenPosition));
 		}
 	}
-	else
+
+
+	//if (DebugWidgetComp->GetWidget())
 	{
-		ERR_V("DebugWidgetCom Widget is null");
-	}
 
+	}
 
 }
 

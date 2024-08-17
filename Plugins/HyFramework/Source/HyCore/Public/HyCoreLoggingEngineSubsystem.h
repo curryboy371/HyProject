@@ -6,6 +6,7 @@
 #include "Subsystems/EngineSubsystem.h"
 #include "Engine/Engine.h"
 
+#include "HyCoreTypes.h"
 #include "HyCoreDefineMacro.h"
 
 #include "HyCoreLoggingEngineSubsystem.generated.h"
@@ -73,6 +74,10 @@ protected:
 
 public:
 
+	ELogPrintType GetLogPrintType() const {	return LogPrintType;}
+	void SetLogPrintType(const ELogPrintType InLogPrintType) { LogPrintType = InLogPrintType; }
+
+
 	inline FString GetFilename(const char* InFilePath)
 	{
 		FString FilePathStr = FString(ANSI_TO_TCHAR(InFilePath)).Replace(TEXT("\\"), TEXT("/"));
@@ -87,13 +92,22 @@ public:
 	// 로그 카테고리 enable 확인
 	const bool IsEnableLogCategory(const FString& InCategoryName) const
 	{
+		if(LogPrintType == ELogPrintType::ELOG_Output_ALL)
+		{
+			return true;
+		}
+		else if (LogPrintType == ELogPrintType::ELOG_Hide)
+		{
+			return false;
+		}
+
 		auto FuncPtr = LogCategoryGetEnableMapName.Find(InCategoryName);
 		if (FuncPtr && *FuncPtr)
 		{
 			return (this->**FuncPtr)();
 		}
 
-		return true;
+		return false;
 	}
 
 	// 로그 카테고리 enable 설정
@@ -110,6 +124,7 @@ protected:
 	TMap<FString, const bool(UHyCoreLoggingEngineSubsystem::*)() const> LogCategoryGetEnableMapName;
 	TMap<FString, void(UHyCoreLoggingEngineSubsystem::*)(const bool)> LogCategorySetEnableMapName;
 
+	ELogPrintType LogPrintType = ELogPrintType::ELOG_Output_ALL;
 
 	DEFINE_LOG_CATEGORIES()
 

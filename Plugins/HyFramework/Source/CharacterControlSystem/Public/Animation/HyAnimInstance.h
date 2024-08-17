@@ -27,13 +27,12 @@ public:
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 	
 
-	UFUNCTION(BlueprintCallable, Category = "Hy | Property")
-	UHyAnimInstance* GetOwningAnimInstance() const;
-	
+	bool IsEditorBlueprint();
+	void SetCharacterReferences();
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hy | CControl | Layer")
 	void SetEquipLayer(const FGameplayTag& InEquipTag);
-
 
 protected:
 // Animaion Valus Update Functions 
@@ -50,6 +49,14 @@ protected:
 
 public:
 	void SetCharacterStateData(const FCharacterStateData& InCharacterStateData) { CharacterStateData = InCharacterStateData; }
+	void SetCharacterDefaultTagSet(const FCharacterDefaultTagSet& InCharacterDefaultTagSet) { CharacterDefaultTagSet = InCharacterDefaultTagSet; }
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl")
+	TObjectPtr<class ACharacter> CharacterOwner;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl")
+	TObjectPtr<class UCharacterMovementComponent> CharacterMovementComp;
 
 protected:
 // Animation Values Update On Off
@@ -65,8 +72,28 @@ protected:
 	TObjectPtr<class UHyAnimEquipLayer> CurEquipLayerInst;
 
 protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | AnimationData")
+	FAnimationLocationData LocationData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | AnimationData")
+	FAnimationJumpData JumpData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | AnimationData")
+	FAnimationMovementData MovementData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | AnimationData")
+	FAnimationRotationData RotationData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | AnimationData")
+	FAnimationAccelerationData AccelerationData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | AnimationData")
+	FAnimationVelocityData VelocityData;
+
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | CharacterData")
 	FCharacterStateData CharacterStateData;
 
-
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl | CharacterData")
+	FCharacterDefaultTagSet CharacterDefaultTagSet;
 };

@@ -20,7 +20,7 @@
 #include "HyCharacterBase.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipLayerChanged, const FGameplayTag&, EquipTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipTagChanged, const FGameplayTag&, EquipTag);
 
 
 UCLASS()
@@ -60,7 +60,9 @@ public:
 
 protected:
 	void CharacterSetup();
+	void CharacterWidgetSetup();
 
+	void CharacterDebugHudSetup();
 public:
 	// Anim 
 	void SwitchEquipLayer(const FGameplayTag& InEquipTag);
@@ -111,12 +113,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class UWidgetComponent> DebugWidgetComp;
 
-
+protected:
+	class TSharedPtr<class SHyCharacterHudDebugWidget> SCharacterDebugWidget;
 
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Hy | Anim | Layer")
-	FOnEquipLayerChanged OnEquipLayerChanged;
+	FOnEquipTagChanged OnEquipTagChanged;
 
 
 public:
@@ -131,7 +134,7 @@ protected:
 protected:
 	// BlueprintSetting
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init")
-	FCharacterInitTagSet CharacterInitTagSet;
+	FCharacterDefaultTagSet CharacterDefaultTagSet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Movement")
 	TMap<ECharacterMovementMode, FCharacterMovementData> CharacterMovementDataMap;
@@ -143,4 +146,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Hy | Character")
 	FCharacterStateData CharacterStateData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Debug")
+	FCharacterDebugData CharacterDebugData;
+	
 };

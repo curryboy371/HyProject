@@ -42,11 +42,9 @@ void UActionsSystemComponent::BeginPlay()
         }
     }
     
-
-    
     if (CMActionsDataSet)
     {
-        CMActionsDataInstMap = NewObject<UActionsDataAsset>(this, CMActionsDataSet);
+        CMActionsDataInst = NewObject<UActionsDataAsset>(this, CMActionsDataSet);
     }
     else
     {
@@ -384,7 +382,7 @@ void UActionsSystemComponent::SetEquipActions(const FGameplayTag& InEquipTag)
 bool UActionsSystemComponent::GetActionByTag(const FGameplayTag& InActionTag, FActionState& OutActionState) const
 {
     // Action이 유효한지 Check한 후 OutActionState에 반환
-    if (CMActionsDataInstMap)
+    if (CMActionsDataInst)
     {
         if (GetEquipActionByTag(InActionTag, CurEquipTag, OutActionState))
         {
@@ -420,9 +418,9 @@ bool UActionsSystemComponent::GetEquipActionByTag(const FGameplayTag& InActionTa
 
 bool UActionsSystemComponent::GetCommonActionByTag(const FGameplayTag& InActionTag, FActionState& OutActionState) const
 {
-    if (CMActionsDataInstMap)
+    if (CMActionsDataInst)
     {
-        return CMActionsDataInstMap->GetActionByTag(InActionTag, OutActionState);
+        return CMActionsDataInst->GetActionByTag(InActionTag, OutActionState);
     }
     return false;
 }

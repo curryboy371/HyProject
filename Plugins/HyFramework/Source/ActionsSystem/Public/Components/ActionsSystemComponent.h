@@ -139,7 +139,7 @@ protected:
 
 	/* CMActionsDataSet을 Runtime에서 instance화 하여 사용함 */
 	UPROPERTY(BlueprintReadOnly, Category = "Hy | Actions")
-	TObjectPtr<UActionsDataAsset> CMActionsDataInstMap;
+	TObjectPtr<UActionsDataAsset> CMActionsDataInst;
 
 	/*	교체 하여 사용하는 ActionDataSet
 		CurEquipTag 과 일치하는 ActionSet만 사용 가능	

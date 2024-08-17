@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "HyUserWidgetBase.generated.h"
+#include "HyBaseWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYUISYSTEM_API UHyUserWidgetBase : public UUserWidget
+class HYUISYSTEM_API UHyBaseWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

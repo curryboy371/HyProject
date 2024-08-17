@@ -11,32 +11,22 @@
 
 #include "HyTypes.generated.h"
 
+#pragma region HyFrameworkEnum
+
+enum class EDebugWidgetTextType : uint8
+{
+	EDebugText_EquipTag = 0,
+	EDebugText_CurActionTag,
+	EDebugText_StoredActionTag,
+	EDebugText_CombatMode,
+
+	EDebugText_END,
+};
+
+#pragma endregion
 
 
 #pragma region HyFrameworkStruct
-
-USTRUCT(BlueprintType)
-struct FCharacterInitTagSet
-{
-	GENERATED_BODY()
-
-public:
-	FCharacterInitTagSet()
-	{
-		InputTag = FGameplayTag::EmptyTag;
-		EquipTag = FGameplayTag::EmptyTag;
-		ActionTag = FGameplayTag::EmptyTag;
-	}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init | Tags")
-	FGameplayTag InputTag;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init | Tags")
-	FGameplayTag EquipTag;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init | Tags")
-	FGameplayTag ActionTag;
-};
 
 
 #pragma endregion

@@ -26,6 +26,7 @@ public class HyCore : ModuleRules
 			{
 				"Core",
 				"GameplayTags",
+                "InputCore",
             }
 			);
 			

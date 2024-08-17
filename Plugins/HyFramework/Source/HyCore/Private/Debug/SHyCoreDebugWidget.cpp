@@ -1,17 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Debug/HyCoreDebugSCompoundWidget.h"
+#include "Debug/SHyCoreDebugWidget.h"
 #include "SlateOptMacros.h"
 #include "HyCoreLoggingEngineSubsystem.h"
 #include "HyCoreMacro.h"
 
+#include "Widgets/Input/SButton.h"
+#include "Widgets/Input/SComboBox.h"
+#include "Widgets/Text/STextBlock.h"
+
+
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 // localize for all languages
-#define LOCTEXT_NAMESPACE "HyCoreDebugSCompoundWidget"
+#define LOCTEXT_NAMESPACE "SHyCoreDebugWidget"
 
-void HyCoreDebugSCompoundWidget::Construct(const FArguments& InArgs)
+
+void SHyCoreDebugWidget::Construct(const FArguments& InArgs)
 {
 
     DEF_BUTTON_FONT_NAME.Size = BUTTON_FONT_SIZE;
@@ -34,6 +40,18 @@ void HyCoreDebugSCompoundWidget::Construct(const FArguments& InArgs)
 
     FSlateFontInfo SubTitleTextStyle = DefaultTextStyle;
     SubTitleTextStyle.Size = 50.f;
+
+    FSlateFontInfo ComboBoxStyle = DefaultTextStyle;
+    ComboBoxStyle.Size = 30.f;
+
+
+    // 콤보박스에 추가할 옵션들 초기화
+
+    LogPrintOptions.Add(MakeShared<FString>(TEXT("HideLog")));
+    LogPrintOptions.Add(MakeShared<FString>(TEXT("SelectLog")));
+    LogPrintOptions.Add(MakeShared<FString>(TEXT("PrintAllLog")));
+
+    SelectedItem = LogPrintOptions.Last();
 
     ChildSlot
         .VAlign(VAlign_Fill)
@@ -58,32 +76,38 @@ void HyCoreDebugSCompoundWidget::Construct(const FArguments& InArgs)
                                 .Justification(ETextJustify::Left)
                         ]
 
-                        // Sub Title
-                        + SVerticalBox::Slot()
-                        .AutoHeight()
-                        .Padding(FMargin(0.f, 0.f, 0.f, 15.f)) // Bottom padding for spacing
-                        [
-                            SNew(STextBlock)
-                                .Font(SubTitleTextStyle)
-                                .Text(SubTitleText)
-                                .Justification(ETextJustify::Left)
-                        ]
-
-
                         // X Button
-                        +SVerticalBox::Slot()
+                        + SVerticalBox::Slot()
                         .AutoHeight()
                         .HAlign(HAlign_Right)
                         .Padding(FMargin(0.f, 0.f, 0.f, 15.f)) // Bottom padding for spacing
                         [
                             SNew(SButton)
-                                .OnClicked(this, &HyCoreDebugSCompoundWidget::OnExitButtonClicked)
+                                .OnClicked(this, &SHyCoreDebugWidget::OnExitButtonClicked)
                                 [
                                     SNew(STextBlock)
                                         .Text(FText::FromString("X"))
                                         .Justification(ETextJustify::Center)
                                 ]
                         ]
+
+                        // 콤보박스
+                        + SVerticalBox::Slot()
+                        .AutoHeight()
+                        .Padding(10.f)
+                        [
+
+                            SNew(SComboBox<FComboItemType>)
+                                .OptionsSource(&LogPrintOptions)
+                                .OnSelectionChanged(this, &SHyCoreDebugWidget::OnSelectionComboBoxChanged)
+                                .OnGenerateWidget(this, &SHyCoreDebugWidget::OnGenerateComboBoxWidget)
+                                [
+                                    SNew(STextBlock)
+                                        .Text(this, &SHyCoreDebugWidget::GetSelectedComboBoxText)
+                                        .Font(ComboBoxStyle)
+                                ]
+                        ]
+
 
                         // LogCategory Button
                         DEFINE_LOG_CATEGORY_SLATE()
@@ -92,7 +116,7 @@ void HyCoreDebugSCompoundWidget::Construct(const FArguments& InArgs)
 }
 
 
-FReply HyCoreDebugSCompoundWidget::OnButtonClicked(const FString& InLogCategoryName)
+FReply SHyCoreDebugWidget::OnLogButtonClicked(const FString& InLogCategoryName)
 {
     // 버튼 클릭시 먼저 호출되고
     if (UHyCoreLoggingEngineSubsystem* LoggingSubsystem = GET_LOGGING_SUBSYSTEM)
@@ -104,13 +128,13 @@ FReply HyCoreDebugSCompoundWidget::OnButtonClicked(const FString& InLogCategoryN
 	return FReply::Handled();
 }
 
-FReply HyCoreDebugSCompoundWidget::OnExitButtonClicked()
+FReply SHyCoreDebugWidget::OnExitButtonClicked()
 {
     SetVisibility(EVisibility::Collapsed);
     return FReply::Handled();
 }
 
-FSlateColor HyCoreDebugSCompoundWidget::GetButtonTextColor(const FString& InLogCategoryName)
+FSlateColor SHyCoreDebugWidget::GetButtonTextColor(const FString& InLogCategoryName)
 {
     // FReply::Handled() 반환되면 Slate UI가 다시 렌더링되면서 이 함수가 호출됨
     bool bEnable = false;
@@ -121,6 +145,31 @@ FSlateColor HyCoreDebugSCompoundWidget::GetButtonTextColor(const FString& InLogC
     }
 
     return bEnable ? EnableTextColor : DisableTextColor;
+}
+
+TSharedRef<SWidget> SHyCoreDebugWidget::OnGenerateComboBoxWidget(FComboItemType InItem)
+{
+    return SNew(STextBlock).Text(FText::FromString(*InItem));
+}
+
+void SHyCoreDebugWidget::OnSelectionComboBoxChanged(FComboItemType NewValue, ESelectInfo::Type SelectInfo)
+{
+    SelectedItem = NewValue;
+
+    if (UHyCoreLoggingEngineSubsystem* LoggingSubsystem = GET_LOGGING_SUBSYSTEM)
+    {
+        if(SelectedItem == LogPrintOptions[0])
+			LoggingSubsystem->SetLogPrintType(ELogPrintType::ELOG_Hide);
+		else if (SelectedItem == LogPrintOptions[1])
+			LoggingSubsystem->SetLogPrintType(ELogPrintType::ELOG_Select);
+		else if (SelectedItem == LogPrintOptions[2])
+			LoggingSubsystem->SetLogPrintType(ELogPrintType::ELOG_Output_ALL);
+    }
+}
+
+FText SHyCoreDebugWidget::GetSelectedComboBoxText() const
+{
+    return FText::FromString(*SelectedItem);
 }
 
 
