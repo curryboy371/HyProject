@@ -110,8 +110,14 @@
 			"Name": "MotionWarping",
 			"Enabled": true
 		},
-
-
+		{
+			"Name": "AnimationModifierLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "AnimationLocomotionLibrary",
+			"Enabled": true
+		},
 		{
 			"Name": "HyTable",
 			"Enabled": true

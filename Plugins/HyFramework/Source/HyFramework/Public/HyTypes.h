@@ -19,6 +19,10 @@ enum class EDebugWidgetTextType : uint8
 	EDebugText_CurActionTag,
 	EDebugText_StoredActionTag,
 	EDebugText_CombatMode,
+	EDebugText_Direction,
+
+	EDebugText_CurLocomotion,
+	EDebugText_TargetLocomotion,
 
 	EDebugText_END,
 };

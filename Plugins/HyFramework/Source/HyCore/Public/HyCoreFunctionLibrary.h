@@ -104,6 +104,21 @@ public:
 		}
 	}
 	
-	
-	
+
+	static FString HyDirectionToString(EHyDirection InDirection)
+	{
+		switch (InDirection)
+		{
+		case EHyDirection::Front:
+			return TEXT("Front");
+		case EHyDirection::Back:
+			return TEXT("Back");
+		case EHyDirection::Left:
+			return TEXT("Left");
+		case EHyDirection::Right:
+			return TEXT("Right");
+		default:
+			return TEXT("Unknown");
+		}
+	}
 };

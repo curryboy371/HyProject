@@ -3,8 +3,13 @@
 
 #include "Animation/HyAnimInstance.h"
 
+#include "Components/HyCharacterMovementComponent.h"
+
 #include "Animation/HyAnimEquipLayer.h"
 #include "Animation/HyAnimLayer.h"
+
+
+#include "CControlFunctionLibrary.h"
 
 #include "HyCoreMacro.h"
 
@@ -14,11 +19,12 @@
 #include "GameFramework/Pawn.h"
 #include "KismetAnimationLibrary.h"
 #include <Animation/AimOffsetBlendSpace1D.h>
-#include <GameFramework/CharacterMovementComponent.h>
+//#include <GameFramework/CharacterMovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <TimerManager.h>
 
+#include "Math/UnrealMathUtility.h"
 
 
 UHyAnimInstance::UHyAnimInstance()
@@ -105,7 +111,7 @@ void UHyAnimInstance::SetCharacterReferences()
     CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
     if (CharacterOwner) 
     {
-        CharacterMovementComp = Cast<UCharacterMovementComponent>(CharacterOwner->GetCharacterMovement());
+        CharacterMovementComp = Cast<UHyCharacterMovementComponent>(CharacterOwner->GetCharacterMovement());
         
         if(!CharacterMovementComp)
         {
@@ -178,39 +184,45 @@ void UHyAnimInstance::UpdateRotation(const float& DeltaSeconds)
     RotationData.YawDelta = RotationData.OwnerRotation.Yaw - RotationData.PreviousRotation.Yaw;
     RotationData.YawSpeed = UKismetMathLibrary::SafeDivide(RotationData.YawDelta, DeltaSeconds);
 
-    //const FRotator RotDelta = UKismetMathLibrary::NormalizedDeltaRotator(RotationData.OwnerRotation, RotationData.PreviousRotation);
-    //const float Turn = RotDelta.Yaw;
+    const FRotator RotDelta = UKismetMathLibrary::NormalizedDeltaRotator(RotationData.OwnerRotation, RotationData.PreviousRotation);
+    const float Turn = RotDelta.Yaw;
     //TurnRate = FMath::FInterpTo(TurnRate, Turn, DeltaSeconds, TurnRateSmoothing);
 }
 
 void UHyAnimInstance::UpdateVelocity(const float& DeltaSeconds)
 {
-    //VelocityData.LastSpeedDirectionWithOffset = SpeedDirectionWithOffset;
-    //VelocityData.LastSpeedDirection = VelocityData.SpeedDirection;
+    if (!CharacterMovementComp)
+    {
+        ERR_V("CharacterMovementComp is nullptr");
+        return;
+    }
 
+    // 직전 Last Velocity Data 
+    VelocityData.LastSpeedDirectionWithOffset = VelocityData.SpeedDirectionWithOffset;
+    VelocityData.LastSpeedDirection = VelocityData.SpeedDirection;
     VelocityData.PreviousSpeed = VelocityData.Speed;
-    //VelocityData.bWasMoving = !FMath::IsNearlyZero(VelocityData.Speed, VelocityData.IsMovingSpeedThreshold);
+    VelocityData.bWasMoving = !FMath::IsNearlyZero(VelocityData.Speed, MOVEMENT_SPEED_THRESHOLD);
+
+    // 현재 Velocity Data
     VelocityData.WorldSpeed = CharacterOwner->GetVelocity();
     VelocityData.Speed = VelocityData.WorldSpeed.Size();
     VelocityData.WorldSpeed2D = VelocityData.WorldSpeed * FVector(1.f, 1.f, 0.f);
     VelocityData.LocalSpeed2D = RotationData.OwnerRotation.UnrotateVector(VelocityData.WorldSpeed2D);
     VelocityData.Direction = UKismetAnimationLibrary::CalculateDirection(VelocityData.WorldSpeed2D, RotationData.OwnerRotation);
     VelocityData.DirectionWithOffset = VelocityData.Direction - RotationData.YawOffset;
-    //VelocityData.SpeedDirection = GetDirectionFromAngle(Direction, LastSpeedDirection, bWasMoving);
+
+
+    VelocityData.bIsMaxSpeed= FMath::IsNearlyEqual(VelocityData.WorldSpeed2D.Length(), CharacterMovementComp->GetMaxSpeed(), MOVEMENT_SPEED_THRESHOLD);
+
+    VelocityData.SpeedDirection = UCControlFunctionLibrary::GetDirectionFromAngle(VelocityData.Direction);
+
     //SpeedDirectionWithOffset = GetDirectionFromAngle(DirectionWithOffset, LastSpeedDirectionWithOffset, bWasMoving);
-    //VelocityData.NormalizedSpeed = UKismetMathLibrary::SafeDivide(VelocityData.Speed, CharacterMovementComp->GetCharacterMaxSpeed());
-    //if (IsLocalPlayer()) 
-    //{
-    //    DeltaInputDirection = UKismetAnimationLibrary::CalculateDirection(MovementComp->GetLastInputVector(), CharacterOwner->GetActorRotation());
-    //}
-    //else {
-    //    // We don't have inputs on server
-    //    DeltaInputDirection = DirectionWithOffset;
-    //}
-    //bIsMoving = !FMath::IsNearlyZero(Speed, IsMovingSpeedThreshold);
-    //if (bIsSwimming) {
-    //    NormalizedSwimSpeed = UKismetMathLibrary::SafeDivide(Speed, MovementComp->MaxSwimSpeed);
-    //}
+    VelocityData.NormalizedSpeed = UKismetMathLibrary::SafeDivide(VelocityData.Speed, CharacterMovementComp->GetMaxSpeed());
+
+    VelocityData.bIsMoving = !FMath::IsNearlyZero(VelocityData.Speed, MOVEMENT_SPEED_THRESHOLD);
+
+    //DeltaInputDirection = UKismetAnimationLibrary::CalculateDirection(CharacterMovementComp->GetLastInputVector(), CharacterOwner->GetActorRotation());
+ 
 }
 
 void UHyAnimInstance::UpdateAimData(const float& DeltaSeconds)
@@ -235,8 +247,7 @@ void UHyAnimInstance::UpdateAcceleration(const float& DeltaSeconds)
     AccelerationData.PivotDirection = UKismetMathLibrary::VLerp(AccelerationData.PivotDirection, AccelerationData.NormalizedAccel, .5f);
     AccelerationData.PivotDirection.Normalize();
     const float AccelerationAngle = UKismetAnimationLibrary::CalculateDirection(AccelerationData.PivotDirection, RotationData.OwnerRotation);
-    //AccelerationData.AccelerationDirection = UACFCCFunctionLibrary::GetOppositeDirectionFromAngle(accelerationAngle);
-
+    AccelerationData.AccelerationDirection = UCControlFunctionLibrary::GetOppositeDirectionFromAngle(AccelerationAngle);
 
 }
 
@@ -272,6 +283,8 @@ void UHyAnimInstance::UpdateJump(const float& DeltaSeconds)
     JumpData.bIsInAir = CharacterMovementComp->IsFalling();
     if (JumpData.bIsInAir) 
     {
+        CharacterMovementComp->CalcGroundDistance();
+
         if (VelocityData.WorldSpeed.Z > 0.f) 
         {
             JumpData.bIsJumping = true;
@@ -281,18 +294,32 @@ void UHyAnimInstance::UpdateJump(const float& DeltaSeconds)
             JumpData.bIsFalling = true;
         }
     }
+    else 
+    {
+        CharacterMovementComp->SetGroundDistance(0.f);
+    }
 
-    // TODO 여기서부터 진행!!
-    JumpData.GroundDistance;
+    JumpData.GroundDistance = CharacterMovementComp->GetGroundDistance();
+}
 
-    //const FCharacterGroundInfo& GroundInfo = CharacterMovementComp->GetGroundInfo();
-    //GroundDistance = GroundInfo.GroundDistance;
+ELocomotionState UHyAnimInstance::GetCurLocomotionState() const
+{
+    if (!CharacterMovementComp)
+    {
+    	ERR_V("CharacterMovementComp is nullptr");
+		return ELocomotionState();
+    }
 
-    //if (JumpData.bIsJumping) 
-    //{
-    //    JumpData.TimeToApex = UKismetMathLibrary::SafeDivide(-WorldSpeed.Z, MovementComp->GetGravityZ());
-    //}
-    //else {
-    //    JumpData.TimeToApex = 0.f;
-    //}
+    return CharacterMovementComp->GetCurLocomotionState();
+}
+
+ELocomotionState UHyAnimInstance::GetTargetLocomotionState() const
+{
+    if (!CharacterMovementComp)
+    {
+        ERR_V("CharacterMovementComp is nullptr");
+        return ELocomotionState();
+    }
+
+    return CharacterMovementComp->GetTargetLocomotionState();
 }

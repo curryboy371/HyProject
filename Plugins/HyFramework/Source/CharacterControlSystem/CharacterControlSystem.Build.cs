@@ -2,6 +2,7 @@
 
 using System.IO;
 using UnrealBuildTool;
+using UnrealBuildTool.Rules;
 
 public class CharacterControlSystem : ModuleRules
 {
@@ -26,8 +27,10 @@ public class CharacterControlSystem : ModuleRules
                 "GameplayTags",
                 "EnhancedInput",
 
-
-
+                "AnimationLocomotionLibraryRuntime",
+                "AnimGraphRuntime",
+                "AnimationModifiers",
+                "AnimationBlueprintLibrary",
             }
             );
 			
@@ -39,7 +42,6 @@ public class CharacterControlSystem : ModuleRules
 				"CoreUObject",
 				"Engine",
 
-                "AnimGraphRuntime",
 
 
 				// Custom Modules

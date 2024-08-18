@@ -30,7 +30,10 @@ class HYFRAMEWORK_API AHyCharacterBase : public ACharacter, public ICControlChar
 
 public:
 	// Sets default values for this character's properties
-	AHyCharacterBase();
+	//AHyCharacterBase();
+
+	// Sets default values for this character's properties
+	AHyCharacterBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void CharacterDefaultSetup();
 	virtual void ComponenetSetup();
@@ -109,9 +112,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class USceneComponent> HUDLocationComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
-	TObjectPtr<class UWidgetComponent> DebugWidgetComp;
 
 protected:
 	class TSharedPtr<class SHyCharacterHudDebugWidget> SCharacterDebugWidget;

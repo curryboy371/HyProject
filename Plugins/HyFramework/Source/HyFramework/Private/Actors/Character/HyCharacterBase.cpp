@@ -5,7 +5,10 @@
 
 #include "Math/UnrealMathUtility.h"
 
-#include "GameFramework/CharacterMovementComponent.h"
+//#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/HyCharacterMovementComponent.h"
+
+
 #include "Components/SkeletalMeshComponent.h"
 
 #include "Components/CapsuleComponent.h"
@@ -21,6 +24,7 @@
 #include "Game/HyGameInstance.h"
 #include "Manager/HyTagManager.h"
 
+
 // Widget
 #include "UI/Debug/SHyCharacterHudDebugWidget.h"
 #include "Widgets/SWeakWidget.h" 
@@ -29,13 +33,25 @@
 #include "HyCoreMacro.h"
 
 #include "HyTypes.h"
+#include "HyCoreFunctionLibrary.h"
+#include "CControlFunctionLibrary.h"
 
 
 
 // Sets default values
-AHyCharacterBase::AHyCharacterBase()
-{
+//AHyCharacterBase::AHyCharacterBase()
+//{
+//
+//
+//	CharacterDefaultSetup();
+//
+//	ComponenetSetup();
+//}
 
+// MovementCom custom으로 변경
+AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UHyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+{
 
 	CharacterDefaultSetup();
 
@@ -85,30 +101,6 @@ void AHyCharacterBase::ComponenetSetup()
 		HUDLocationComp->SetupAttachment(GetCapsuleComponent());
 		HUDLocationComp->SetRelativeLocation(FVector(0.0f, 0.0f, GetCapsuleComponent()->GetScaledCapsuleRadius()));
 	}
-
-	DebugWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidgetComp"));
-	if (DebugWidgetComp)
-	{
-		DebugWidgetComp->SetupAttachment(HUDLocationComp);
-
-		//FString DebugWidgetPath = TEXT("/Game/UI/Widget/Debug/HUD/HudDebugWidget.HudDebugWidget_C");
-		//
-		//UClass* DebugWidgetBPClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr, *DebugWidgetPath);
-		//if (DebugWidgetBPClass == nullptr)
-		//{
-		//	ERR_V("DebugWidgetBPClass is invalid %s", *DebugWidgetPath);
-		//}
-		//else
-		//{
-		//	if (DebugWidgetComp)
-		//	{
-		//		DebugWidgetComp->SetWidgetClass(DebugWidgetBPClass);
-		//		DebugWidgetComp->SetWidgetSpace(EWidgetSpace::Screen);
-		//	}
-		//}
-	}
-
-
 }
 
 // Called when the game starts or when spawned
@@ -402,13 +394,6 @@ void AHyCharacterBase::DebugRenderWidget()
 		return;
 	}
 
-	if (!DebugWidgetComp)
-	{
-		ERR_V("DebugWidgetComp is invalid");
-		return;
-	}
-
-
 	if (HyAnimInstance == nullptr)
 	{
 		ERR_V("HyAnimInstance is null");
@@ -439,15 +424,19 @@ void AHyCharacterBase::DebugRenderWidget()
 			FString CombatMode = (IsCombatMode()) ? TEXT("Combat") : TEXT("Peace");
 			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_CombatMode, CombatMode);
 
+			FString Direction = FString::Printf(TEXT("%s(%f)"), *UHyCoreFunctionLibrary::HyDirectionToString(HyAnimInstance->GetVelocityData().SpeedDirection), HyAnimInstance->GetVelocityData().Direction);
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_Direction, Direction);
+
+			FString CurLocomotion = FString::Printf(TEXT("%s"), *UCControlFunctionLibrary::LocomotionStateToString(HyAnimInstance->GetCurLocomotionState()));
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_CurLocomotion, CurLocomotion);
+
+			FString TargetLocomotion = FString::Printf(TEXT("%s"), *UCControlFunctionLibrary::LocomotionStateToString(HyAnimInstance->GetTargetLocomotionState()));
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_TargetLocomotion, TargetLocomotion);
+
 			SCharacterDebugWidget->SetRenderTransform(FSlateRenderTransform(ScreenPosition));
 		}
 	}
 
-
-	//if (DebugWidgetComp->GetWidget())
-	{
-
-	}
 
 }
 

@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+
+#include "HyCoreTypes.h"
+#include "CControlTypes.h"
+
+
 #include "CControlFunctionLibrary.generated.h"
 
 /**
@@ -18,4 +23,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CControl", meta = (BlueprintThreadSafe))
 	static class UHyAnimInstance* GetOwningAnimInstance(UObject* Object);
 	
+
+
+	static EHyDirection GetDirectionFromAngle(const float InAngle);
+
+	static EHyDirection GetOppositeDirectionFromAngle(float InAngle);
+
+	static EHyDirection GetOppositeDirection(EHyDirection InDirection);
+
+
+	static FString LocomotionStateToString(ELocomotionState InLocomotionState);
+
 };

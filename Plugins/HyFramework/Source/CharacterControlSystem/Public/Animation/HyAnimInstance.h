@@ -51,12 +51,27 @@ public:
 	void SetCharacterStateData(const FCharacterStateData& InCharacterStateData) { CharacterStateData = InCharacterStateData; }
 	void SetCharacterDefaultTagSet(const FCharacterDefaultTagSet& InCharacterDefaultTagSet) { CharacterDefaultTagSet = InCharacterDefaultTagSet; }
 
+
+	const FAnimationVelocityData& GetVelocityData() const { return VelocityData; }
+	const FAnimationLocationData& GetLocationData() const { return LocationData; }
+	const FAnimationRotationData& GetRotationData() const { return RotationData; }
+	const FAnimationJumpData& GetJumpData() const { return JumpData; }
+	const FAnimationMovementData& GetMovementData() const { return MovementData; }
+	const FAnimationAccelerationData& GetAccelerationData() const { return AccelerationData; }
+	
+
+
+	UFUNCTION(BlueprintPure, Category = "Hy | CControl | Movement")
+	ELocomotionState GetCurLocomotionState() const;
+
+	UFUNCTION(BlueprintPure, Category = "Hy | CControl | Movement")
+	ELocomotionState GetTargetLocomotionState() const;
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl")
 	TObjectPtr<class ACharacter> CharacterOwner;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Hy | CControl")
-	TObjectPtr<class UCharacterMovementComponent> CharacterMovementComp;
+	TObjectPtr<class UHyCharacterMovementComponent> CharacterMovementComp;
 
 protected:
 // Animation Values Update On Off

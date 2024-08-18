@@ -79,6 +79,19 @@ void SHyCharacterHudDebugWidget::UpdateDebugText(const EDebugWidgetTextType InDe
     case EDebugWidgetTextType::EDebugText_CombatMode:
         Title = TEXT("CombatMode");
         break;
+
+    case EDebugWidgetTextType::EDebugText_Direction:
+        Title = TEXT("Direction");
+		break;
+
+    case EDebugWidgetTextType::EDebugText_CurLocomotion:
+	    Title = TEXT("CurLocomotion");
+	    break;
+
+    case EDebugWidgetTextType::EDebugText_TargetLocomotion:
+        Title = TEXT("TargetLocomotion");
+        break;
+
     case EDebugWidgetTextType::EDebugText_END:
     default:
         ERR_V("Invalid DebugTextType %d", (int32)InDebugTextType);

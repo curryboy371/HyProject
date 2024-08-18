@@ -12,7 +12,14 @@
 /**
  * 
  */
+#pragma region CControlDefine
 
+// 캐릭터가 이동중인지 확인하는 임계값
+#define MOVEMENT_SPEED_THRESHOLD 0.2f
+
+
+
+#pragma endregion
 
 
 #pragma region CControlEnum
@@ -23,6 +30,24 @@ enum class ECharacterMovementMode : uint8
     EWalk UMETA(DisplayName = "Walk"),
     ERun UMETA(DisplayName = "Run"),
     EDash UMETA(DisplayName = "Dash"),
+};
+
+UENUM(BlueprintType)
+enum class ELocomotionState : uint8 
+{
+    EIdle = 0 UMETA(DisplayName = "Idle"),
+    EWalk = 1 UMETA(DisplayName = "Walk"),
+    EJog = 2 UMETA(DisplayName = "Jog"),
+    ESprint = 3 UMETA(DisplayName = "Sprint"),
+};
+
+UENUM(BlueprintType)
+enum class EMovementStance : uint8 
+{
+    EIdle = 0 UMETA(DisplayName = "Idle"),
+    EAiming = 1 UMETA(DisplayName = "Aiming"),
+    EBlock = 2 UMETA(DisplayName = "Blocking"),
+    ECustom = 3 UMETA(DisplayName = "Custom"),
 };
 
 UENUM(BlueprintType)
@@ -164,6 +189,7 @@ public:
 		LocalAccel2D = FVector::ZeroVector;
 		PivotDirection = FVector::ZeroVector;
 		TimeSinceLastPivot = 0.f;
+        AccelerationDirection = EHyDirection::Front;
     }
 
     UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
@@ -182,6 +208,9 @@ public:
     FVector LocalAccel2D;
 
     UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    EHyDirection AccelerationDirection;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
     FVector PivotDirection;
 
     UPROPERTY(BlueprintReadWrite, Category = "Acceleration")
@@ -198,6 +227,8 @@ public:
     {
         bWasMoving = false;
         bIsMoving = false;
+        bIsMaxSpeed = false;
+
         Direction = 0.f;
         DirectionWithOffset = 0.f;
         Speed = 0.f;
@@ -209,6 +240,10 @@ public:
         WorldSpeed2D = FVector::ZeroVector;
         LocalSpeed2D = FVector::ZeroVector;
 
+        SpeedDirection = EHyDirection::Front;
+        SpeedDirectionWithOffset = EHyDirection::Front;
+        LastSpeedDirection = EHyDirection::Front;
+        LastSpeedDirectionWithOffset = EHyDirection::Front;
     }
 
     UPROPERTY(BlueprintReadOnly, Category = "Velocity")
@@ -246,6 +281,21 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "Velocity")
     FVector LocalSpeed2D;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    EHyDirection SpeedDirection;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    EHyDirection SpeedDirectionWithOffset;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    EHyDirection LastSpeedDirection;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    EHyDirection LastSpeedDirectionWithOffset;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Velocity")
+    bool bIsMaxSpeed;
 };
 
 
@@ -279,6 +329,131 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "Rotation")
     float YawOffset = 0.f;
+};
+
+
+// Movement Structs
+USTRUCT(BlueprintType)
+struct FCharacterMovementData
+{
+    GENERATED_BODY()
+
+    FCharacterMovementData()
+        : MaxWalkSpeed(600.0f)               // 언리얼 기본 보행 속도
+        , MaxAcceleration(2048.0f)           // 언리얼 기본 가속도
+        , BrakingDeceleration(2048.0f)       // 언리얼 기본 걷기 감속도
+        , BrakingFrictionFactor(2.0f)        // 언리얼 기본 브레이크 마찰 계수
+        , BrakingFriction(0.0f)              // 언리얼 기본 브레이크 마찰력
+        , UseSeparateBrakingFriction(false)  // 기본적으로 별도의 브레이크 마찰력 사용 안 함
+    {
+    }
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
+    float MaxWalkSpeed;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
+    float MaxAcceleration;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
+    float BrakingDeceleration;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
+    float BrakingFrictionFactor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
+    float BrakingFriction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
+    bool UseSeparateBrakingFriction;
+
+};
+
+USTRUCT(BlueprintType)
+struct FLocomotionState 
+{
+    GENERATED_BODY()
+
+    FLocomotionState()
+    {
+        State = ELocomotionState::EWalk;
+    };
+    FLocomotionState(ELocomotionState InState, const FCharacterMovementData& InCharacterMovementData)
+    {
+        State = InState;
+        CharacterMovementData = InCharacterMovementData;
+    };
+
+    FORCEINLINE const float GetMaxSpeed() const
+    {
+        return CharacterMovementData.MaxWalkSpeed;
+    }
+
+public:
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+    ELocomotionState State;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+    FCharacterMovementData CharacterMovementData;
+
+    // Struct Array에서 Key값을 사용하기 위하여 operator 선언
+    FORCEINLINE bool operator==(const FLocomotionState& Other) const
+    {
+        return this->State == Other.State;
+    }
+
+    FORCEINLINE bool operator==(const ELocomotionState& Other) const
+    {
+        return this->State == Other;
+    }
+
+    FORCEINLINE bool operator!=(const FLocomotionState& Other) const
+    {
+        return this->State != Other.State;
+    }
+
+    FORCEINLINE bool operator!=(const ELocomotionState& Other) const
+    {
+        return this->State != Other;
+    }
+};
+
+USTRUCT(BlueprintType)
+struct FMovStances 
+{
+    GENERATED_BODY()
+
+    FMovStances()
+    {
+        MovementStance = EMovementStance::EIdle;
+        LocomotionState = ELocomotionState::EWalk;
+    }
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+    EMovementStance MovementStance;
+
+    FORCEINLINE bool operator!=(const EMovementStance& Other) const
+    {
+        return MovementStance != Other;
+    }
+
+    FORCEINLINE bool operator==(const EMovementStance& Other) const
+    {
+        return MovementStance == Other;
+    }
+
+    FORCEINLINE bool operator!=(const FMovStances& Other) const
+    {
+        return MovementStance != Other.MovementStance;
+    }
+
+    FORCEINLINE bool operator==(const FMovStances& Other) const
+    {
+        return MovementStance == Other.MovementStance;
+    }
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement)
+    ELocomotionState LocomotionState;
 };
 
 
@@ -338,42 +513,6 @@ public:
 
 
 
-// Movement Structs
-USTRUCT(BlueprintType)
-struct FCharacterMovementData
-{
-    GENERATED_BODY()
-
-    FCharacterMovementData()
-        : MaxWalkSpeed(600.0f)               // 언리얼 기본 보행 속도
-        , MaxAcceleration(2048.0f)           // 언리얼 기본 가속도
-        , BrakingDeceleration(2048.0f)       // 언리얼 기본 걷기 감속도
-        , BrakingFrictionFactor(2.0f)        // 언리얼 기본 브레이크 마찰 계수
-        , BrakingFriction(0.0f)              // 언리얼 기본 브레이크 마찰력
-        , UseSeparateBrakingFriction(false)  // 기본적으로 별도의 브레이크 마찰력 사용 안 함
-    {
-    }
-
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
-    float MaxWalkSpeed;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
-    float MaxAcceleration;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
-    float BrakingDeceleration;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
-    float BrakingFrictionFactor;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
-    float BrakingFriction;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
-    bool UseSeparateBrakingFriction;
-
-};
 
 
 // Character DebugData Set
