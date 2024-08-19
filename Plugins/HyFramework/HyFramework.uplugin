@@ -111,6 +111,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "AnimationWarping",
+			"Enabled": true
+		},
+		{
 			"Name": "AnimationModifierLibrary",
 			"Enabled": true
 		},

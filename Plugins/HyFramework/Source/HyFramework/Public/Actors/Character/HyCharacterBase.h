@@ -93,11 +93,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputEquip(const FInputActionValue& Value);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputSprint(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void CompletedSprint(const FInputActionValue& Value);
+
 protected:
 	// Debug
 	void DebugUpdate();
 
 	void DebugRenderWidget();
+
+protected:
 
 protected:
 	// Components
@@ -112,6 +120,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class USceneComponent> HUDLocationComp;
+
+	UPROPERTY()
+	TObjectPtr<class UHyCharacterMovementComponent> HyCharacterMovement;
 
 protected:
 	class TSharedPtr<class SHyCharacterHudDebugWidget> SCharacterDebugWidget;
@@ -135,10 +146,6 @@ protected:
 	// BlueprintSetting
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Init")
 	FCharacterDefaultTagSet CharacterDefaultTagSet;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Movement")
-	TMap<ECharacterMovementMode, FCharacterMovementData> CharacterMovementDataMap;
-
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Hy | Input")
 	FCharacterInputData CharacterInputData;

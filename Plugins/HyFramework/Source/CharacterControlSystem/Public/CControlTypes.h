@@ -67,6 +67,8 @@ enum class EKeyInput : uint8
 	IA_Jump,
 	IA_Move,
 	IA_Look,
+
+    IA_Sprint,
 };
 
 #pragma endregion

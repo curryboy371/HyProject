@@ -61,6 +61,7 @@ AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
 void AHyCharacterBase::CharacterDefaultSetup()
 {
 	HyAnimInstance = nullptr;
+	HyCharacterMovement = nullptr;
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -74,10 +75,6 @@ void AHyCharacterBase::CharacterDefaultSetup()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 500.0f); // ...at this rotation rate
 
 
-	FCharacterMovementData Temp;
-	CharacterMovementDataMap.Add(ECharacterMovementMode::EWalk, Temp);
-	CharacterMovementDataMap.Add(ECharacterMovementMode::ERun, Temp);
-	CharacterMovementDataMap.Add(ECharacterMovementMode::EDash, Temp);
 }
 
 void AHyCharacterBase::ComponenetSetup()
@@ -86,6 +83,12 @@ void AHyCharacterBase::ComponenetSetup()
 	{
 		ERR_V("GetCapsuleComponent is not set.");
 		return;
+	}
+
+	HyCharacterMovement = Cast<UHyCharacterMovementComponent>(GetCharacterMovement());
+	if(!HyCharacterMovement)
+	{
+		ERR_V("HyCharacterMovement is not set.");
 	}
 
 	// Actions System Com
@@ -316,9 +319,12 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 		bIsRotating = false; // 회전 완료
 	}
 
+	bIsRotating = false; // 회전 완료
+
+
 	// 항상 회전시킴
 	// 회전이 완료되었더라도 오차 범위가 있는 회전값 계산이므로 (RotationToleranceAngle)
-	SetActorRotation(NewRotation);
+	//SetActorRotation(NewRotation);
 
 	// 회전이 완료되었으면 이동 처리 || 이미 이동중이면 그대로 이동
 	FVector CharacterVelocity2D = FVector(1.f, 1.f, 0.f) * GetCharacterMovement()->Velocity;
@@ -371,6 +377,28 @@ void AHyCharacterBase::InputEquip(const FInputActionValue& Value)
 			ERR_V("TagManager is not set.");
 		}
 	}
+}
+
+void AHyCharacterBase::InputSprint(const FInputActionValue& Value)
+{
+	if (!HyCharacterMovement)
+	{
+		ERR_V("HyCharacterMovement is not set.");
+		return;
+	}
+
+	HyCharacterMovement->AccelerateToNextState();
+}
+
+void AHyCharacterBase::CompletedSprint(const FInputActionValue& Value)
+{
+	if (!HyCharacterMovement)
+	{
+		ERR_V("HyCharacterMovement is not set.");
+		return;
+	}
+
+	HyCharacterMovement->SetDefaultLocomotionState();
 }
 
 void AHyCharacterBase::DebugUpdate()

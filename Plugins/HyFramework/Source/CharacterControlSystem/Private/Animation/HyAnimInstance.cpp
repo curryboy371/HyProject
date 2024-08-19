@@ -112,8 +112,11 @@ void UHyAnimInstance::SetCharacterReferences()
     if (CharacterOwner) 
     {
         CharacterMovementComp = Cast<UHyCharacterMovementComponent>(CharacterOwner->GetCharacterMovement());
-        
-        if(!CharacterMovementComp)
+        if (CharacterMovementComp)
+        {
+            MovementData.bIsWalking = (CharacterMovementComp->GetTargetLocomotionState() == ELocomotionState::EWalk);
+        }
+        else
         {
             ERR_V("Owner doesn't have ACharacterMovement Comp!!!!");
         }
@@ -265,9 +268,8 @@ void UHyAnimInstance::UpdateStateData(const float& DeltaSeconds)
     MovementData.bCrouchChanged = MovementData.bIsCrouching != MovementData.bWasCrouching;
     MovementData.bWalkStateChanged = MovementData.bWasWalking != MovementData.bIsWalking;
     MovementData.bWasWalking = MovementData.bIsWalking;
-    //MovementData.bIsStrafing = CharacterMovementComp->IsCharacterStrafing();
-    //MovementData.bIsWalking = CharacterMovementComp->GetTargetLocomotionState() == ELocomotionState::EWalk; // || MovementComp->GetCurrentLocomotionState() == ELocomotionState::EIdle;
-    //MovementData.bIsSwimming = CharacterMovementComp->IsSwimming();
+    MovementData.bIsWalking = CharacterMovementComp->GetTargetLocomotionState() == ELocomotionState::EWalk; // || MovementComp->GetCurrentLocomotionState() == ELocomotionState::EIdle;
+    MovementData.bIsSwimming = CharacterMovementComp->IsSwimming();
 }
 
 void UHyAnimInstance::UpdateJump(const float& DeltaSeconds)

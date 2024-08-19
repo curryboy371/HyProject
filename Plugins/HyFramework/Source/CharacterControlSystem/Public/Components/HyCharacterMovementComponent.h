@@ -36,9 +36,14 @@ public:
 	void CalcGroundDistance();
 
 	void SetLocomotionState(ELocomotionState InState);
+	void SetDefaultLocomotionState();
 
 
 	void HandleStateChanged(ELocomotionState InChangeState);
+
+	void AccelerateToNextState();
+	void BrakeToPreviousState();
+
 public:
 	FORCEINLINE float GetGroundDistance() const { return GroundDistance; }
 	FORCEINLINE void SetGroundDistance(float InGroundDistance) { GroundDistance = InGroundDistance; }
@@ -49,6 +54,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "CControl | Movement")
 	FORCEINLINE ELocomotionState GetTargetLocomotionState() const { return TargetLocomotionState.State; }
+
+	UFUNCTION(BlueprintCallable, Category = "CControl | Movement")
+	const float GetCharacterMaxStateSpeed(ELocomotionState InState);
 
 protected:
 	UPROPERTY()

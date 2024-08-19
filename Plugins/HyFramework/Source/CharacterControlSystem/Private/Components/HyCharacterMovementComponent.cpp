@@ -28,14 +28,18 @@ UHyCharacterMovementComponent::UHyCharacterMovementComponent(const FObjectInitia
 
 
     FCharacterMovementData CharacterMovementData;
+    CharacterMovementData.MaxWalkSpeed = 0.0f;
     LocomotionStates.Add(FLocomotionState(ELocomotionState::EIdle, CharacterMovementData));
+
+    CharacterMovementData.MaxWalkSpeed = 300.0f;
     LocomotionStates.Add(FLocomotionState(ELocomotionState::EWalk, CharacterMovementData));
 
-    CharacterMovementData.MaxWalkSpeed = 1200.f;
+    CharacterMovementData.MaxWalkSpeed = 600.f;
     LocomotionStates.Add(FLocomotionState(ELocomotionState::EJog, CharacterMovementData));
 
-    CharacterMovementData.MaxWalkSpeed = 1600.f;
+    CharacterMovementData.MaxWalkSpeed = 900.f;
     LocomotionStates.Add(FLocomotionState(ELocomotionState::ESprint, CharacterMovementData));
+
 
     CurLocomotionState = ELocomotionState::EIdle;
     CurMovestance = EMovementStance::EIdle;
@@ -204,6 +208,11 @@ void UHyCharacterMovementComponent::SetLocomotionState(ELocomotionState InState)
     }
 }
 
+void UHyCharacterMovementComponent::SetDefaultLocomotionState()
+{
+    SetLocomotionState(DefaultState);
+}
+
 void UHyCharacterMovementComponent::HandleStateChanged(ELocomotionState InChangeState)
 {
     if (CurLocomotionState == InChangeState)
@@ -213,4 +222,35 @@ void UHyCharacterMovementComponent::HandleStateChanged(ELocomotionState InChange
 
     CurLocomotionState = InChangeState;
     OnLocomotionStateChanged.Broadcast(InChangeState);
+}
+
+void UHyCharacterMovementComponent::AccelerateToNextState()
+{
+    const int32 Actualindex = LocomotionStates.IndexOfByKey(CurLocomotionState);
+
+    if (LocomotionStates.IsValidIndex(Actualindex + 1))
+    {
+        SetLocomotionState(LocomotionStates[Actualindex + 1].State);
+    }
+}
+
+void UHyCharacterMovementComponent::BrakeToPreviousState()
+{
+    const int32 Actualindex = LocomotionStates.IndexOfByKey(CurLocomotionState);
+
+    if (LocomotionStates.IsValidIndex(Actualindex - 1))
+    {
+        SetLocomotionState(LocomotionStates[Actualindex - 1].State);
+    }
+}
+
+const float UHyCharacterMovementComponent::GetCharacterMaxStateSpeed(ELocomotionState InState)
+{
+    FLocomotionState* LocomotionState = LocomotionStates.FindByKey(InState);
+    if (LocomotionState)
+    {
+        return LocomotionState->CharacterMovementData.MaxWalkSpeed;
+    }
+
+    return 0.0f;
 }

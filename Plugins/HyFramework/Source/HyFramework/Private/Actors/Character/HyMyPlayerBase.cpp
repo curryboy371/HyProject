@@ -103,6 +103,11 @@ void AHyMyPlayerBase::InputFunctionMapping()
 	InputFunctionMap.Add("InputJump", &AHyMyPlayerBase::InputJump);
 	InputFunctionMap.Add("InputLook", &AHyMyPlayerBase::InputLook);
 	InputFunctionMap.Add("InputEquip", &AHyMyPlayerBase::InputEquip);
+
+	InputFunctionMap.Add("InputSprint", &AHyMyPlayerBase::InputSprint);
+	InputFunctionMap.Add("CompletedSprint", &AHyMyPlayerBase::CompletedSprint);
+
+
 }
 
 void AHyMyPlayerBase::InputActionDataSetup(FInputDataSet* InInputDataSet)
