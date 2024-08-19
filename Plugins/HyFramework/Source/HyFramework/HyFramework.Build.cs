@@ -57,7 +57,7 @@ public class HyFramework : ModuleRules
                 "HyFXSystem",
                 "CollisionSystem",
 				"HyUISystem",
-
+                "InventorySystem",
 
 				// ... add private dependencies that you statically link with here ...	
 			}

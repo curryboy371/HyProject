@@ -18,6 +18,8 @@
 
 
 #include "Components/ActionsSystemComponent.h"
+#include "Components/HyInventorySystemComponent.h"
+
 
 #include "Animation/HyAnimInstance.h"
 
@@ -96,6 +98,12 @@ void AHyCharacterBase::ComponenetSetup()
 	if(!ActionsSystemComp)
 	{
 		ERR_V("ActionsSystemComp is not set.");
+	}
+
+	InventorySystemComp = CreateDefaultSubobject<UHyInventorySystemComponent>(TEXT("InventorySystemComp"));
+	if (!InventorySystemComp)
+	{
+		ERR_V("InventorySystemComp is not set.");
 	}
 
 	HUDLocationComp = CreateDefaultSubobject<USceneComponent>(TEXT("HUDLocationComp"));

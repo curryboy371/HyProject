@@ -113,6 +113,9 @@ protected:
 	TObjectPtr<class UActionsSystemComponent> ActionsSystemComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	TObjectPtr<class UHyInventorySystemComponent> InventorySystemComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComp;
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
