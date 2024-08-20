@@ -16,6 +16,7 @@
 #include "InputActionValue.h"
 
 #include "Interface/CControlCharacterInterface.h"
+#include "Interface/ActionsCharacterInterface.h"
 
 #include "HyCharacterBase.generated.h"
 
@@ -24,7 +25,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipTagChanged, const FGameplayT
 
 
 UCLASS()
-class HYFRAMEWORK_API AHyCharacterBase : public ACharacter, public ICControlCharacterInterface
+class HYFRAMEWORK_API AHyCharacterBase : public ACharacter, public ICControlCharacterInterface, public IActionsCharacterInterface
 {
 	GENERATED_BODY()
 
@@ -62,6 +63,17 @@ public:
 	// about Inventory...
 	const bool IsWeaponOnHand();
 
+
+public:
+	// IActionsCharacterInterface을(를) 통해 상속됨
+	virtual bool TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false) override;
+	virtual void SetStoredAction(FActionExcuteData& InActionExcuteData, const FString InContext = "", bool bForce = false) override;
+	virtual void HandleAction(EActionHandleType InExitType, float BlendOut = 0.5f) override;
+
+	virtual void SetPerformingActionPriority(EActionPriority InPriority) override;
+
+	virtual const bool IsEmptyStoredAction() const override;
+	virtual const bool IsCanStoreAction(EActionPriority InPriority) const override;
 protected:
 	void CharacterSetup();
 	void CharacterActorComponentSetup();
@@ -72,11 +84,7 @@ public:
 	// Anim 
 	void SwitchEquipLayer(const FGameplayTag& InEquipTag);
 
-
 	void SetHyAnimInstance();
-public:
-	// Actions System
-	bool TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false);
 
 
 public:

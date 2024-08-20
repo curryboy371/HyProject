@@ -302,18 +302,102 @@ void AHyCharacterBase::SetHyAnimInstance()
 bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext, bool bCanBeStored)
 {
 	bool bSuccessAction = false;
-	if (ActionsSystemComp)
+
+	if (!ActionsSystemComp)
 	{
-		InActionExcuteData.ActionContext = InContext;
-		bSuccessAction = ActionsSystemComp->TriggerAction(InActionExcuteData, bCanBeStored);
+		ERR_V("ActionsSystemComp is not set.");
+		return bSuccessAction;
+	}
 
-		if (bSuccessAction)
-		{
+	InActionExcuteData.ActionContext = InContext;
+	bSuccessAction = ActionsSystemComp->TriggerAction(InActionExcuteData, bCanBeStored);
 
-		}
+	if (bSuccessAction)
+	{
+
 	}
 
 	return bSuccessAction;
+}
+
+void AHyCharacterBase::SetStoredAction(FActionExcuteData& InActionExcuteData, const FString InContext, bool bForce)
+{
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is not set.");
+		return;
+	}
+
+	InActionExcuteData.ActionContext = InContext;
+	ActionsSystemComp->SetStoredActionTag(InActionExcuteData, bForce);
+
+}
+
+void AHyCharacterBase::HandleAction(EActionHandleType InExitType, float BlendOut)
+{
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is not set.");
+		return;
+	}
+
+	switch (InExitType)
+	{
+	case EActionHandleType::EActionHandle_Free:
+		ActionsSystemComp->FreeAction();
+		break;
+	case EActionHandleType::EActionHandle_Stop:
+		ActionsSystemComp->ActionStopImmeditaley(BlendOut);
+		break;
+	case EActionHandleType::EActionHandle_ConditionalStop:
+		if (ActionsSystemComp->IsActionStopCondition()) // 조건이 일치하면 Stop
+		{
+			HandleAction(EActionHandleType::EActionHandle_Stop, BlendOut);
+		}
+		break;
+	case EActionHandleType::EActionHandle_Noti:
+
+	default:
+		break;
+	}
+}
+
+void AHyCharacterBase::SetPerformingActionPriority(EActionPriority InPriority)
+{
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is not set.");
+		return;
+	}
+
+	ActionsSystemComp->SetCurActionPriority(InPriority);
+}
+
+const bool AHyCharacterBase::IsEmptyStoredAction() const
+{
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is not set.");
+		return false;
+	}
+
+	return ActionsSystemComp->IsEmptyStoredAction();
+}
+
+const bool AHyCharacterBase::IsCanStoreAction(EActionPriority InPriority) const
+{
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is not set.");
+		return false;
+	}
+
+	if (!ActionsSystemComp->IsEmptyStoredAction())
+	{
+		return ActionsSystemComp->GetStoredActionData().ActionPriority < InPriority;
+	}
+
+	return true;
 }
 
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)

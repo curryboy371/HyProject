@@ -20,6 +20,8 @@ public:
 	virtual void OnActionEnded_Implementation();
 	virtual void OnActionTransition_Implementation(class UActionsBaseAction* InpreAction);
 	virtual void OnTick_Implementation(float DeltaTime);
+	virtual void OnActionNotify_Implementation();
+
 	virtual bool IsStopConditional_Implementation();
 	
 };

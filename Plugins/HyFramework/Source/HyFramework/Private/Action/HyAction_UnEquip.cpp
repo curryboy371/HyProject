@@ -5,6 +5,7 @@
 #include "Actors/Character/HyCharacterBase.h"
 #include "Components/HyInventorySystemComponent.h"
 
+#include "HyCoreMacro.h"
 
 
 void UHyAction_UnEquip::OnActionStarted_Implementation(const FString& InContext)
@@ -39,22 +40,23 @@ void UHyAction_UnEquip::OnActionTransition_Implementation(UActionsBaseAction* In
 void UHyAction_UnEquip::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
+}
 
-	if (ActionDuration > 0.1)
+void UHyAction_UnEquip::OnActionNotify_Implementation()
+{
+	if (!HyCharacterOwner)
 	{
-		if (HyCharacterOwner)
-		{
-			if (HyCharacterOwner->IsWeaponOnHand())
-			{
-				if (TObjectPtr<class UHyInventorySystemComponent> InventoryComp = HyCharacterOwner->GetInventorySystemComp())
-				{
-					InventoryComp->AttachWeaponOnBody(InventoryComp->GetEquippedWeapon());
-				}
-
-			}
-		}
+		ERR_V("HyCharacterOwner is nullptr");
 	}
 
+	if (HyCharacterOwner->IsWeaponOnHand())
+	{
+		if (TObjectPtr<class UHyInventorySystemComponent> InventoryComp = HyCharacterOwner->GetInventorySystemComp())
+		{
+			InventoryComp->AttachWeaponOnBody(InventoryComp->GetEquippedWeapon());
+		}
+
+	}
 }
 
 bool UHyAction_UnEquip::IsStopConditional_Implementation()

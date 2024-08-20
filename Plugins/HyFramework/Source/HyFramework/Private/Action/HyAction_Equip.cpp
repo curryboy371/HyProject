@@ -4,6 +4,7 @@
 #include "Action/HyAction_Equip.h"
 #include "Actors/Character/HyCharacterBase.h"
 #include "Components/HyInventorySystemComponent.h"
+#include "HyCoreMacro.h"
 
 
 void UHyAction_Equip::OnActionStarted_Implementation(const FString& InContext)
@@ -39,17 +40,20 @@ void UHyAction_Equip::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
 
-	if (ActionDuration > 0.1)
+}
+
+void UHyAction_Equip::OnActionNotify_Implementation()
+{
+	if (!HyCharacterOwner)
 	{
-		if (HyCharacterOwner)
+		ERR_V("HyCharacterOwner is nullptr");
+	}
+
+	if (!HyCharacterOwner->IsWeaponOnHand())
+	{
+		if (TObjectPtr<class UHyInventorySystemComponent> InventoryComp = HyCharacterOwner->GetInventorySystemComp())
 		{
-			if (!HyCharacterOwner->IsWeaponOnHand())
-			{
-				if (TObjectPtr<class UHyInventorySystemComponent> InventoryComp = HyCharacterOwner->GetInventorySystemComp())
-				{
-					InventoryComp->AttachWeaponOnHand(InventoryComp->GetEquippedWeapon());
-				}
-			}
+			InventoryComp->AttachWeaponOnHand(InventoryComp->GetEquippedWeapon());
 		}
 	}
 }

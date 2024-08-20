@@ -235,6 +235,14 @@ void UActionsSystemComponent::ActionStopImmeditaley(float InBlendOutTime)
     InternalExitAction();
 }
 
+void UActionsSystemComponent::ActionNotify()
+{
+	if (bIsPerformingAction && PerformingAction)
+	{
+		PerformingAction->OnActionNotify();
+	}
+}
+
 void UActionsSystemComponent::PlayMontage(const FActionMontageInfo& InMontageInfo, float InStartFrame)
 {
     MontageInfo = InMontageInfo;

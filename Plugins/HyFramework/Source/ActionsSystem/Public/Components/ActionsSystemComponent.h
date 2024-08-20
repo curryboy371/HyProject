@@ -48,7 +48,9 @@ public:
 	void StoreAction(const FActionExcuteData& InActionExcuteData);
 	void FreeAction();
 	void PauseAction(bool bSetPause);
+	void ActionStopImmeditaley(float InBlendOutTime = 0.0f);
 
+	void ActionNotify();
 
 public:
 	void PlayMontage(const FActionMontageInfo& InMontageInfo, float InStartFrame);
@@ -58,7 +60,6 @@ public:
 protected:
 	void ActionStart(const FGameplayTag& InActionTag, const FString& InContext);
 	void ActionEnd(const FGameplayTag& InActionTag);
-	void ActionStopImmeditaley(float InBlendOutTime = 0.0f);
 
 
 	void TerminateCurrentAction();
@@ -104,6 +105,8 @@ public:
 	const FActionExcuteData& GetCurActionData() const { return CurActionExcuteData; };
 	const FActionExcuteData& GetStoredActionData() const { return StoredActionExcuteData; };
 
+	void SetCurActionPriority(EActionPriority InPriority) { CurActionExcuteData.ActionPriority = InPriority; };
+	void SetStoredActionPriority(EActionPriority InPriority) { StoredActionExcuteData.ActionPriority = InPriority; };
 
 	const bool IsActionStopCondition() const;
 

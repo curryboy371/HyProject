@@ -57,10 +57,15 @@ public:
     void OnTick(float DeltaTime);
     virtual void OnTick_Implementation(float DeltaTime) {  };
 
+    /* Action Notify */
+    UFUNCTION(BlueprintNativeEvent, Category = "Actions")
+    void OnActionNotify();
+    virtual void OnActionNotify_Implementation() { };
 
     UFUNCTION(BlueprintNativeEvent, Category = "Actions")
     bool IsStopConditional();
     virtual bool IsStopConditional_Implementation() { return true; };
+
 
 
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Actions")

@@ -21,16 +21,19 @@
 
  // Action 종료 타입
 UENUM(BlueprintType)
-enum class EActionHandleExitType : uint8
+enum class EActionHandleType : uint8
 {
 	// StoreAction 실행 > 진행중이던 Action 종료
-	EActionExit_Free UMETA(DisplayName = "EActionExit_Free"), 
+    EActionHandle_Free UMETA(DisplayName = "EActionHandle_Free"),
 
 	// 진행중이던 Action 즉시 Stop Exit > StoreAction 실행
-	EActionExit_Stop UMETA(DisplayName = "EActionExit_Stop"), 
+    EActionHandle_Stop UMETA(DisplayName = "EActionHandle_Stop"),
 
 	// 각 Action의 조건 실행, 조건이 참이면 Stop ( 조건반환을 항상 false로 하고 조건함수 안에서 Handle하기도 함 )
-	EActionExit_Conditional UMETA(DisplayName = "EActionExit_Conditional"),
+    EActionHandle_ConditionalStop UMETA(DisplayName = "EActionHandle_ConditionalStop"),
+
+    // 진행중인 액션에 Noti를 넣어주는 기능
+    EActionHandle_Noti UMETA(DisplayName = "EActionHandle_Noti"),
 };
 
 
