@@ -59,6 +59,9 @@ public class HyFramework : ModuleRules
 				"HyUISystem",
                 "InventorySystem",
 
+
+                "HyTable",
+
 				// ... add private dependencies that you statically link with here ...	
 			}
             );

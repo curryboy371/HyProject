@@ -38,17 +38,15 @@
 #include "HyCoreFunctionLibrary.h"
 #include "CControlFunctionLibrary.h"
 
+#include "InvenTypes.h"
 
 
-// Sets default values
-//AHyCharacterBase::AHyCharacterBase()
-//{
-//
-//
-//	CharacterDefaultSetup();
-//
-//	ComponenetSetup();
-//}
+#include "Items/HyItem.h"
+#include "Items/HyWeapon.h"
+
+#include "HyTableSubsystem.h"
+#include "Table/Item_TableEntity.h"
+
 
 // MovementCom custom으로 변경
 AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
@@ -81,29 +79,26 @@ void AHyCharacterBase::CharacterDefaultSetup()
 
 void AHyCharacterBase::ComponenetSetup()
 {
-	if (!GetCapsuleComponent())
+	// Actions System Com
+	ActionsSystemComp = CreateDefaultSubobject<UActionsSystemComponent>(TEXT("ActionsSystemComp"));
+	if (ActionsSystemComp)
 	{
-		ERR_V("GetCapsuleComponent is not set.");
-		return;
+		HyActorComponents.Add(ActionsSystemComp);
 	}
+
+	InventorySystemComp = CreateDefaultSubobject<UHyInventorySystemComponent>(TEXT("InventorySystemComp"));
+	if (InventorySystemComp)
+	{
+		HyActorComponents.Add(InventorySystemComp);
+	}
+
+
+
 
 	HyCharacterMovement = Cast<UHyCharacterMovementComponent>(GetCharacterMovement());
 	if(!HyCharacterMovement)
 	{
 		ERR_V("HyCharacterMovement is not set.");
-	}
-
-	// Actions System Com
-	ActionsSystemComp = CreateDefaultSubobject<UActionsSystemComponent>(TEXT("ActionsSystemComp"));
-	if(!ActionsSystemComp)
-	{
-		ERR_V("ActionsSystemComp is not set.");
-	}
-
-	InventorySystemComp = CreateDefaultSubobject<UHyInventorySystemComponent>(TEXT("InventorySystemComp"));
-	if (!InventorySystemComp)
-	{
-		ERR_V("InventorySystemComp is not set.");
 	}
 
 	HUDLocationComp = CreateDefaultSubobject<USceneComponent>(TEXT("HUDLocationComp"));
@@ -118,11 +113,19 @@ void AHyCharacterBase::ComponenetSetup()
 void AHyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetHyAnimInstance();
+
 	CharacterSetup();
 
-	CharacterWidgetSetup();
+	SwitchEquipLayer(CharacterDefaultTagSet.PeaceEquipTag);
 
+	// DefaultAction Setting, Trigger Excute
+	if (ActionsSystemComp)
+	{
+		FActionExcuteData InitActionData(CharacterDefaultTagSet.ActionTag);
+		ActionsSystemComp->SetDefaultActinoTag(InitActionData);
+		TriggerAction(InitActionData);
+	}
 }
 
 // Called every frame
@@ -157,12 +160,6 @@ FGameplayTag AHyCharacterBase::GetEquipTag()
 
 void AHyCharacterBase::SetCombatMode(const bool bCombatMode)
 {
-	if (!HyAnimInstance)
-	{
-		ERR_V("HyAnimInstance is not set.");
-		return;
-	}
-
 	ECombatMode PreMode = CharacterStateData.CombatMode;
 	CharacterStateData.SetCombatMode(bCombatMode);
 
@@ -173,13 +170,78 @@ void AHyCharacterBase::SetCombatMode(const bool bCombatMode)
 		SwitchEquipLayer(NewEquipTag);
 	}
 
+
+
+}
+
+const bool AHyCharacterBase::IsWeaponOnHand()
+{
+	if (InventorySystemComp)
+	{
+		const EWeaponArmState ArmState = InventorySystemComp->GetWeaponArmState();
+
+		switch (ArmState)
+		{
+		case EWeaponArmState::EWS_None:
+			WAR_V("Equipped Weapon is None");
+			break;
+		case EWeaponArmState::EWS_Unarmed:
+			return false;
+		case EWeaponArmState::EWS_Armed:
+			return true;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		ERR_V("InventorySystemComp is not set.");
+	}
+
+	return false;
 }
 
 void AHyCharacterBase::CharacterSetup()
 {
 	// BeginPlay에서 Character를 Setup하는 함수
-	SetHyAnimInstance();
 
+	CharacterActorComponentSetup();
+
+	CharacterWidgetSetup();
+
+	SetDelegateFunctions();
+
+	// Test Item Add
+	if (UHyTableSubsystem* TableSubSystem = GetGameInstance()->GetSubsystem<UHyTableSubsystem>())
+	{
+		int32 TestItem = 1;
+		if (FItem_TableEntity* ItemEntity = TableSubSystem->GetTableData<FItem_TableEntity>(TestItem))
+		{
+			InventorySystemComp->AddInventoryItem(*ItemEntity);
+		}
+		else
+		{
+			ERR_V("ItemEntity is not set. ID=%d", TestItem);
+		}
+	}
+
+}
+
+void AHyCharacterBase::CharacterActorComponentSetup()
+{
+	for(auto & ActorComp : HyActorComponents)
+	{
+		if (ActorComp)
+		{
+			ActorComp->InitializeHyActorComponent();
+		}
+	}
+
+
+}
+
+void AHyCharacterBase::SetDelegateFunctions()
+{
 	//  Bind Change Equip Action(Layer)
 	if (HyAnimInstance)
 	{
@@ -188,20 +250,6 @@ void AHyCharacterBase::CharacterSetup()
 	if (ActionsSystemComp)
 	{
 		OnEquipTagChanged.AddDynamic(ActionsSystemComp, &UActionsSystemComponent::SetEquipActions);
-	}
-
-	SwitchEquipLayer(CharacterDefaultTagSet.PeaceEquipTag);
-
-	// DefaultAction Setting, Trigger Excute
-	if (ActionsSystemComp)
-	{
-		FActionExcuteData InitActionData(CharacterDefaultTagSet.ActionTag);
-		ActionsSystemComp->SetDefaultActinoTag(InitActionData);
-		TriggerAction(InitActionData);
-	}
-	else
-	{
-		ERR_V("ActionsSystemComp is not set.");
 	}
 }
 
@@ -266,7 +314,6 @@ bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, cons
 	}
 
 	return bSuccessAction;
-	return false;
 }
 
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
@@ -275,7 +322,15 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 	{
 		if (UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>())
 		{
-			TriggerAction(TagManager->ActionExcuteSet.ActionAttack, FString(), true);
+			if(IsCombatMode())
+			{
+				TriggerAction(TagManager->ActionExcuteSet.ActionAttack, FString(), true);
+			}
+			else
+			{
+				FString Context = TEXT("Auto");
+				TriggerAction(TagManager->ActionExcuteSet.ActionEquip, Context);
+			}
 		}
 		else
 		{
@@ -327,12 +382,9 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 		bIsRotating = false; // 회전 완료
 	}
 
-	bIsRotating = false; // 회전 완료
-
-
 	// 항상 회전시킴
 	// 회전이 완료되었더라도 오차 범위가 있는 회전값 계산이므로 (RotationToleranceAngle)
-	//SetActorRotation(NewRotation);
+	SetActorRotation(NewRotation);
 
 	// 회전이 완료되었으면 이동 처리 || 이미 이동중이면 그대로 이동
 	FVector CharacterVelocity2D = FVector(1.f, 1.f, 0.f) * GetCharacterMovement()->Velocity;
@@ -370,21 +422,21 @@ void AHyCharacterBase::InputEquip(const FInputActionValue& Value)
 	{
 		if (UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>())
 		{
-			FString Context = TEXT("Auto");
-			if(IsCombatMode())
+			if (InventorySystemComp)
 			{
-				TriggerAction(TagManager->ActionExcuteSet.ActionUnEquip, Context);
+				FGameplayTag WeaponSlot = TagManager->ItemSlotTagSet.SlotWeapon;
+				if (InventorySystemComp->IsEquippedSlot(WeaponSlot))
+				{
+					InventorySystemComp->UnEquipItemBySlot(WeaponSlot);
+				}
+				else
+				{
+					InventorySystemComp->EquipItemBySlot(WeaponSlot);
+				}
 			}
-			else
-			{
-				TriggerAction(TagManager->ActionExcuteSet.ActionEquip, Context);
-			}
-		}
-		else
-		{
-			ERR_V("TagManager is not set.");
 		}
 	}
+
 }
 
 void AHyCharacterBase::InputSprint(const FInputActionValue& Value)

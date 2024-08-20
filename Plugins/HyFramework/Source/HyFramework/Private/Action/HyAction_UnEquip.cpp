@@ -3,6 +3,7 @@
 
 #include "Action/HyAction_UnEquip.h"
 #include "Actors/Character/HyCharacterBase.h"
+#include "Components/HyInventorySystemComponent.h"
 
 
 
@@ -38,6 +39,21 @@ void UHyAction_UnEquip::OnActionTransition_Implementation(UActionsBaseAction* In
 void UHyAction_UnEquip::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
+
+	if (ActionDuration > 0.1)
+	{
+		if (HyCharacterOwner)
+		{
+			if (HyCharacterOwner->IsWeaponOnHand())
+			{
+				if (TObjectPtr<class UHyInventorySystemComponent> InventoryComp = HyCharacterOwner->GetInventorySystemComp())
+				{
+					InventoryComp->AttachWeaponOnBody(InventoryComp->GetEquippedWeapon());
+				}
+
+			}
+		}
+	}
 
 }
 

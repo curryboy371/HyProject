@@ -10,6 +10,7 @@ public class HyProjectTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 
-		ExtraModuleNames.AddRange( new string[] { "HyProject" } );
+
+        ExtraModuleNames.AddRange( new string[] { "HyProject" } );
 	}
 }

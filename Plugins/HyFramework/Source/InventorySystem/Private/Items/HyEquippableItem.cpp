@@ -8,6 +8,10 @@
 
 #include "HyCoreMacro.h"
 
+void AHyEquippableItem::InitializeItem(const FItem_TableEntity* InItemTableInfo)
+{
+	Super::InitializeItem(InItemTableInfo);
+}
 
 void AHyEquippableItem::OnEquipped(TObjectPtr<ACharacter> InOwner)
 {

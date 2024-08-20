@@ -25,8 +25,10 @@ UActionsSystemComponent::UActionsSystemComponent()
 void UActionsSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-
+void UActionsSystemComponent::InitializeHyActorComponent()
+{
     // EquipableActionInstMap을 생성
     EquipableActionsInstMap.Empty();
     for (const auto& ActionSetclass : EquipableActionSets)
@@ -41,7 +43,7 @@ void UActionsSystemComponent::BeginPlay()
             ERR_V("Invalid EquipableActions Class");
         }
     }
-    
+
     if (CMActionsDataSet)
     {
         CMActionsDataInst = NewObject<UActionsDataAsset>(this, CMActionsDataSet);
@@ -67,6 +69,7 @@ void UActionsSystemComponent::BeginPlay()
     }
 
     ResetActionState();
+
 }
 
 

@@ -15,6 +15,7 @@ class INVENTORYSYSTEM_API AHyEquippableItem : public AHyItem
 	GENERATED_BODY()
 
 public:
+	virtual void InitializeItem(const struct FItem_TableEntity* InItemTableInfo);
 
 
 
@@ -32,4 +33,6 @@ public:
 	void OnItemUnEquipped();
 	virtual void OnItemUnEquipped_Implementation() {};
 
+
+protected:
 };

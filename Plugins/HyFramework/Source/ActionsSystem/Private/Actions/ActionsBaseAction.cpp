@@ -78,7 +78,7 @@ void UActionsBaseAction::Internal_OnActivated(TObjectPtr<UActionsSystemComponent
     OnActionStarted(InContext);
 
     // Action에 설정된 몽타주를 실행
-    if (ActionConfig.bAutoExecute)
+    if (ActionConfig.bAutoExecute && animMontage)
     {
         ExecuteAction();
     }

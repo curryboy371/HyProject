@@ -107,7 +107,6 @@ void AHyMyPlayerBase::InputFunctionMapping()
 	InputFunctionMap.Add("InputSprint", &AHyMyPlayerBase::InputSprint);
 	InputFunctionMap.Add("CompletedSprint", &AHyMyPlayerBase::CompletedSprint);
 
-
 }
 
 void AHyMyPlayerBase::InputActionDataSetup(FInputDataSet* InInputDataSet)

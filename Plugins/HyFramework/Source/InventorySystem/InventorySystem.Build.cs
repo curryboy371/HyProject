@@ -38,6 +38,7 @@ public class InventorySystem : ModuleRules
 
 				// Custom Modules
                 "HyCore",
+                "HyTable",
             }
 			);
 		

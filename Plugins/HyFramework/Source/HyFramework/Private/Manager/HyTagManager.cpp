@@ -5,7 +5,9 @@
 
 void UHyTagManager::InitManager()
 {
-	InitActionTagSet();
+    InitTagSet();
+
+
 }
 
 void UHyTagManager::ReleaseManager()
@@ -13,7 +15,7 @@ void UHyTagManager::ReleaseManager()
 
 }
 
-void UHyTagManager::InitActionTagSet()
+void UHyTagManager::InitTagSet()
 {
     AddActionTag(FName("Action.Stand.Normal"), ActionExcuteSet.NorActionParent);
     AddActionTag(FName("Action.Stand.Normal.Spawn"), ActionExcuteSet.ActionSpawn, EActionPriority::ENone);
@@ -26,6 +28,12 @@ void UHyTagManager::InitActionTagSet()
 
     AddActionTag(FName("Action.Stand.Attack"), ActionExcuteSet.AttActionParent);
     AddActionTag(FName("Action.Stand.Attack.Attacking"), ActionExcuteSet.ActionAttack, EActionPriority::EMedium);
+
+
+
+
+    AddOtherTag(FName("ItemSlot"), ItemSlotTagSet.SlotParent);
+    AddOtherTag(FName("ItemSlot.Weapon"), ItemSlotTagSet.SlotWeapon);
 }
 
 void UHyTagManager::AddActionTag(const FName& InTagName, FGameplayTag& InActionTagInst)
@@ -40,10 +48,11 @@ void UHyTagManager::AddActionTag(const FName& InTagName, FActionExcuteData& InAc
 	InActionExcuteData.ActionPriority = InActionProperty;
 }
 
-void UHyTagManager::AddOtherTag(const FName& InTagName, FGameplayTag& InActionTagInst, EActionPriority InActionProperty)
+void UHyTagManager::AddOtherTag(const FName& InTagName, FGameplayTag& InTagInst)
 {
+	InTagInst = FGameplayTag::RequestGameplayTag(InTagName);
 }
 
-void UHyTagManager::AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple, EActionPriority InActionProperty)
+void UHyTagManager::AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple)
 {
 }

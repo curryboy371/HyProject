@@ -35,6 +35,12 @@ struct FActionExcuteSet
 	FActionExcuteData ActionAttack;
 };
 
+struct FItemSlotTagSet
+{
+	FGameplayTag SlotParent;
+	FGameplayTag SlotWeapon;
+};
+
 
 
 /**
@@ -53,19 +59,21 @@ public:
 public:
 
 protected:
-	void InitActionTagSet();
+	void InitTagSet();
+	
 
 	void AddActionTag(const FName& InTagName, FGameplayTag& InActionTagInst);
 	void AddActionTag(const FName& InTagName, FActionExcuteData& InActionExcuteData, EActionPriority InActionProperty = EActionPriority::EEmpty);
 
 
-	void AddOtherTag(const FName& InTagName, FGameplayTag& InActionTagInst, EActionPriority InActionProperty = EActionPriority::EEmpty);
-	void AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple, EActionPriority InActionProperty = EActionPriority::EEmpty);
+	void AddOtherTag(const FName& InTagName, FGameplayTag& InActionTagInst);
+	void AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple);
 
 
 public:
 	FActionExcuteSet ActionExcuteSet;
 
+	FItemSlotTagSet ItemSlotTagSet;
 
 protected:
 };

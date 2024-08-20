@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-
+#include "Components/HyActorComponent.h"
 
 #include "Actions/ActionsBaseAction.h"
 #include "ActionsTypes.h"
@@ -22,7 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActionEnded, FGameplayTag, InActi
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionTriggered, FGameplayTag, InActionTag, EActionPriority, InPriority);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ACTIONSSYSTEM_API UActionsSystemComponent : public UActorComponent
+class ACTIONSSYSTEM_API UActionsSystemComponent : public UHyActorComponent
 {
 	GENERATED_BODY()
 
@@ -34,9 +33,14 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	// UHyActorComponent을(를) 통해 상속됨
+	void InitializeHyActorComponent() override;
 
 	bool TriggerAction(const FActionExcuteData& InActionExcuteData, bool bCanBeStored = false);
 

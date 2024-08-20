@@ -10,6 +10,6 @@ public class HyProjectEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 
-		ExtraModuleNames.AddRange( new string[] { "HyProject" } );
+        ExtraModuleNames.AddRange( new string[] { "HyProject" } );
 	}
 }

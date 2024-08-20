@@ -59,12 +59,14 @@ public:
 
 	virtual void SetCombatMode(const bool bCombatMode) override;
 
-
+	// about Inventory...
+	const bool IsWeaponOnHand();
 
 protected:
 	void CharacterSetup();
+	void CharacterActorComponentSetup();
+	void SetDelegateFunctions();
 	void CharacterWidgetSetup();
-
 	void CharacterDebugHudSetup();
 public:
 	// Anim 
@@ -105,10 +107,16 @@ protected:
 
 	void DebugRenderWidget();
 
-protected:
+
+public:
+	TObjectPtr<class UHyInventorySystemComponent> GetInventorySystemComp() { return InventorySystemComp; }
+	TObjectPtr<class UActionsSystemComponent> GetActionsSystemComp() { return ActionsSystemComp; }
 
 protected:
 	// Components
+	UPROPERTY()
+	TArray<TObjectPtr<class UHyActorComponent>> HyActorComponents;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class UActionsSystemComponent> ActionsSystemComp;
 

@@ -7,11 +7,22 @@
 
 #include "HyCoreMacro.h"
 
+
+
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 UHyGameInstance* UHyGameInstance::HyGameInstance = nullptr;
 
 void UHyGameInstance::Init()
 {
 	UGameInstance::Init();
+
+    // 메모리 누수 체크 활성화
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
     HyGameInstance = nullptr;
     InitManager();
 
@@ -25,6 +36,9 @@ void UHyGameInstance::Shutdown()
     ReleaseManager();
     HyGameInstance = nullptr;
     UGameInstance::Shutdown();
+
+    // 프로그램 종료 시 메모리 누수 확인
+    _CrtDumpMemoryLeaks();
 }
 
 void UHyGameInstance::InitManager()
