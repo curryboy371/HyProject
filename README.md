@@ -1,5 +1,9 @@
 # HyProject
 
+## 모듈 그래프
+![Uml](https://github.com/user-attachments/assets/31c626c9-3ff6-43eb-ada5-f6e949633695)
+
+
 ## 1. 모듈화
 
 ### 목적 
