@@ -45,6 +45,9 @@ UHyCharacterMovementComponent::UHyCharacterMovementComponent(const FObjectInitia
     CurMovestance = EMovementStance::EIdle;
 
 
+    // Crouch 허용
+    GetNavAgentPropertiesRef().bCanCrouch = true;
+
 }
 
 void UHyCharacterMovementComponent::BeginPlay()

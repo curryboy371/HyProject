@@ -68,6 +68,7 @@ enum class EKeyInput : uint8
 	IA_Move,
 	IA_Look,
 
+    IA_Crouch,
     IA_Sprint,
 };
 

@@ -8,15 +8,26 @@
 
 #include "HyCoreMacro.h"
 
-
 void UHyAction_Equip::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
 
+
 	if (HyCharacterOwner)
 	{
+		if (HyCharacterOwner->IsCrouching())
+		{
+			MontageSectionName = TEXT("Crouch");
+		}
+		else
+		{
+			MontageSectionName = *InContext;
+		}
+
 		HyCharacterOwner->SetCombatMode(true);
 	}
+
+
 }
 
 void UHyAction_Equip::OnActionSetupCompleted_Implementation(const FString& InContext)

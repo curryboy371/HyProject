@@ -31,6 +31,8 @@ public:
 	virtual const bool IsDead() = 0;
 	virtual const bool IsCombatMode() = 0;
 
+
+
 	virtual struct FGameplayTag GetEquipTag() = 0;
 
 	virtual void SetCombatMode(const bool bCombatMode) = 0;

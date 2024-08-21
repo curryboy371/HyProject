@@ -26,6 +26,7 @@ void UHyTagManager::InitTagSet()
     AddActionTag(FName("Action.Stand.Doing.Jump"), ActionExcuteSet.ActionJump, EActionPriority::EMedium);
     AddActionTag(FName("Action.Stand.Doing.Equip"), ActionExcuteSet.ActionEquip, EActionPriority::EMedium);
     AddActionTag(FName("Action.Stand.Doing.UnEquip"), ActionExcuteSet.ActionUnEquip, EActionPriority::EMedium);
+    AddActionTag(FName("Action.Stand.Doing.Crouching"), ActionExcuteSet.ActionCrouching, EActionPriority::EMedium);
 
     AddActionTag(FName("Action.Stand.Attack"), ActionExcuteSet.AttActionParent);
     AddActionTag(FName("Action.Stand.Attack.Attacking"), ActionExcuteSet.ActionAttack, EActionPriority::EMedium);

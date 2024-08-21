@@ -60,6 +60,8 @@ AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
 
 void AHyCharacterBase::CharacterDefaultSetup()
 {
+	SetActorHiddenInGame(true);
+
 	HyAnimInstance = nullptr;
 	HyCharacterMovement = nullptr;
 
@@ -75,6 +77,9 @@ void AHyCharacterBase::CharacterDefaultSetup()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 500.0f); // ...at this rotation rate
 
 
+	// Character Guid
+	MyGuid.Invalidate();
+	TargetGuid.Invalidate();
 }
 
 void AHyCharacterBase::ComponenetSetup()
@@ -126,6 +131,9 @@ void AHyCharacterBase::BeginPlay()
 		ActionsSystemComp->SetDefaultActinoTag(InitActionData);
 		TriggerAction(InitActionData);
 	}
+
+
+	SetActorHiddenInGame(false);
 }
 
 // Called every frame
@@ -134,6 +142,8 @@ void AHyCharacterBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	DebugUpdate();
+
+
 }
 
 // Called to bind functionality to input
@@ -141,6 +151,12 @@ void AHyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+const bool AHyCharacterBase::IsTargetAvailable()
+{
+
+	return false;
 }
 
 const bool AHyCharacterBase::IsDead()
@@ -174,6 +190,16 @@ void AHyCharacterBase::SetCombatMode(const bool bCombatMode)
 
 }
 
+const bool AHyCharacterBase::IsCrouching() const
+{
+	if (bIsCrouched == 1)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 const bool AHyCharacterBase::IsWeaponOnHand()
 {
 	if (InventorySystemComp)
@@ -204,6 +230,7 @@ const bool AHyCharacterBase::IsWeaponOnHand()
 void AHyCharacterBase::CharacterSetup()
 {
 	// BeginPlay에서 Character를 Setup하는 함수
+	MyGuid = FGuid::NewGuid();
 
 	CharacterActorComponentSetup();
 
@@ -297,6 +324,18 @@ void AHyCharacterBase::SetHyAnimInstance()
 	{
 		ERR_V("HyAnimInstance is not set.");
 	}
+}
+
+void AHyCharacterBase::SetStencilOutline(bool IsShow, EStencilOutLine StencilType)
+{
+	if (TObjectPtr<USkeletalMeshComponent> SkeletalMesh = GetMesh())
+	{
+		SkeletalMesh->SetRenderCustomDepth(IsShow);
+		SkeletalMesh->CustomDepthStencilValue = (int32)StencilType;
+		SkeletalMesh->SetVisibility(false);
+		SkeletalMesh->SetVisibility(true);
+	}
+
 }
 
 bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext, bool bCanBeStored)
@@ -525,6 +564,35 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 	}
 }
 
+void AHyCharacterBase::CompletedMove(const FInputActionValue& Value)
+{
+	UHyInst* HyInst = UHyInst::Get();
+	if (!HyInst)
+	{
+		ERR_V("HyInst is not set.");
+		return;
+	}
+
+	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
+	if (!TagManager)
+	{
+		ERR_V("TagManager is not set.");
+		return;
+	}
+
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is invalid");
+		return;
+	}
+
+	FGameplayTag CurActionTag = ActionsSystemComp->GetPerformingActionTag();
+	if (TagManager->ActionExcuteSet.ActionMove.TagName == CurActionTag)
+	{
+		TriggerAction(TagManager->ActionExcuteSet.ActionIdle);
+	}
+}
+
 void AHyCharacterBase::InputJump(const FInputActionValue& Value)
 {
 	UHyInst* HyInst = UHyInst::Get();
@@ -666,6 +734,30 @@ void AHyCharacterBase::CompletedSprint(const FInputActionValue& Value)
 	HyCharacterMovement->SetDefaultLocomotionState();
 }
 
+void AHyCharacterBase::InputCrouch(const FInputActionValue& Value)
+{
+	UHyInst* HyInst = UHyInst::Get();
+	if (!HyInst)
+	{
+		ERR_V("HyInst is not set.");
+		return;
+	}
+
+	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
+	if (!TagManager)
+	{
+		ERR_V("TagManager is not set.");
+		return;
+	}
+
+	if (!IsCanAction(EKeyInput::IA_Crouch))
+	{
+		return;
+	}
+
+	TriggerAction(TagManager->ActionExcuteSet.ActionCrouching);
+}
+
 const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 {
 	bool bRes = false;
@@ -726,6 +818,10 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 	case EKeyInput::IA_Sprint:
 		bRes = TagManager->IsNormalAction(CurActionTag);
 
+		break;
+
+	case EKeyInput::IA_Crouch:
+		bRes = TagManager->IsNormalAction(CurActionTag);
 		break;
 	default:
 		break;

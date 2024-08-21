@@ -18,15 +18,30 @@ class HYFRAMEWORK_API AHyMyPlayerBase : public AHyPlayerBase, public ICControlIn
 {
 	GENERATED_BODY()
 
+public:
 	AHyMyPlayerBase();
 
+protected:
 	virtual void CharacterDefaultSetup();
 	virtual void ComponenetSetup();
 
 	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	void LocalPlayerSetup();
+
+
+	// PostProcessVolume
+	void SetPostProcessVolume();
+public:
+	void SetPPMValue(EPPMType InPPMType, float InValue);
+
+	void UpdateBlurWeight();
 
 protected:
 	// ICControlInputInterface을(를) 통해 상속됨
@@ -41,7 +56,7 @@ protected:
 
 
 public:
-
+	const bool IsLocalPlayer();
 
 protected:
 	TObjectPtr<class USpringArmComponent> GetCameraBoom() { return CameraBoomComp; }
@@ -61,4 +76,17 @@ protected:
 	// Input Function Map
 	TMap<FName, void (AHyMyPlayerBase::*)(const FInputActionValue&)> InputFunctionMap;
 
+
+	UPROPERTY()
+	TMap<EPPMType, TObjectPtr<class UMaterialInstanceDynamic>> PPMMaterialMap;
+
+
+protected:
+	bool bSprintBlurOn;
 };
+
+
+
+
+
+

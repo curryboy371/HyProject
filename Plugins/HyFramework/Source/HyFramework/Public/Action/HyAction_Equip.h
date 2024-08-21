@@ -23,5 +23,7 @@ public:
 	virtual void OnActionNotify_Implementation();
 
 	virtual bool IsStopConditional_Implementation();
-	
+
+protected:
+
 };

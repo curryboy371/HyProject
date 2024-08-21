@@ -4,6 +4,10 @@
 #include "Action/HyAction_Jump.h"
 #include "Actors/Character/HyCharacterBase.h"
 
+#include "ActionsTypes.h"
+#include "Components/HyCharacterMovementComponent.h"
+
+
 
 void UHyAction_Jump::OnActionStarted_Implementation(const FString& InContext)
 {
@@ -32,6 +36,15 @@ void UHyAction_Jump::OnActionTransition_Implementation(UActionsBaseAction* Inpre
 void UHyAction_Jump::OnTick_Implementation(float DeltaTime)
 {
    	Super::OnTick_Implementation(DeltaTime);
+
+    if (HyCharacterOwner && HyCharacterOwner->GetCharacterMovementComp())
+    {
+        if (HyCharacterOwner->GetCharacterMovementComp()->GetGroundDistance() == 0.0f)
+        {
+            HyCharacterOwner->HandleAction(EActionHandleType::EActionHandle_Stop);
+        }
+    }
+	
 }
 
 bool UHyAction_Jump::IsStopConditional_Implementation()

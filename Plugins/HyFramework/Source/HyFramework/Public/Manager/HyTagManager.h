@@ -31,7 +31,7 @@ struct FActionExcuteSet
 	FActionExcuteData ActionJump;
 	FActionExcuteData ActionEquip;
 	FActionExcuteData ActionUnEquip;
-
+	FActionExcuteData ActionCrouching;
 
 	FGameplayTag AttActionParent;
 	FActionExcuteData ActionAttack;

@@ -15,6 +15,15 @@ void UHyAction_UnEquip::OnActionStarted_Implementation(const FString& InContext)
 
 	if (HyCharacterOwner)
 	{
+		if (HyCharacterOwner->IsCrouching())
+		{
+			MontageSectionName = TEXT("Crouch");
+		}
+		else
+		{
+			MontageSectionName = *InContext;
+		}
+
 		HyCharacterOwner->SetCombatMode(false);
 	}
 }

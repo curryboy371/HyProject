@@ -15,7 +15,7 @@ class HYCORE_API UHyBaseAnimNotifyState : public UAnimNotifyState
 	GENERATED_BODY()
 	
 public:
-
+	UHyBaseAnimNotifyState();
 
 protected:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
@@ -23,7 +23,15 @@ protected:
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;
 
 
+protected:
 	const bool IsGameWorld(USkeletalMeshComponent* MeshComp);
+	const bool IsStartNotiState() { return bStartNotiState; }
 
 
+protected:
+	bool  bStartNotiState;
+	float StartTime;
+	float EndTime;
+	float DeltaTime;
+	float RemainAlphaRatio;
 };

@@ -23,6 +23,9 @@ public:
     virtual void OnTick_Implementation(float DeltaTime) { ActionDuration += DeltaTime; };
     virtual bool IsStopConditional_Implementation() { return true; };
     
+    virtual FName GetMontageSectionName_Implementation() { return MontageSectionName; };
+
+
 protected:
     UPROPERTY()
     TObjectPtr<class AHyCharacterBase> HyCharacterOwner;
@@ -33,4 +36,7 @@ protected:
 
     // Action 지속 시간
     float ActionDuration = 0.0f;
+
+    FName MontageSectionName;
+
 };

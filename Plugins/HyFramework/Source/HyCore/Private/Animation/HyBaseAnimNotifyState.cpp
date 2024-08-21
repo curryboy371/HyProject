@@ -3,6 +3,12 @@
 
 #include "Animation/HyBaseAnimNotifyState.h"
 
+UHyBaseAnimNotifyState::UHyBaseAnimNotifyState()
+{
+    bStartNotiState = false;
+    RemainAlphaRatio = DeltaTime = EndTime = StartTime = 0.0f;
+}
+
 void UHyBaseAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
     if (!IsGameWorld(MeshComp))
@@ -12,7 +18,10 @@ void UHyBaseAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnim
 
     Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 
-
+    StartTime = MeshComp->GetWorld()->GetTimeSeconds();
+    EndTime = StartTime + TotalDuration;
+    DeltaTime = 0.0f;
+    RemainAlphaRatio = 0.0f;
 }
 
 void UHyBaseAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -24,7 +33,8 @@ void UHyBaseAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSe
 
     Super::NotifyEnd(MeshComp, Animation, EventReference);
 
-
+    RemainAlphaRatio = DeltaTime = EndTime = StartTime = 0.0f;
+    bStartNotiState = false;
 }
 
 void UHyBaseAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
@@ -36,6 +46,13 @@ void UHyBaseAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimS
 
     Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
 
+    if (!bStartNotiState)
+    {
+        return;
+    }
+
+    RemainAlphaRatio = FMath::Clamp((MeshComp->GetWorld()->GetTimeSeconds() - StartTime) / (EndTime - StartTime), 0.0f, 1.0f);
+    DeltaTime += FrameDeltaTime;
 }
 
 const bool UHyBaseAnimNotifyState::IsGameWorld(USkeletalMeshComponent* MeshComp)

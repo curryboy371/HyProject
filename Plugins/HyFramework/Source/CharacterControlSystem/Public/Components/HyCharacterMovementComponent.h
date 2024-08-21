@@ -93,7 +93,7 @@ protected:
 
 	// Sprint 가능 각도
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CControl | Movement")
-	float SprintDirectionCone = 10.f;
+	float SprintDirectionCone = 45.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CControl | Movement")
 	float GroundTraceDistance = 3000.f;

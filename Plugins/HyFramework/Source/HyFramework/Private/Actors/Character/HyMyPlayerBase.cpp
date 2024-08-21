@@ -3,6 +3,10 @@
 
 #include "Actors/Character/HyMyPlayerBase.h"
 
+#include "Game/HyPlayerController.h"
+
+#include "Manager/HySpawnManager.h"
+
 //Input
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
@@ -16,6 +20,14 @@
 #include "Game/HyGameInstance.h"
 #include "Game/HyPlayerController.h"
 
+#include "Components/HyCharacterMovementComponent.h"
+
+#include "CControlTypes.h"
+#include "HyTypes.h"
+
+#include "HyTableSubsystem.h"
+
+#include "Table/PlayerPPM_TableEntity.h"
 
 #include "HyCoreMacro.h"
 
@@ -28,6 +40,7 @@ AHyMyPlayerBase::AHyMyPlayerBase()
 
 void AHyMyPlayerBase::CharacterDefaultSetup()
 {
+	bSprintBlurOn = false;
 
 	CameraBoomComp = nullptr;
 	FollowCameraComp = nullptr;
@@ -107,6 +120,8 @@ void AHyMyPlayerBase::InputFunctionMapping()
 	InputFunctionMap.Add("InputSprint", &AHyMyPlayerBase::InputSprint);
 	InputFunctionMap.Add("CompletedSprint", &AHyMyPlayerBase::CompletedSprint);
 
+	InputFunctionMap.Add("InputCrouch", &AHyMyPlayerBase::InputCrouch);
+
 }
 
 void AHyMyPlayerBase::InputActionDataSetup(FInputDataSet* InInputDataSet)
@@ -154,8 +169,20 @@ void AHyMyPlayerBase::InputActionDataSetup(FInputDataSet* InInputDataSet)
 
 void AHyMyPlayerBase::BeginPlay()
 {
+	SetPostProcessVolume();
+
+
 	Super::BeginPlay();
 
+	LocalPlayerSetup();
+}
+
+void AHyMyPlayerBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+
+	UpdateBlurWeight();
 }
 
 void AHyMyPlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -167,6 +194,163 @@ void AHyMyPlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		InputActionMapping(EnhancedInputComponent);
+	}
+}
+
+void AHyMyPlayerBase::LocalPlayerSetup()
+{
+	// 언리얼 프레임워크가 생성하는 default character에 대해 세팅해줌
+	AHyPlayerController* PC = Cast<AHyPlayerController>(GetController());
+	if (!PC)
+	{
+		ERR_V("No PlayerController");
+		return;
+	}
+
+	UHyInst* HyInst = UHyInst::Get();
+	if (!HyInst)
+	{
+		ERR_V("HyInst is not set.");
+		return;
+	}
+
+	UHySpawnManager* SpawnManager = HyInst->GetManager<UHySpawnManager>();
+	if (!SpawnManager)
+	{
+		ERR_V("SpawnManager is not set.");
+		return;
+	}
+
+	SpawnManager->SetLocalPlayer(this);
+
+	SetPPMValue(EPPMType::EPPM_Stencil, 1.0f); // Stencil PPM On
+	SetStencilOutline(true, EStencilOutLine::EStencil_MyPlayer);
+
+	EnableInput(PC);
+}
+
+void AHyMyPlayerBase::SetPostProcessVolume()
+{
+	if (!FollowCameraComp)
+	{
+		ERR_V("FollowCameraComp is invaild");
+		return;
+	}
+
+	// PPM 초기화
+	FPostProcessSettings& PostProcessSettings = FollowCameraComp->PostProcessSettings;
+	PostProcessSettings = FPostProcessSettings();
+	PPMMaterialMap.Reset();
+
+	// TableData로 PPM 세팅
+	if (UHyTableSubsystem* TableSubSystem = GetGameInstance()->GetSubsystem<UHyTableSubsystem>())
+	{
+		TArray<FPlayerPPM_TableEntity*> PPMTableEntitys;
+		if (TableSubSystem->GetTableAll<FPlayerPPM_TableEntity>(PPMTableEntitys))
+		{
+			for(auto PPMTableEntity : PPMTableEntitys)
+			{
+				if(!PPMTableEntity)
+				{
+					ERR_V("PPMTableEntity is invaild");
+					continue;
+				}
+
+				EPPMType PPMType = static_cast<EPPMType>(PPMTableEntity->PPMID);
+				if (PPMMaterialMap.Contains(PPMType))
+				{
+					ERR_V("PPMType is already exist %d", PPMType);
+					continue;
+				}
+				if (PPMType <= EPPMType::EPPM_None && PPMType >= EPPMType::EPPM_MAX)
+				{
+					ERR_V("Invalid PPMType %d", PPMType);
+					continue;
+				}
+
+				UMaterialInterface* Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *PPMTableEntity->PPMPath));
+				if (!Material)
+				{
+					ERR_V("Invalid PostProcess Material %s", *PPMTableEntity->PPMPath);
+					continue;
+				}
+
+				UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
+				if (!DynamicMaterial)
+				{
+					ERR_V("Invalid DynamicMaterial %s", *PPMTableEntity->PPMPath);
+					continue;
+				}
+
+				PostProcessSettings.AddBlendable(DynamicMaterial, 0.0f);
+				PPMMaterialMap.Add(PPMType, DynamicMaterial);
+			}
+		}
+	}
+	else
+	{
+		ERR_V("No TableSubsystem");
+	}
+}
+
+void AHyMyPlayerBase::SetPPMValue(EPPMType InPPMType, float InValue)
+{
+	if (!FollowCameraComp)
+	{
+		ERR_V("FollowCameraComp is invaild");
+		return;
+	}
+
+	FPostProcessSettings& PostProcessSettings = FollowCameraComp->PostProcessSettings;
+
+	int32 PPMIdx = static_cast<int32>(InPPMType) - 1; // None 제외
+	if (PostProcessSettings.WeightedBlendables.Array.IsValidIndex(PPMIdx) == false)
+	{
+		ERR_V("Invalid PPMIdx %d", PPMIdx);
+		return;
+	}
+
+	switch (InPPMType)
+	{
+	case EPPMType::EPPM_Stencil:
+	case EPPMType::EPPM_Blur:
+		PostProcessSettings.WeightedBlendables.Array[PPMIdx].Weight = InValue;
+		break;
+	case EPPMType::EPPM_SprintBlur:
+		PostProcessSettings.WeightedBlendables.Array[PPMIdx].Weight = InValue;
+		bSprintBlurOn = InValue > 0.0f;
+		break;
+	default:
+		ERR_V("Invalid PPMType %d", PPMIdx);
+		break;
+	}
+}
+
+void AHyMyPlayerBase::UpdateBlurWeight()
+{
+	if(!HyCharacterMovement)
+	{
+		ERR_V("HyCharacterMovement is invaild");
+		return;
+	}
+
+	if (HyCharacterMovement->GetCurLocomotionState() == ELocomotionState::ESprint)
+	{
+		float Velocity = HyCharacterMovement->Velocity.Size();
+		float MaxVelocity = HyCharacterMovement->GetCharacterMaxStateSpeed(ELocomotionState::ESprint);
+
+		if (MaxVelocity > 0.0f)
+		{
+			float VelocitRatio = Velocity / MaxVelocity;
+			SetPPMValue(EPPMType::EPPM_SprintBlur, VelocitRatio);
+		}
+	}
+	else
+	{
+		if (bSprintBlurOn)
+		{
+			SetPPMValue(EPPMType::EPPM_SprintBlur, 0.0f);
+		}
 	}
 }
 
@@ -210,4 +394,35 @@ void AHyMyPlayerBase::InputActionMapping(UEnhancedInputComponent* EnhancedInputC
 			ERR_V("No InputAction");
 		}
 	}
+}
+
+const bool AHyMyPlayerBase::IsLocalPlayer()
+{
+	UHyInst* HyInst = UHyInst::Get();
+	if (!HyInst)
+	{
+		ERR_V("HyInst is not set.");
+		return false;
+	}
+
+	UHySpawnManager* SpawnManager = HyInst->GetManager<UHySpawnManager>();
+	if (!SpawnManager)
+	{
+		ERR_V("SpawnManager is not set.");
+		return false;
+	}
+	TObjectPtr<AHyMyPlayerBase> LocalPlayer = SpawnManager->GetLocalPlayer();
+
+	if (!LocalPlayer)
+	{
+		ERR_V("LocalPlayer is nullptr");
+		return false;
+	}
+
+	if (LocalPlayer->GetMyGuidRef() == MyGuid)
+	{
+		return true;
+	}
+
+	return false;
 }

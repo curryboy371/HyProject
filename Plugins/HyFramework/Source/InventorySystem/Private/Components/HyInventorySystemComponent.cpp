@@ -254,12 +254,6 @@ void UHyInventorySystemComponent::AttachWeapon(EWeaponArmState InWeaponArmState,
 		}
 	}
 
-	if (InWeaponToEquip->AttachToComponent(CharacterOwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, socket) == false)
-	{
-		ERR_V("AttachToComponent failed Check Socket Name %s", *InWeaponToEquip->GetHandSocketName().ToString());
-		return;
-	}
-
 	WeaponArmState = InWeaponArmState;
 }
 

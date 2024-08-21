@@ -12,6 +12,8 @@
 
 void UHyActionBase::OnActionStarted_Implementation(const FString& InContext)
 {
+	MontageSectionName = NAME_None;
+
 	Super::OnActionStarted_Implementation(InContext);
 
 	ActionDuration = 0.0f;

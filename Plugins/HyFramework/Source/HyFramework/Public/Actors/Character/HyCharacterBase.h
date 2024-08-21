@@ -31,9 +31,6 @@ class HYFRAMEWORK_API AHyCharacterBase : public ACharacter, public ICControlChar
 
 public:
 	// Sets default values for this character's properties
-	//AHyCharacterBase();
-
-	// Sets default values for this character's properties
 	AHyCharacterBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void CharacterDefaultSetup();
@@ -43,22 +40,34 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
+public:
+	// Guid
+	const FGuid& GetMyGuid() const { return MyGuid; }
+	FGuid& GetMyGuidRef() { return MyGuid; }
+
+	const FGuid& GetTargetGuid() const { return TargetGuid; }
+	FGuid& GetTargetGuidRef() { return TargetGuid; }
+
+	const bool IsTargetAvailable();
+
 
 public:
 	// ICControlCharacterInterface을(를) 통해 상속됨
 	virtual const bool IsDead() override;
 	virtual const bool IsCombatMode() override;
+
 	virtual FGameplayTag GetEquipTag() override;
 
 	virtual void SetCombatMode(const bool bCombatMode) override;
+
+
+	const bool IsCrouching() const;
 
 	// about Inventory...
 	const bool IsWeaponOnHand();
@@ -86,6 +95,7 @@ public:
 
 	void SetHyAnimInstance();
 
+	void SetStencilOutline(bool IsShow, EStencilOutLine StencilType );
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
@@ -109,6 +119,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void CompletedSprint(const FInputActionValue& Value);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputCrouch(const FInputActionValue& Value);
+
 public:
 	const bool IsCanAction(EKeyInput InKeyAction) const;
 
@@ -122,6 +135,7 @@ protected:
 public:
 	TObjectPtr<class UHyInventorySystemComponent> GetInventorySystemComp() { return InventorySystemComp; }
 	TObjectPtr<class UActionsSystemComponent> GetActionsSystemComp() { return ActionsSystemComp; }
+	TObjectPtr<class UHyCharacterMovementComponent> GetCharacterMovementComp() { return HyCharacterMovement; }
 
 protected:
 	// Components
@@ -178,4 +192,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Debug")
 	FCharacterDebugData CharacterDebugData;
 	
+
+
+protected:
+	FGuid MyGuid;
+	FGuid TargetGuid;
+
+
 };
