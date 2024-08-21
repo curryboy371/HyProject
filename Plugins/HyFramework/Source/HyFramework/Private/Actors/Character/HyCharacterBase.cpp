@@ -794,6 +794,9 @@ void AHyCharacterBase::DebugRenderWidget()
 			FString TargetLocomotion = FString::Printf(TEXT("%s"), *UCControlFunctionLibrary::LocomotionStateToString(HyAnimInstance->GetTargetLocomotionState()));
 			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_TargetLocomotion, TargetLocomotion);
 
+			FString VelocitySpeed = FString::Printf(TEXT("%f"), GetVelocity().Length());
+			SCharacterDebugWidget->UpdateDebugText(EDebugWidgetTextType::EDebugText_VelocityLength, VelocitySpeed);
+
 			SCharacterDebugWidget->SetRenderTransform(FSlateRenderTransform(ScreenPosition));
 		}
 	}

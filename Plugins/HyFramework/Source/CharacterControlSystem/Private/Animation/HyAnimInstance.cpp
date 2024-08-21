@@ -226,6 +226,10 @@ void UHyAnimInstance::UpdateVelocity(const float& DeltaSeconds)
 
     //DeltaInputDirection = UKismetAnimationLibrary::CalculateDirection(CharacterMovementComp->GetLastInputVector(), CharacterOwner->GetActorRotation());
  
+    if (VelocityData.bIsMoving)
+    {
+        MovementData.CurLocomotionState = GetCurLocomotionState();
+    }
 }
 
 void UHyAnimInstance::UpdateAimData(const float& DeltaSeconds)
@@ -309,7 +313,7 @@ ELocomotionState UHyAnimInstance::GetCurLocomotionState() const
     if (!CharacterMovementComp)
     {
     	ERR_V("CharacterMovementComp is nullptr");
-		return ELocomotionState();
+		return ELocomotionState::EIdle;
     }
 
     return CharacterMovementComp->GetCurLocomotionState();

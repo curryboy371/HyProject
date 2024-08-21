@@ -24,6 +24,8 @@ enum class EDebugWidgetTextType : uint8
 	EDebugText_CurLocomotion,
 	EDebugText_TargetLocomotion,
 
+	EDebugText_VelocityLength,
+
 	EDebugText_END,
 };
 

@@ -92,6 +92,10 @@ void SHyCharacterHudDebugWidget::UpdateDebugText(const EDebugWidgetTextType InDe
         Title = TEXT("TargetLocomotion");
         break;
 
+    case EDebugWidgetTextType::EDebugText_VelocityLength:
+        Title = TEXT("Velocity");
+        break;
+
     case EDebugWidgetTextType::EDebugText_END:
     default:
         ERR_V("Invalid DebugTextType %d", (int32)InDebugTextType);

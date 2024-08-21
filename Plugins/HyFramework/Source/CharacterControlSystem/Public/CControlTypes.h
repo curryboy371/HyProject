@@ -112,7 +112,9 @@ struct FAnimationMovementData
 
 public:
     FAnimationMovementData()
-		: bIsCrouching(false)
+		:
+          CurLocomotionState(ELocomotionState::EIdle)
+        , bIsCrouching(false)
 		, bWasCrouching(false)
 		, bCrouchChanged(false)
 		, bIsOnGround(false)
@@ -121,9 +123,12 @@ public:
         , bWalkStateChanged(false)
         , bIsStrafing(false)
         , bIsSwimming(false)
-
+        
 	{
     }
+
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    ELocomotionState CurLocomotionState;
 
     UPROPERTY(BlueprintReadOnly, Category = "Movement")
     bool bIsCrouching;
@@ -174,6 +179,7 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "Location")
     FVector OwnerLocation;
+
 };
 
 USTRUCT(BlueprintType)
