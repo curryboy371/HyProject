@@ -70,7 +70,7 @@ public:
 	virtual void SetStoredAction(FActionExcuteData& InActionExcuteData, const FString InContext = "", bool bForce = false) override;
 	virtual void HandleAction(EActionHandleType InExitType, float BlendOut = 0.5f) override;
 
-	virtual void SetPerformingActionPriority(EActionPriority InPriority) override;
+	virtual void SetPerformingActionPriority(EActionPriority InPriority = EActionPriority::ENone) override;
 
 	virtual const bool IsEmptyStoredAction() const override;
 	virtual const bool IsCanStoreAction(EActionPriority InPriority) const override;
@@ -108,6 +108,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void CompletedSprint(const FInputActionValue& Value);
+
+public:
+	const bool IsCanAction(EKeyInput InKeyAction) const;
 
 protected:
 	// Debug

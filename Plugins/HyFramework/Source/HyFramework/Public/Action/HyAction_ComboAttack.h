@@ -13,5 +13,8 @@ UCLASS()
 class HYFRAMEWORK_API UHyAction_ComboAttack : public UHyActionComboBase
 {
 	GENERATED_BODY()
-	
+public:
+
+	virtual bool IsStopConditional_Implementation();
+
 };

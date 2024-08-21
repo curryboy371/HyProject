@@ -35,6 +35,9 @@ public:
 
     FORCEINLINE class USkeletalMeshComponent* GetMeshComponent() const { return SkeletalMesh; };
 
+    FORCEINLINE class USceneComponent* GetSubHandleComp() const { return SubHandleComp; };
+
+
 
 protected:
     UPROPERTY(BlueprintReadWrite, EditAnyWhere, Category = "Hy | Weapon")
@@ -43,7 +46,10 @@ protected:
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Hy | Weapon")
     TObjectPtr<class USkeletalMeshComponent> SkeletalMesh;
 
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Hy | Weapon")
+    TObjectPtr<class UStaticMeshComponent> SubWeaponMesh;
+
     UPROPERTY(BlueprintReadOnly, EditAnyWhere, Category = "Hy | Weapon")
-    TObjectPtr<class USceneComponent> HandleComp;
+    TObjectPtr<class USceneComponent> SubHandleComp;
 
 };

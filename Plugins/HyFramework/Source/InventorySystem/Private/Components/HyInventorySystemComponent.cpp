@@ -126,9 +126,10 @@ void UHyInventorySystemComponent::EquipItemBySlot(const FGameplayTag& InSlotTag)
 				{
 					if (TObjectPtr<AHyWeapon> EquipWeapon = Cast<AHyWeapon>(SpawnedItem))
 					{
-						AttachWeaponOnBody(EquipWeapon);
-						EquipWeapon->SetActorHiddenInGame(false);
 						Equipments.EquipWeapon = EquipWeapon;
+						AttachWeapon(EWeaponArmState::EWS_Unarmed, EquipWeapon);
+						AttachSubWeapon(EquipWeapon);
+						EquipWeapon->SetActorHiddenInGame(false);
 					}
 				}
 				Equipments.EquippedItems.Add(FEquippedItem(InventoryItems[i], SpawnedItem));
@@ -208,8 +209,7 @@ bool UHyInventorySystemComponent::IsEquippedSlot(const FGameplayTag& InSlotTag, 
 	return false;
 }
 
-
-void UHyInventorySystemComponent::AttachWeaponOnBody(TObjectPtr<class AHyWeapon> InWeaponToEquip)
+void UHyInventorySystemComponent::AttachWeapon(EWeaponArmState InWeaponArmState, TObjectPtr<class AHyWeapon> InWeaponToEquip)
 {
 	if (!CharacterOwnerMesh)
 	{
@@ -223,26 +223,47 @@ void UHyInventorySystemComponent::AttachWeaponOnBody(TObjectPtr<class AHyWeapon>
 		return;
 	}
 
-	const FName socket = InWeaponToEquip->GetBodySocketName();
-
-	if (socket != NAME_None) 
+	if(InWeaponArmState == EWeaponArmState::EWS_None)
 	{
-		if (InWeaponToEquip->AttachToComponent(CharacterOwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, socket) == false)
-		{
-			ERR_V("AttachToComponent failed Check Socket Name %s", *InWeaponToEquip->GetBodySocketName().ToString());
-			return;
-		}
-	}
-	else 
-	{
-		ERR_V("BodySocketName is nullptr");
+		ERR_V("InWeaponArmState is EWS_None");
 		return;
 	}
 
-	WeaponArmState = EWeaponArmState::EWS_Unarmed;
+	FName socket = NAME_None;
+	if (InWeaponArmState == EWeaponArmState::EWS_Armed)
+	{
+		socket = InWeaponToEquip->GetHandSocketName();
+	}
+	else if (InWeaponArmState == EWeaponArmState::EWS_Unarmed)
+	{
+		socket = InWeaponToEquip->GetBodySocketName();
+	}
+
+	if (socket == NAME_None)
+	{
+		ERR_V("socket is NAME_None");
+		return;
+	}
+
+	if (USceneComponent* RootComp = InWeaponToEquip->GetRootComponent())
+	{
+		if (RootComp->AttachToComponent(CharacterOwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, socket) == false)
+		{
+			ERR_V("AttachToComponent failed Check Socket Name %s", *InWeaponToEquip->GetSubHandSocketName().ToString());
+			return;
+		}
+	}
+
+	if (InWeaponToEquip->AttachToComponent(CharacterOwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, socket) == false)
+	{
+		ERR_V("AttachToComponent failed Check Socket Name %s", *InWeaponToEquip->GetHandSocketName().ToString());
+		return;
+	}
+
+	WeaponArmState = InWeaponArmState;
 }
 
-void UHyInventorySystemComponent::AttachWeaponOnHand(TObjectPtr<class AHyWeapon> InWeaponToEquip)
+void UHyInventorySystemComponent::AttachSubWeapon(TObjectPtr<class AHyWeapon> InWeaponToEquip)
 {
 	if (!CharacterOwnerMesh)
 	{
@@ -256,22 +277,26 @@ void UHyInventorySystemComponent::AttachWeaponOnHand(TObjectPtr<class AHyWeapon>
 		return;
 	}
 
-	const FName socket = InWeaponToEquip->GetHandSocketName();
-
-	if (socket != NAME_None)
+	if (WeaponArmState == EWeaponArmState::EWS_None)
 	{
-		if (InWeaponToEquip->AttachToComponent(CharacterOwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, socket) == false)
-		{
-			ERR_V("AttachToComponent failed Check Socket Name %s", *InWeaponToEquip->GetBodySocketName().ToString());
-			return;
-		}
-	}
-	else
-	{
-		ERR_V("HandSocketName is nullptr");
+		ERR_V("InWeaponArmState is EWS_None");
 		return;
 	}
 
-	WeaponArmState = EWeaponArmState::EWS_Armed;
+	const FName socket = InWeaponToEquip->GetSubHandSocketName();
 
+	if (socket == NAME_None)
+	{
+		ERR_V("socket is NAME_None");
+		return;
+	}
+
+	if (USceneComponent* SubHandleComp = InWeaponToEquip->GetSubHandleComp())
+	{
+		if (SubHandleComp->AttachToComponent(CharacterOwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, socket) == false)
+		{
+			ERR_V("AttachToComponent failed Check Socket Name %s", *InWeaponToEquip->GetSubHandSocketName().ToString());
+			return;
+		}
+	}
 }

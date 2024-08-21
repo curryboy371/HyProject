@@ -161,9 +161,8 @@ public:
 
 
 public:
-	void AttachWeaponOnBody(TObjectPtr<class AHyWeapon> InWeaponToEquip);
-	void AttachWeaponOnHand(TObjectPtr<class AHyWeapon> InWeaponToEquip);
-		
+	void AttachWeapon(EWeaponArmState InWeaponArmState, TObjectPtr<class AHyWeapon> InWeaponToEquip);
+    void AttachSubWeapon(TObjectPtr<class AHyWeapon> InWeaponToEquip);
 
 public:
     const EWeaponArmState GetWeaponArmState() const { return WeaponArmState; }

@@ -66,7 +66,7 @@ protected:
 
 	void SetMontageBlendType(const FActionMontageInfo& InMontageInfo);
 public:
-	void SetPerformingActionPriority(EActionPriority InPriority);
+	void SetPerformingActionPriority(EActionPriority InPriority = EActionPriority::ENone);
 
 	void SetStoredActionTag(const FActionExcuteData& InActionExcuteData, bool bForce = false);
 	void SetDefaultStoredActionTag(const bool bForce = false);

@@ -22,14 +22,16 @@ struct FGameplayTuple
 struct FActionExcuteSet
 {
 	FGameplayTag NorActionParent;
-
 	FActionExcuteData ActionIdle;
 	FActionExcuteData ActionSpawn;
-	FActionExcuteData ActionWalk;
-	FActionExcuteData ActionRun;
+	FActionExcuteData ActionMove;
+
+
+	FGameplayTag DoingActionParent;
 	FActionExcuteData ActionJump;
 	FActionExcuteData ActionEquip;
 	FActionExcuteData ActionUnEquip;
+
 
 	FGameplayTag AttActionParent;
 	FActionExcuteData ActionAttack;
@@ -68,6 +70,12 @@ protected:
 
 	void AddOtherTag(const FName& InTagName, FGameplayTag& InActionTagInst);
 	void AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple);
+
+public:
+	// Check State By ActionTag
+	const bool IsNormalAction(FGameplayTag& InActionTag);
+	const bool IsDoingAction(FGameplayTag& InActionTag);
+	const bool IsAttackAction(FGameplayTag& InActionTag);
 
 
 public:

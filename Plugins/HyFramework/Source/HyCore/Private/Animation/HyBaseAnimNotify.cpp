@@ -16,7 +16,7 @@ void UHyBaseAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 
 const bool UHyBaseAnimNotify::IsGameWorld(USkeletalMeshComponent* MeshComp)
 {
-    if (!MeshComp || !MeshComp->GetWorld())
+    if (MeshComp && MeshComp->GetWorld())
     {
         return MeshComp->GetWorld()->IsGameWorld();
     }

@@ -4,6 +4,7 @@
 #include "Action/HyAction_UnEquip.h"
 #include "Actors/Character/HyCharacterBase.h"
 #include "Components/HyInventorySystemComponent.h"
+#include "InvenTypes.h"
 
 #include "HyCoreMacro.h"
 
@@ -53,7 +54,7 @@ void UHyAction_UnEquip::OnActionNotify_Implementation()
 	{
 		if (TObjectPtr<class UHyInventorySystemComponent> InventoryComp = HyCharacterOwner->GetInventorySystemComp())
 		{
-			InventoryComp->AttachWeaponOnBody(InventoryComp->GetEquippedWeapon());
+			InventoryComp->AttachWeapon(EWeaponArmState::EWS_Unarmed, InventoryComp->GetEquippedWeapon());
 		}
 
 	}

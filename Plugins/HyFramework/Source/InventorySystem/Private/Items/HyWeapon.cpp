@@ -10,15 +10,24 @@
 
 AHyWeapon::AHyWeapon()
 {
-    HandleComp = CreateDefaultSubobject<USceneComponent>(TEXT("HandleComp"));
+    SubHandleComp = CreateDefaultSubobject<USceneComponent>(TEXT("SubHandleComp"));
 
     SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
     if (SkeletalMesh)
     {
-        SkeletalMesh->SetupAttachment(HandleComp);
+        SkeletalMesh->SetupAttachment(RootComp);
         SkeletalMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
         SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     }
+
+    SubWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SubWeaponMesh"));
+    if (SubWeaponMesh)
+    {
+        SubWeaponMesh->SetupAttachment(SubHandleComp);
+        SubWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    }
+
+
 
 }
 
