@@ -14,6 +14,7 @@
 #include "Components/CapsuleComponent.h"
 #include "MotionWarpingComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/ArrowComponent.h"
 
 
 // Components
@@ -25,6 +26,7 @@
 
 #include "Game/HyGameInstance.h"
 #include "Manager/HyTagManager.h"
+#include "Manager/HySpawnManager.h"
 
 
 // Widget
@@ -78,6 +80,10 @@ void AHyCharacterBase::CharacterDefaultSetup()
 	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 500.0f); // ...at this rotation rate
 
+	// Mesh
+	FRotator MeshRotator = FRotator(0.0f, -90.0f, 0.0f);
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -100.0f), MeshRotator);
+
 
 	// Character Guid
 	MyGuid.Invalidate();
@@ -122,6 +128,14 @@ void AHyCharacterBase::ComponenetSetup()
 	{
 		ERR_V("HUDLocationComp is not set.");
 	}
+
+	CombatArrowParentComp = CreateDefaultSubobject<USceneComponent>(TEXT("CombatArrowParentComp"));
+	if (CombatArrowParentComp)
+	{
+		CombatArrowParentComp->SetupAttachment(GetMesh());
+		CharacterCombatArrowSetup();
+	}
+
 
 	// TODO 이 위치에 Add하면 beginplay시점에 CollisionSystemComp가 사라짐. 이유를 모르겠음.
 	//HyActorComponents.Add(ActionsSystemComp);
@@ -294,6 +308,96 @@ void AHyCharacterBase::CharacterActorComponentSetup()
 
 }
 
+void AHyCharacterBase::CharacterCombatArrowSetup()
+{
+	if (!CombatArrowParentComp)
+	{
+		ERR_V("CombatArrowParentComp is not set.");
+		return;
+	}
+
+	if (!GetMesh())
+	{
+		ERR_V("Mesh is not set.");
+		return;
+	}
+
+	if (CombatArrowParentComp)
+	{
+		FRotator MeshRotation = GetMesh()->GetRelativeRotation();
+		FVector ForwardVector = FRotationMatrix(MeshRotation).GetUnitAxis(EAxis::X);
+		FVector RightVector = FRotationMatrix(MeshRotation).GetUnitAxis(EAxis::Y);
+
+		for (int32 i = static_cast<int32>(ECombatDirection::EForward); i < static_cast<int32>(ECombatDirection::EDirectionMax); ++i)
+		{
+			ECombatDirection Direction = static_cast<ECombatDirection>(i);
+
+			TObjectPtr<UArrowComponent> ArrowCom = nullptr;
+			FName ArrowName;
+			FVector ArrowLocation;
+
+			switch (Direction)
+			{
+			case ECombatDirection::EForward:
+				ArrowName = TEXT("FCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = ForwardVector;
+				break;
+			case ECombatDirection::ERight:
+				ArrowName = TEXT("RCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = RightVector;
+				break;
+			case ECombatDirection::ELeft:
+				ArrowName = TEXT("LCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = RightVector * -1;
+				break;
+			case ECombatDirection::EBack:
+				ArrowName = TEXT("BCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = ForwardVector * -1;
+				break;
+			case ECombatDirection::EForwardRight:
+				ArrowName = TEXT("FRCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = (ForwardVector + RightVector).GetSafeNormal();
+				break;
+			case ECombatDirection::EForwardLeft:
+				ArrowName = TEXT("FLCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = (ForwardVector + (RightVector * -1)).GetSafeNormal();
+				break;
+			case ECombatDirection::EBackRight:
+				ArrowName = TEXT("BRCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = ((ForwardVector * -1) + RightVector).GetSafeNormal();
+				break;
+			case ECombatDirection::EBackLeft:
+				ArrowName = TEXT("BLCombatArrowCom");
+				ArrowCom = CreateDefaultSubobject<UArrowComponent>(ArrowName);
+				ArrowLocation = ((ForwardVector * -1) + (RightVector * -1)).GetSafeNormal();
+				break;
+			default:
+				break;
+			}
+
+			if (ArrowCom)
+			{
+				FRotator ArrowRot = FRotator::ZeroRotator;
+				ArrowRot.Pitch = 90;
+
+				ArrowCom->SetupAttachment(CombatArrowParentComp);
+				ArrowCom->SetRelativeLocation(ArrowLocation);
+				ArrowCom->SetRelativeRotation(ArrowRot);
+				CombatArrowComponentMap.Add(Direction, ArrowCom);
+			}
+		}
+	}
+
+
+}
+
 void AHyCharacterBase::SetDelegateFunctions()
 {
 	//  Bind Change Equip Action(Layer)
@@ -323,6 +427,18 @@ void AHyCharacterBase::CharacterDebugHudSetup()
 		GEngine->GameViewport->AddViewportWidgetContent(
 			SNew(SWeakWidget).PossiblyNullContent(SCharacterDebugWidget.ToSharedRef())
 		);
+	}
+}
+
+void AHyCharacterBase::MatchArrowComponenLocation()
+{
+	for (auto& CombatArrowPair : CombatArrowComponentMap)
+	{
+		if (CombatArrowPair.Value)
+		{
+			FVector RelativeLoc = CombatArrowPair.Value->GetRelativeLocation() * GetCapsuleComponent()->GetScaledCapsuleRadius() * 2;
+			CombatArrowPair.Value->SetRelativeLocation(RelativeLoc);
+		}
 	}
 }
 
@@ -363,6 +479,63 @@ void AHyCharacterBase::SetStencilOutline(bool IsShow, EStencilOutLine StencilTyp
 		SkeletalMesh->SetVisibility(true);
 	}
 
+}
+
+bool AHyCharacterBase::GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation)
+{
+	bool bRes = false;
+	OutCombatArrowLocation = InAttackerLocation;
+
+	float ClosetDistance = InOwnerAttackRange;
+
+	for (auto& CombatArrowPair : CombatArrowComponentMap)
+	{
+		if (CombatArrowPair.Value)
+		{
+			FVector Distance = CombatArrowPair.Value->GetComponentLocation() - InAttackerLocation;
+			float DistanceLength = Distance.Length();
+
+			if (DistanceLength < ClosetDistance)
+			{
+				ClosetDistance = DistanceLength;
+				OutCombatArrowLocation = CombatArrowPair.Value->GetComponentLocation();
+				bRes = true;
+			}
+		}
+	}
+
+	return bRes;
+}
+
+void AHyCharacterBase::SetDashWarpingTarget(const FVector& InTargetLocation)
+{
+	if (!MotionWarpingComp)
+	{
+		ERR_V("MotionWarpingComp is not set.");
+		return;
+	}
+
+	FTransform TargetTransform = GetTransform();
+	TargetTransform.SetLocation(InTargetLocation);
+
+	FVector LookVec = InTargetLocation - GetActorLocation();
+	FRotator TargetRot = FRotationMatrix::MakeFromX(LookVec).Rotator();
+	TargetRot.Pitch = 0;
+	FQuat QuatRot = TargetRot.Quaternion();
+	TargetTransform.SetRotation(QuatRot);
+
+	MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(FName("Dash"), TargetTransform);
+}
+
+void AHyCharacterBase::ReleaseWarpingTarget()
+{
+	if (!MotionWarpingComp)
+	{
+		ERR_V("MotionWarpingComp is not set.");
+		return;
+	}
+
+	MotionWarpingComp->RemoveWarpTarget(FName("Dash"));
 }
 
 bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext, bool bCanBeStored)

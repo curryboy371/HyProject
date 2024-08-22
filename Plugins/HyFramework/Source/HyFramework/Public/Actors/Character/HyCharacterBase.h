@@ -47,13 +47,19 @@ protected:
 
 	virtual void CharacterDefaultSetup();
 	virtual void ComponenetSetup();
+
 protected:
 
 	void CharacterSetup();
 	void CharacterActorComponentSetup();
+	void CharacterCombatArrowSetup();
+
 	void SetDelegateFunctions();
 	void CharacterWidgetSetup();
 	void CharacterDebugHudSetup();
+
+
+	void MatchArrowComponenLocation();
 
 public:
 	// Guid
@@ -65,6 +71,7 @@ public:
 
 	const bool IsTargetAvailable();
 
+	const FGameplayTag& GetCharacterTypeTag() const { return CharacterTypeTag; }
 
 public:
 	// ICControlCharacterInterface을(를) 통해 상속됨
@@ -106,6 +113,15 @@ public:
 	void SetHyAnimInstance();
 
 	void SetStencilOutline(bool IsShow, EStencilOutLine StencilType );
+
+public:
+	// Combat
+	bool GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation);
+
+	void SetDashWarpingTarget(const FVector& InTargetLocation);
+	void ReleaseWarpingTarget();
+
+	virtual bool FindTarget() { return false;  };
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
@@ -155,6 +171,8 @@ protected:
 
 
 public:
+
+
 	TObjectPtr<class UHyInventorySystemComponent> GetInventorySystemComp() { return InventorySystemComp; }
 	TObjectPtr<class UActionsSystemComponent> GetActionsSystemComp() { return ActionsSystemComp; }
 	TObjectPtr<class UHyCollisionSystemComponent> GetCollisionSystemComp() { return CollisionSystemComp; }
@@ -177,6 +195,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	TObjectPtr<class USceneComponent> CombatArrowParentComp;
+
+
+
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	//TObjectPtr<class UHyFXComponent> FXComponent;
 
@@ -189,6 +212,7 @@ protected:
 protected:
 	class TSharedPtr<class SHyCharacterHudDebugWidget> SCharacterDebugWidget;
 
+	TMap<ECombatDirection, TObjectPtr<class UArrowComponent>> CombatArrowComponentMap;
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Hy | Anim | Layer")
@@ -221,8 +245,10 @@ protected:
 
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Character")
+	FGameplayTag CharacterTypeTag;
+
 	FGuid MyGuid;
 	FGuid TargetGuid;
-
 
 };

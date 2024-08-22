@@ -20,4 +20,8 @@ class HYFRAMEWORK_API AHyPlayerBase : public AHyCharacterBase
 public:
 
 
+
+public:
+	virtual bool FindTarget();
+
 };

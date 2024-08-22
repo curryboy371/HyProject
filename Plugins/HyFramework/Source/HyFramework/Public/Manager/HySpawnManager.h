@@ -25,13 +25,24 @@ public:
 	virtual void ReleaseManager();
 
 public:
-	//void SpawnCharacter(const FGuid& InGuid, const FGameplayTag& InTag, const FVector& InLocation, const FRotator& InRotation);
+	const FGameplayTag GetCharacterAction(const FGuid& InCharacterGuid);
+
+	const bool IsValidCharacter(const FGuid& InCharacterGuid, bool bIncludeDeadCharacter = false);
+	const bool IsValidMonster(const FGuid& InMonsterGuid);
+	const bool IsValidPlayer(const FGuid& InPlayerGuid);
+
+	TObjectPtr<class AHyCharacterBase> GetCharacterByGuid(const FGuid& InCharacterGuid);
 
 	TObjectPtr<class AHyMyPlayerBase> GetLocalPlayer() { return LocalPlayer; }
 	void SetLocalPlayer(TObjectPtr<class AHyMyPlayerBase> InLocalPlayer);
 
+
+public:
+	const bool FindTargetMonster(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid);
+	const bool FindTargetPlayer(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid);
+
 protected:
-	TMap<FGuid, TObjectPtr<class AHyCharacter>> SpawnedCharacterMap;
+	TMap<FGuid, TObjectPtr<class AHyCharacterBase>> SpawnedCharacterMap;
 	TMap<FGuid, TObjectPtr<class AHyPlayerBase>> SpawnedPlayerMap;
 	TMap<FGuid, TObjectPtr<class AHyMonsterBase>> SpawnedMonsterMap;
 

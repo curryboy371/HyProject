@@ -69,6 +69,21 @@ enum class EHyDamageType : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class ECombatDirection : uint8
+{
+    EForward UMETA(DisplayName = "Forward"),
+    ERight UMETA(DisplayName = "Right"),
+    ELeft UMETA(DisplayName = "Left"),
+    EBack UMETA(DisplayName = "Back"),
+    EForwardRight UMETA(DisplayName = "ForwardRight"),
+    EForwardLeft UMETA(DisplayName = "ForwardLeft"),
+    EBackRight UMETA(DisplayName = "BackRight"),
+    EBackLeft UMETA(DisplayName = "BackLeft"),
+    EDirectionMax UMETA(Hidden)
+};
+
+
 #pragma endregion
 
 
