@@ -17,6 +17,6 @@ class HYFRAMEWORK_API UHyCheatManager : public UHyManagerBase
 	GENERATED_BODY()
 	
 public:
-	virtual void InitManager();
-	virtual void ReleaseManager();
+	virtual void InitManager() {};
+	virtual void ReleaseManager() {};
 };
