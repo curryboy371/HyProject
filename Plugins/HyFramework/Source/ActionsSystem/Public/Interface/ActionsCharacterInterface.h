@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 
 #include "ActionsTypes.h"
+#include "GameplayTagContainer.h"
 
 #include "ActionsCharacterInterface.generated.h"
 
@@ -31,7 +32,12 @@ public:
 
 	virtual void SetPerformingActionPriority(EActionPriority InPriority) {};
 
+	virtual bool CompareCurrentPriority(EActionPriority InPriority) const { return false; }
 	virtual const bool IsEmptyStoredAction() const { return false; };
 	virtual const bool IsCanStoreAction(EActionPriority InPriority) const { return false; };
+
+
+	virtual const FGameplayTag GetCurAction() const { return FGameplayTag::EmptyTag; }
+	virtual const FGameplayTag GetStoredAction() const { return FGameplayTag::EmptyTag; }
 
 };

@@ -16,10 +16,10 @@
 #include "Components/WidgetComponent.h"
 
 
-
+// Components
 #include "Components/ActionsSystemComponent.h"
 #include "Components/HyInventorySystemComponent.h"
-
+#include "Components/HyCollisionSystemComponent.h"
 
 #include "Animation/HyAnimInstance.h"
 
@@ -34,11 +34,12 @@
 #include "HyCoreDeveloperSettings.h"
 #include "HyCoreMacro.h"
 
-#include "HyTypes.h"
 #include "HyCoreFunctionLibrary.h"
 #include "CControlFunctionLibrary.h"
 
+#include "HyTypes.h"
 #include "InvenTypes.h"
+#include "CollisionTypes.h"
 
 
 #include "Items/HyItem.h"
@@ -56,6 +57,7 @@ AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
 	CharacterDefaultSetup();
 
 	ComponenetSetup();
+
 }
 
 void AHyCharacterBase::CharacterDefaultSetup()
@@ -86,19 +88,23 @@ void AHyCharacterBase::ComponenetSetup()
 {
 	// Actions System Com
 	ActionsSystemComp = CreateDefaultSubobject<UActionsSystemComponent>(TEXT("ActionsSystemComp"));
-	if (ActionsSystemComp)
+	if (!ActionsSystemComp)
 	{
-		HyActorComponents.Add(ActionsSystemComp);
+		ERR_V("ActionsSystemComp is not set.");
+	}
+
+
+	CollisionSystemComp = CreateDefaultSubobject<UHyCollisionSystemComponent>(TEXT("CollisionSystemComp"));
+	if (!CollisionSystemComp)
+	{
+		ERR_V("CollisionSystemComp is not set.");
 	}
 
 	InventorySystemComp = CreateDefaultSubobject<UHyInventorySystemComponent>(TEXT("InventorySystemComp"));
-	if (InventorySystemComp)
+	if (!InventorySystemComp)
 	{
-		HyActorComponents.Add(InventorySystemComp);
+		ERR_V("InventorySystemComp is not set.");
 	}
-
-
-
 
 	HyCharacterMovement = Cast<UHyCharacterMovementComponent>(GetCharacterMovement());
 	if(!HyCharacterMovement)
@@ -112,11 +118,21 @@ void AHyCharacterBase::ComponenetSetup()
 		HUDLocationComp->SetupAttachment(GetCapsuleComponent());
 		HUDLocationComp->SetRelativeLocation(FVector(0.0f, 0.0f, GetCapsuleComponent()->GetScaledCapsuleRadius()));
 	}
+	else
+	{
+		ERR_V("HUDLocationComp is not set.");
+	}
+
+	// TODO 이 위치에 Add하면 beginplay시점에 CollisionSystemComp가 사라짐. 이유를 모르겠음.
+	//HyActorComponents.Add(ActionsSystemComp);
+	//HyActorComponents.Add(CollisionSystemComp);
+	//HyActorComponents.Add(InventorySystemComp);
 }
 
 // Called when the game starts or when spawned
 void AHyCharacterBase::BeginPlay()
 {
+
 	Super::BeginPlay();
 	SetHyAnimInstance();
 
@@ -140,6 +156,10 @@ void AHyCharacterBase::BeginPlay()
 void AHyCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// CollisionINfo Update
+	// tag
+
 
 	DebugUpdate();
 
@@ -256,6 +276,12 @@ void AHyCharacterBase::CharacterSetup()
 
 void AHyCharacterBase::CharacterActorComponentSetup()
 {
+	HyActorComponents.Reset();
+	
+	HyActorComponents.Add(ActionsSystemComp);
+	HyActorComponents.Add(CollisionSystemComp);
+	HyActorComponents.Add(InventorySystemComp);
+
 	for(auto & ActorComp : HyActorComponents)
 	{
 		if (ActorComp)
@@ -263,6 +289,7 @@ void AHyCharacterBase::CharacterActorComponentSetup()
 			ActorComp->InitializeHyActorComponent();
 		}
 	}
+
 
 
 }
@@ -414,6 +441,17 @@ void AHyCharacterBase::SetPerformingActionPriority(EActionPriority InPriority)
 	ActionsSystemComp->SetCurActionPriority(InPriority);
 }
 
+bool AHyCharacterBase::CompareCurrentPriority(EActionPriority InPriority) const
+{
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is not set.");
+		return false;
+	}
+
+	return ActionsSystemComp->GetCurActionData().ActionPriority < InPriority;
+}
+
 const bool AHyCharacterBase::IsEmptyStoredAction() const
 {
 	if (!ActionsSystemComp)
@@ -439,6 +477,26 @@ const bool AHyCharacterBase::IsCanStoreAction(EActionPriority InPriority) const
 	}
 
 	return true;
+}
+
+const FGameplayTag AHyCharacterBase::GetCurAction() const
+{
+	if (ActionsSystemComp) 
+	{
+		return ActionsSystemComp->GetPerformingActionTag();
+	}
+
+	return FGameplayTag();
+}
+
+const FGameplayTag AHyCharacterBase::GetStoredAction() const
+{
+	if (ActionsSystemComp)
+	{
+		return ActionsSystemComp->GetStoredActionData().TagName;
+	}
+
+	return FGameplayTag();
 }
 
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
@@ -758,6 +816,85 @@ void AHyCharacterBase::InputCrouch(const FInputActionValue& Value)
 	TriggerAction(TagManager->ActionExcuteSet.ActionCrouching);
 }
 
+void AHyCharacterBase::EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet)
+{
+	if (!CollisionSystemComp)
+	{
+		ERR_V("CollisionSystemComp is invalid");
+		return;
+	}
+
+	CollisionSystemComp->EnableAttackCollider(InAttackCollisionSet);
+
+
+}
+
+void AHyCharacterBase::DisableAttackCollider()
+{
+	if (!CollisionSystemComp)
+	{
+		ERR_V("CollisionSystemComp is invalid");
+		return;
+	}
+
+	CollisionSystemComp->DisableAttackCollider();
+}
+
+float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (IsDead())
+	{
+		return 0.0f;
+	}
+
+
+	LOG_V("TakeDamage : %f", Damage);
+
+
+
+	return 0.0f;
+}
+
+const bool AHyCharacterBase::IsDead() const
+{
+	if (IsPendingKillPending())
+	{
+		return true;
+	}
+
+	if (CharacterStateData.bIsDead)
+	{
+		return true;
+	}
+
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionsSystemComp is invalid");
+		return true;
+	}
+
+	UHyInst* HyInst = UHyInst::Get();
+	if (!HyInst)
+	{
+		ERR_V("HyInst is not set.");
+		return true;
+	}
+
+	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
+	if (!TagManager)
+	{
+		ERR_V("TagManager is not set.");
+		return true;
+	}
+
+	if(TagManager->IsDeadAction(ActionsSystemComp->GetPerformingActionTag()))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 {
 	bool bRes = false;
@@ -809,8 +946,16 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 
 		break;
 	case EKeyInput::IA_Move:
+	{
 		bRes = TagManager->IsNormalAction(CurActionTag);
-
+		if (!bRes)
+		{
+			if (TagManager->IsAttackAction(CurActionTag))
+			{
+				bRes = CompareCurrentPriority(TagManager->ActionExcuteSet.ActionMove.ActionPriority);
+			}
+		}
+	}
 		break;
 	case EKeyInput::IA_Look:
 

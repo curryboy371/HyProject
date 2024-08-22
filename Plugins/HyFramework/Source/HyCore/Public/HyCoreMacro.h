@@ -36,7 +36,7 @@ DECLARE_LOG_CATEGORY_EXTERN(HyFXSystem, Log, All);
 #define __FUNCNAME__  ANSI_TO_TCHAR(__FUNCTION__)
 
 // DeveloperSetting에서 Category enable bool 값이 true인지 check하여 출력 여부를 결정
-#define IS_ENABLE_LOG(CategoryName) GET_LOGGING_SUBSYSTEM->IsEnableLogCategory(CategoryName)
+#define IS_ENABLE_LOG(CategoryName) (GEngine && GET_LOGGING_SUBSYSTEM) ? GET_LOGGING_SUBSYSTEM->IsEnableLogCategory(CategoryName) : false
 
 
 #define LOG_V(Fmt, ...) if (IS_ENABLE_LOG(LOG_CATEGORY_NAME)) UE_LOG(LOG_CATEGORY, Log,		TEXT("[LOG] " Fmt "  ...[%s::%s(%d)]"), ##__VA_ARGS__, *__FILENAME__, __FUNCNAME__, __LINE__)

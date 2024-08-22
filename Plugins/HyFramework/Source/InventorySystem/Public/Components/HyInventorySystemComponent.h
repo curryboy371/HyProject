@@ -145,7 +145,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// UHyActorComponent을(를) 통해 상속됨
-	void InitializeHyActorComponent() override;
+    virtual void  InitializeHyActorComponent() override;
 
 
     void AddInventoryItem(const FInventoryItem& InItem);

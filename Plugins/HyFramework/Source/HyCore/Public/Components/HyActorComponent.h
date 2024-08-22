@@ -27,7 +27,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Custom Initalize virtual Function
-	virtual void InitializeHyActorComponent() {};
+	virtual void InitializeHyActorComponent();
 
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "HyActorComp")
+	TObjectPtr<class ACharacter> CharacterOwner;
 		
 };

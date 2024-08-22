@@ -73,15 +73,20 @@ protected:
 
 public:
 	// Check State By ActionTag
-	const bool IsNormalAction(FGameplayTag& InActionTag);
-	const bool IsDoingAction(FGameplayTag& InActionTag);
-	const bool IsAttackAction(FGameplayTag& InActionTag);
+	const bool IsNormalAction(const FGameplayTag& InActionTag) const;
+	const bool IsDoingAction(const FGameplayTag& InActionTag) const;
+	const bool IsAttackAction(const FGameplayTag& InActionTag) const;
+	const bool IsDeadAction(const FGameplayTag& InActionTag) const;
 
 
 public:
 	FActionExcuteSet ActionExcuteSet;
 
 	FItemSlotTagSet ItemSlotTagSet;
+
+
+
+	FGameplayTagContainer DeadContainer;
 
 protected:
 };

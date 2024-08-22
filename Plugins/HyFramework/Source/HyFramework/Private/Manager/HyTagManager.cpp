@@ -59,7 +59,7 @@ void UHyTagManager::AddContainerTag(const FName& InTagName, FGameplayTuple& InTa
 {
 }
 
-const bool UHyTagManager::IsNormalAction(FGameplayTag& InActionTag)
+const bool UHyTagManager::IsNormalAction(const FGameplayTag& InActionTag) const
 {
     if (InActionTag.MatchesTag(ActionExcuteSet.NorActionParent))
     {
@@ -69,7 +69,7 @@ const bool UHyTagManager::IsNormalAction(FGameplayTag& InActionTag)
     return false;
 }
 
-const bool UHyTagManager::IsDoingAction(FGameplayTag& InActionTag)
+const bool UHyTagManager::IsDoingAction(const FGameplayTag& InActionTag) const
 {
     if (InActionTag.MatchesTag(ActionExcuteSet.DoingActionParent))
     {
@@ -79,11 +79,16 @@ const bool UHyTagManager::IsDoingAction(FGameplayTag& InActionTag)
     return false;
 }
 
-const bool UHyTagManager::IsAttackAction(FGameplayTag& InActionTag)
+const bool UHyTagManager::IsAttackAction(const FGameplayTag& InActionTag) const
 {
     if (InActionTag.MatchesTag(ActionExcuteSet.AttActionParent))
     {
         return true;
     }
     return false;
+}
+
+const bool UHyTagManager::IsDeadAction(const FGameplayTag& InActionTag) const
+{
+    return DeadContainer.HasTag(InActionTag);
 }

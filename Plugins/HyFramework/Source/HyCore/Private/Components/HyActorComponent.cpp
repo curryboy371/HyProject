@@ -1,5 +1,7 @@
 #include "Components/HyActorComponent.h"
 
+#include "GameFramework/Character.h"
+
 // Sets default values for this component's properties
 UHyActorComponent::UHyActorComponent()
 {
@@ -27,5 +29,15 @@ void UHyActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UHyActorComponent::InitializeHyActorComponent()
+{
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
+	CharacterOwner = Cast<ACharacter>(GetOwner());
 }
 

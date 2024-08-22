@@ -25,10 +25,6 @@ void UHyGameInstance::Init()
 
     HyGameInstance = nullptr;
     InitManager();
-
-
-    LOG_V("Test!!");
-
 }
 
 void UHyGameInstance::Shutdown()

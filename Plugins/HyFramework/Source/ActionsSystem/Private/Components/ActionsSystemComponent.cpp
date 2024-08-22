@@ -29,6 +29,8 @@ void UActionsSystemComponent::BeginPlay()
 
 void UActionsSystemComponent::InitializeHyActorComponent()
 {
+    Super::InitializeHyActorComponent();
+
     // EquipableActionInstMap을 생성
     EquipableActionsInstMap.Empty();
     for (const auto& ActionSetclass : EquipableActionSets)
@@ -53,8 +55,6 @@ void UActionsSystemComponent::InitializeHyActorComponent()
         ERR_V("Invalid CMActionsDataSet Class");
     }
 
-
-    CharacterOwner = Cast<ACharacter>(GetOwner());
     if (CharacterOwner)
     {
         AnimInst = CharacterOwner->GetMesh()->GetAnimInstance();

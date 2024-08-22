@@ -7,6 +7,8 @@
 
 #include "GameplayTagContainer.h"
 
+
+
 #include "HyCoreTypes.generated.h"
 
 /**
@@ -36,6 +38,21 @@ enum class ELogPrintType : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class ECameraShakeType : uint8
+{
+    ECS_Wave UMETA(DisplayName = "CS Wave"),
+    ECS_PerlinNoise UMETA(DisplayName = "CS Perlin Noise"),
+    ECS_Vertical UMETA(DisplayName = "CS Vertical"),
+    ECS_Horizontal UMETA(DisplayName = "CS Horizontal"),
+    ECS_DiagonalDownRL UMETA(DisplayName = "CS DiagonalDownRL"),
+    ECS_DiagonalDownLR UMETA(DisplayName = "CS DiagonalDownLR"),
+    ECS_Ulti UMETA(DisplayName = "CS Ulti"),
+    ECS_VerticalVib UMETA(DisplayName = "ECS_VerticalVib"),
+    ECS_HorizontalVib UMETA(DisplayName = "ECS_HorizontalVib"),
+    ECS_None UMETA(DisplayName = "None"),
+};
+
 
 
 #pragma endregion
@@ -45,7 +62,8 @@ enum class ELogPrintType : uint8
 #pragma region HyCoreStruct
 
 USTRUCT(BlueprintType)
-struct FTagBase {
+struct FTagBase 
+{
 
     GENERATED_BODY()
 
@@ -82,7 +100,35 @@ public:
     {
         return TagName == Other.TagName;
     }
+
 };
+
+// Struct for Camera Shake Settings
+USTRUCT(BlueprintType)
+struct FCameraShakeSettings
+{
+    GENERATED_BODY()
+
+public:
+    FCameraShakeSettings()
+        : CameraShakeType(ECameraShakeType::ECS_None)
+        , CameraShakeScale(1.f)
+        , CameraShakePlaySpace(ECameraShakePlaySpace::CameraLocal)
+    {}
+
+    // The type of camera shake to apply
+    UPROPERTY(EditAnywhere, Category = "Camera Shake")
+    ECameraShakeType CameraShakeType;
+
+    // The scale of the camera shake effect
+    UPROPERTY(EditAnywhere, Category = "Camera Shake")
+    float CameraShakeScale;
+
+    // The play space for the camera shake
+    UPROPERTY(EditAnywhere, Category = "Camera Shake")
+    ECameraShakePlaySpace CameraShakePlaySpace;
+};
+
 
 #pragma endregion
 

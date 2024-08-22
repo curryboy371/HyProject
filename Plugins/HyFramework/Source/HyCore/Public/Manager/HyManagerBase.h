@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class HYFRAMEWORK_API UHyManagerBase : public UObject
+class HYCORE_API UHyManagerBase : public UObject
 {
 	GENERATED_BODY()
 public:

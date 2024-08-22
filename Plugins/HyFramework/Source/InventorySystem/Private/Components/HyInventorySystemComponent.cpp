@@ -48,6 +48,8 @@ void UHyInventorySystemComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UHyInventorySystemComponent::InitializeHyActorComponent()
 {
+	Super::InitializeHyActorComponent();
+
 	if(GetOwner() == nullptr)
 	{
 		ERR_V("GetOwner is nullptr");
