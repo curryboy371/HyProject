@@ -4,6 +4,7 @@
 #include "Game/HyGameInstance.h"
 
 #include "Manager/HyManagerBase.h"
+#include "Manager/HySpawnManager.h"
 
 #include "HyCoreMacro.h"
 
@@ -80,6 +81,24 @@ void UHyGameInstance::ReleaseManager()
 
     UHyManagerBase::ResetManagerID();
 	HyManagerMap.Empty();
+}
+
+void UHyGameInstance::ExecTestCommand(const int32 InTestID)
+{
+    WAR_V("(%d)", InTestID);
+}
+
+void UHyGameInstance::ExecSpawnMonsterCommand(const int32 InMonsterID)
+{
+	UHySpawnManager* SpawnManager = GetManager<UHySpawnManager>();
+	if(SpawnManager)
+	{
+		SpawnManager->SpawnMonster(InMonsterID);
+	}
+    else
+    {
+        ERR_V("SpawnManager is nullptr");
+    }
 }
 
 const bool UHyGameInstance::GetInputDataSet(const FGameplayTag& InInputTag, FInputDataSet& OutInputData)

@@ -221,12 +221,15 @@ void AHyMyPlayerBase::LocalPlayerSetup()
 		return;
 	}
 
+
+	SpawnCompleted(); // Engine에서 생성하는 Character는 SpawnCompleted를 이곳에서 호출
 	SpawnManager->SetLocalPlayer(this);
 
 	SetPPMValue(EPPMType::EPPM_Stencil, 1.0f); // Stencil PPM On
 	SetStencilOutline(true, EStencilOutLine::EStencil_MyPlayer);
 
 	EnableInput(PC);
+
 }
 
 void AHyMyPlayerBase::SetPostProcessVolume()

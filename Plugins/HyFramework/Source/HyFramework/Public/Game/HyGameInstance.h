@@ -31,6 +31,17 @@ public:
 	void InitManager();
 	void ReleaseManager();
 
+
+#pragma region ExecCommand
+	UFUNCTION(Exec)
+	void ExecTestCommand(const int32 InTestID);
+
+	UFUNCTION(Exec)
+	void ExecSpawnMonsterCommand(const int32 InMonsterID);
+
+#pragma endregion
+
+
 	template<typename T>
 	T* GetManager()
 	{

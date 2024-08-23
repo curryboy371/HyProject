@@ -13,6 +13,16 @@
 
 #pragma region HyFrameworkEnum
 
+UENUM(BlueprintType)
+enum class ECharacterType : uint8
+{
+	ECharacter_None UMETA(DisplayName = "ECharacter_None"),
+	ECharacter_Player UMETA(DisplayName = "ECharacter_Player"),
+	ECharacter_Monster UMETA(DisplayName = "ECharacter_Monster"),
+
+};
+
+
 
 UENUM(BlueprintType)
 enum class EPPMType : uint8

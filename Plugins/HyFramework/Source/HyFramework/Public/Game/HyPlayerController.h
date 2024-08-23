@@ -13,7 +13,13 @@ UCLASS()
 class HYFRAMEWORK_API AHyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+
+
+
+public:
+	bool GetMouseRaycastHitLocation(FVector& OutLocation);
+
 	
 	
 	

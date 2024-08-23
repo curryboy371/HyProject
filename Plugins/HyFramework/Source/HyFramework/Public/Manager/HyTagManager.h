@@ -43,6 +43,12 @@ struct FItemSlotTagSet
 	FGameplayTag SlotWeapon;
 };
 
+struct FCharacterTagSet
+{
+	FGameplayTag CharacterParent;
+	FGameplayTag PlayerTag;
+	FGameplayTag MonsterTag;
+};
 
 
 /**
@@ -80,6 +86,11 @@ public:
 
 
 public:
+	// check character type
+	const bool IsPlayerCharacter(const FGameplayTag& InCharacterTag) const;
+	const bool IsMonsterCharacter(const FGameplayTag& InCharacterTag) const;
+
+public:
 	FActionExcuteSet ActionExcuteSet;
 
 	FItemSlotTagSet ItemSlotTagSet;
@@ -88,5 +99,9 @@ public:
 
 	FGameplayTagContainer DeadContainer;
 
+
+	
 protected:
+	FCharacterTagSet CharacterTagSet;
+	
 };

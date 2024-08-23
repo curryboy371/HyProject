@@ -39,7 +39,6 @@
 #include "HyCoreFunctionLibrary.h"
 #include "CControlFunctionLibrary.h"
 
-#include "HyTypes.h"
 #include "InvenTypes.h"
 #include "CollisionTypes.h"
 
@@ -163,7 +162,6 @@ void AHyCharacterBase::BeginPlay()
 	}
 
 
-	SetActorHiddenInGame(false);
 }
 
 // Called every frame
@@ -261,10 +259,17 @@ const bool AHyCharacterBase::IsWeaponOnHand()
 	return false;
 }
 
+void AHyCharacterBase::SpawnCompleted()
+{
+	// Spawn이 완료되었을때 호출되는 함수
+	MyGuid = FGuid::NewGuid();
+
+	SetActorHiddenInGame(false);
+}
+
 void AHyCharacterBase::CharacterSetup()
 {
 	// BeginPlay에서 Character를 Setup하는 함수
-	MyGuid = FGuid::NewGuid();
 
 	CharacterActorComponentSetup();
 

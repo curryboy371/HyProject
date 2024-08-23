@@ -40,6 +40,9 @@ public:
 	// Sets default values for this character's properties
 	AHyCharacterBase(const FObjectInitializer& ObjectInitializer);
 
+
+public:
+	void SpawnCompleted();
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

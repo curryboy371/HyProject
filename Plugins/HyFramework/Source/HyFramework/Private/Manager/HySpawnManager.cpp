@@ -6,6 +6,17 @@
 #include "Actors/Character/HyMyPlayerBase.h"
 #include "Actors/Character/HyMonsterBase.h"
 
+
+#include "Game/HyGameInstance.h"
+#include "Manager/HyTagManager.h"
+
+#include "Game/HyPlayerController.h"
+
+#include "HyTableSubsystem.h"
+#include "Table/Monster_TableEntity.h"
+#include "Game/HyPlayerController.h"
+
+
 #include "HyCoreMacro.h"
 
 
@@ -207,4 +218,224 @@ const bool UHySpawnManager::FindTargetPlayer(const FVector& InCompareLocation, c
 {
 
 	return false;
+}
+
+void UHySpawnManager::SpawnMonster(const int32 InMonsterID)
+{
+	if (InMonsterID <= 0)
+	{
+		ERR_V(TEXT("Invalid MonsterID"));
+		return;
+	}
+
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		ERR_V("HyInst is not set.");
+		return;
+	}
+
+	AHyPlayerController* HyPC = Cast<AHyPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (HyPC == nullptr)
+	{
+		ERR_V("invalid player controller");
+		return;
+	}
+
+	FVector HitLocation;
+	if (HyPC->GetMouseRaycastHitLocation(HitLocation) == false)
+	{
+		ERR_V("invalid mouse cursor location");
+		return;
+	}
+	
+	if (UHyTableSubsystem* TableSubSystem = Inst->GetSubsystem<UHyTableSubsystem>())
+	{
+		if (FMonster_TableEntity* MonsterEntity = TableSubSystem->GetTableData<FMonster_TableEntity>(InMonsterID))
+		{
+			HitLocation.Z += 100.f;
+
+			FResourceloaderArgument* pArg = new FResourceloaderArgument(MonsterEntity->MonsterID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
+			if (SpawCharacter(MonsterEntity->MonsterPath, pArg) == false)
+			{
+				// Success시 delete는 SpawnComplete에서
+				if (pArg)
+				{
+					delete pArg;
+					pArg = nullptr;
+				}
+			}
+		}
+		else
+		{
+			ERR_V("MonsterEntity is not set. ID=%d", InMonsterID);
+		}
+	}
+
+}
+
+const bool UHySpawnManager::SpawCharacter(const FName& InCharacterPath, FResourceloaderArgument* pArg)
+{
+	if(!pArg)
+	{
+		ERR_V("pArg is nullptr");
+		return false;
+	}
+
+	if (pArg->ObjectID <= 0)
+	{
+		ERR_V("Invalid ObjectID");
+		return false;
+	}
+
+	if (InCharacterPath == NAME_None)
+	{
+		ERR_V("InCharacterPath is Name None");
+		return false;
+	}
+
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		ERR_V("HyInst is not set.");
+		return false;
+	}
+
+	UHyResourceLoadSubsystem* ResourceLoadSubsystem = Inst->GetSubsystem<UHyResourceLoadSubsystem>();
+	if (!ResourceLoadSubsystem)
+	{
+		ERR_V("ResourceLoadSubsystem is not set.");
+		return false;
+	}
+
+	// Object AsyncLoad Start
+	ResourceLoadSubsystem->LoadMemoryAsync(InCharacterPath, pArg, FResourceLoaderAsyncDelegate::CreateUObject(this, &UHySpawnManager::OnGenerateObject));
+	return true;
+}
+
+void UHySpawnManager::OnGenerateObject(FResourceloaderArgument* pArg)
+{
+	// Object AsyncLoad End
+	if (CheckResourceLoaderArg(pArg) == false)
+	{
+		if (pArg)
+		{
+			delete pArg;
+			pArg = nullptr;
+		}
+		ERR_V("CheckResourceLoaderArg");
+		return;
+	}
+
+	pArg->Location.Z += 100.f;
+	AActor* SpawnActor = GetWorld()->SpawnActor<AActor>(Cast<UClass>(pArg->GetObjectPtr()), pArg->Location, pArg->Rotation);
+	if (!SpawnActor)
+	{
+		ERR_V("Spawn Actor is nullptr");
+		pArg->bIsError = true;
+	}
+
+	SpawnComplete(SpawnActor, pArg->bIsError, pArg);
+}
+
+const bool UHySpawnManager::CheckResourceLoaderArg(FResourceloaderArgument* pArg)
+{
+	if (!pArg)
+	{
+		ERR_V("pArg is nullptr");
+		return false;
+	}
+
+	if (pArg->bIsError)
+	{
+		ERR_V("bIsError");
+		return false;
+	}
+
+	if (pArg->ObjectID <= 0)
+	{
+		ERR_V("Invalid ObjectID");
+		pArg->bIsError = true;
+		return false;
+	}
+
+	if (pArg->GenType == EGenerateType::EGen_None)
+	{
+		ERR_V("Invalid GenerateType");
+		pArg->bIsError = true;
+		return false;
+	}
+
+	if (!pArg->GetObjectPtr())
+	{
+		ERR_V("ObjectPtr is Null");
+		return false;
+	}
+
+
+	return true;
+}
+
+void UHySpawnManager::SpawnComplete(TObjectPtr<AActor> InSpawnActor, bool bError, FResourceloaderArgument* pArg)
+{
+	// Object AsyncLoad Completed
+
+	if (CheckResourceLoaderArg(pArg) == false)
+	{
+		if (pArg)
+		{
+			delete pArg;
+			pArg = nullptr;
+		}
+		ERR_V("CheckResourceLoaderArg");
+		return;
+	}
+
+	if (!InSpawnActor)
+	{
+		ERR_V("InSpawnActor is nullptr");
+		pArg->bIsError = true;
+	}
+
+	if (pArg->bIsError)
+	{
+		ERR_V("bIsError");
+	}
+	else
+	{
+		bool bSpawnComplete = false;
+
+		switch (pArg->GenType)
+		{
+			case EGenerateType::EGen_Character:
+			{
+				if (InSpawnActor->IsA<AHyPlayerBase>())
+				{
+					if (AHyPlayerBase* Player = Cast<AHyPlayerBase>(InSpawnActor))
+					{
+						Player->SpawnCompleted();
+
+						SpawnedPlayerMap.Add(Player->GetMyGuidRef(), Player);
+						SpawnedCharacterMap.Add(Player->GetMyGuidRef(), Player);
+						bSpawnComplete = true;
+					}
+				}
+				else if (InSpawnActor->IsA<AHyMonsterBase>())
+				{
+					if (AHyMonsterBase* Monster = Cast<AHyMonsterBase>(InSpawnActor))
+					{
+						Monster->SpawnCompleted();
+						SpawnedMonsterMap.Add(Monster->GetMyGuidRef(), Monster);
+						SpawnedCharacterMap.Add(Monster->GetMyGuidRef(), Monster);
+						bSpawnComplete = true;
+					}
+				}
+			}
+		}
+	}
+
+	if (pArg != nullptr)
+	{
+		delete pArg;
+	}
 }

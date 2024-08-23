@@ -36,6 +36,13 @@ void UHyTagManager::InitTagSet()
 
     AddOtherTag(FName("ItemSlot"), ItemSlotTagSet.SlotParent);
     AddOtherTag(FName("ItemSlot.Weapon"), ItemSlotTagSet.SlotWeapon);
+
+
+    AddOtherTag(FName("Character"), CharacterTagSet.CharacterParent);
+    AddOtherTag(FName("Character.Player"), CharacterTagSet.PlayerTag);
+    AddOtherTag(FName("Character.Monster"), CharacterTagSet.MonsterTag);
+
+
 }
 
 void UHyTagManager::AddActionTag(const FName& InTagName, FGameplayTag& InActionTagInst)
@@ -92,3 +99,14 @@ const bool UHyTagManager::IsDeadAction(const FGameplayTag& InActionTag) const
 {
     return DeadContainer.HasTag(InActionTag);
 }
+
+const bool UHyTagManager::IsPlayerCharacter(const FGameplayTag& InCharacterTag) const
+{
+    return CharacterTagSet.PlayerTag == InCharacterTag;
+}
+
+const bool UHyTagManager::IsMonsterCharacter(const FGameplayTag& InCharacterTag) const
+{
+    return CharacterTagSet.MonsterTag == InCharacterTag;
+}
+

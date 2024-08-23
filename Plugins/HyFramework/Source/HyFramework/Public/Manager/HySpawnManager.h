@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Manager/HyManagerBase.h"
 #include "GameplayTagContainer.h"
+#include "Resource/HyResourceLoadSubsystem.h"
 
 #include "HySpawnManager.generated.h"
 
@@ -40,6 +41,19 @@ public:
 public:
 	const bool FindTargetMonster(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid);
 	const bool FindTargetPlayer(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid);
+
+
+public:
+	void SpawnMonster(const int32 InMonsterID);
+
+	const bool SpawCharacter(const FName& InCharacterPath, FResourceloaderArgument* pArg);
+
+protected:
+	void OnGenerateObject(FResourceloaderArgument* pArg);
+	void SpawnComplete(TObjectPtr<AActor> InSpawnActor, bool bError, FResourceloaderArgument* pArg);
+
+	const bool CheckResourceLoaderArg(FResourceloaderArgument* pArg);
+
 
 protected:
 	TMap<FGuid, TObjectPtr<class AHyCharacterBase>> SpawnedCharacterMap;

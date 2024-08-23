@@ -7,7 +7,6 @@
 #include "Manager/HySpawnManager.h"
 
 
-
 #include "HyCoreMacro.h"
 
 bool AHyPlayerBase::FindTarget()
