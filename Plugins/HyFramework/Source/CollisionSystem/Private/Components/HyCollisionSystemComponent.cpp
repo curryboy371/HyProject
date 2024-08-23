@@ -10,15 +10,14 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-
+#include "Components/CapsuleComponent.h"
 
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/KismetMathLibrary.h"
 
 #include "HyCoreFunctionLibrary.h"
 
-
-
+#include "HyCoreDeveloperSettings.h"
 
 UHyCollisionSystemComponent::UHyCollisionSystemComponent()
 {
@@ -50,6 +49,8 @@ void UHyCollisionSystemComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	{
 		UpdateTraceSweep();
 	}
+
+	DebugDrawCharacterCapsule();
 }
 
 void UHyCollisionSystemComponent::EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet)
@@ -274,26 +275,49 @@ bool UHyCollisionSystemComponent::SweepSingle(const FTraceData& InTraceData, con
 
 	FQuat Quat = FRotationMatrix::MakeFromZ(InTraceData.DiffTrace).ToQuat();
 
+
+	bool bDebugDrawCollider = false;
+	if (UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSettingRef())
+	{
+		if (DevSetting->IsDebugDrawCollision())
+		{
+			bDebugDrawCollider = true;
+		}
+	}
+
+
 	if (!bIsLerpSweep)
 	{
 		if (bHit)
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Red, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Red, 1, 1);
+			}
 		}
 		else
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Yellow, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Yellow, 1, 1);
+			}
 		}
 	}
 	else
 	{
 		if (bHit)
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Black, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Black, 1, 1);
+			}
 		}
 		else
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Green, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Green, 1, 1);
+			}
 		}
 	}
 
@@ -318,28 +342,51 @@ bool UHyCollisionSystemComponent::SweepMulti(const FTraceData& InTraceData, cons
 
 	FQuat Quat = FRotationMatrix::MakeFromZ(InTraceData.DiffTrace).ToQuat();
 
+
+	bool bDebugDrawCollider = false;
+	if (UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSettingRef())
+	{
+		if (DevSetting->IsDebugDrawCollision())
+		{
+			bDebugDrawCollider = true;
+		}
+	}
+
 	if (!bIsLerpSweep)
 	{
 		if (bHit)
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Red, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Red, 1, 1);
+			}
 		}
 		else
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Yellow, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Yellow, 1, 1);
+			}
 		}
 	}
 	else
 	{
 		if (bHit)
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Black, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Black, 1, 1);
+			}
 		}
 		else
 		{
-			UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Green, 1, 1);
+			if (bDebugDrawCollider)
+			{
+				UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), CapsuleLocation, InTraceData.TraceHeight * 0.5, InTraceData.TraceRadius, Quat, FColor::Green, 1, 1);
+			}
 		}
 	}
+
 
 	return bHit;
 }
@@ -372,4 +419,24 @@ void UHyCollisionSystemComponent::ResetIgnoreActors()
 {
 	CollisionMainParams.ClearIgnoredActors();
 	CollisionMainParams.AddIgnoredActor(GetOwner());
+}
+
+void UHyCollisionSystemComponent::DebugDrawCharacterCapsule()
+{
+	if (UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSettingRef())
+	{
+		if (DevSetting->IsDebugDrawCollision())
+		{
+			if (CharacterOwner && CharacterOwner->GetCapsuleComponent())
+			{
+				FVector CapsuleLocation = CharacterOwner->GetCapsuleComponent()->GetComponentLocation();
+				float CapsuleRadius = CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+				float CapsuleHalfHeight = CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+				FRotator CapsuleRotation = CharacterOwner->GetCapsuleComponent()->GetComponentRotation();
+
+				UHyCoreFunctionLibrary::DrawCapsule(GetWorld(), CapsuleLocation, CapsuleHalfHeight, CapsuleRadius, CapsuleRotation, FColor::Black, 0.0f, 0.5f);
+			}
+
+		}
+	}
 }

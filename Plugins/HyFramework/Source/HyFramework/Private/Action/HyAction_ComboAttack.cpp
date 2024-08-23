@@ -8,24 +8,10 @@
 #include "HyCoreMacro.h"
 
 #include "Game/HyGameInstance.h"
-#include "Manager/HyTagManager.h"
 
 
 bool UHyAction_ComboAttack::IsStopConditional_Implementation()
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return false;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return false;
-	}
 
 	if (!HyCharacterOwner)
 	{
@@ -43,7 +29,7 @@ bool UHyAction_ComboAttack::IsStopConditional_Implementation()
 	}
 
 	// 공격 액션이 저장되어있다면 콤보를 위해 Free
-	if (TagManager->IsAttackAction(HyCharacterOwner->GetStoredAction()))
+	if (GET_TAG_SUBSYSTEM()->IsAttackAction(HyCharacterOwner->GetStoredAction()))
 	{
 		HyCharacterOwner->HandleAction(EActionHandleType::EActionHandle_Free);
 		return false;

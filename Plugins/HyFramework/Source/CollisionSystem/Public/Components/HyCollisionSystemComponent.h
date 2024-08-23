@@ -49,7 +49,7 @@ protected:
 	void ResetIgnoreActors();
 
 protected:
-
+	void DebugDrawCharacterCapsule();
 
 protected:
 

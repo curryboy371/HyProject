@@ -33,7 +33,7 @@ public:
 		{
 			if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 			{
-				if (DevSetting->IsDebugDraw())
+				if (DevSetting->IsDrawEnable())
 				{
 					UKismetSystemLibrary::DrawDebugArrow(World, LineStart, LineEnd, ArrowSize, Color, Duration, Tickness);
 				}
@@ -47,7 +47,7 @@ public:
 	{
 		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
-			if (DevSetting->IsDebugDraw())
+			if (DevSetting->IsDrawEnable())
 			{
 				UKismetSystemLibrary::DrawDebugSphere(World, Center, Radius, Segments, Color, LifeTime, Thickness);
 			}
@@ -59,7 +59,7 @@ public:
 	{
 		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
-			if (DevSetting->IsDebugDraw())
+			if (DevSetting->IsDrawEnable())
 			{
 				UKismetSystemLibrary::DrawDebugPoint(World, Position, Size, Color, LifeTime);
 			}
@@ -72,7 +72,7 @@ public:
 	{
 		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
-			if (DevSetting->IsDebugDraw())
+			if (DevSetting->IsDrawEnable())
 			{
 				UKismetSystemLibrary::DrawDebugBox(World, BoxLocation, BoxExtent, Color, Rotation, LifeTime, Thickness);
 			}
@@ -85,7 +85,7 @@ public:
 	{
 		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
-			if (DevSetting->IsDebugDraw())
+			if (DevSetting->IsDrawEnable())
 			{
 				UKismetSystemLibrary::DrawDebugCapsule(World, Center, HalfHeight, Radius, Rotation, Color, LifeTime, Thickness);
 			}
@@ -97,7 +97,7 @@ public:
 	{
 		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 		{
-			if (DevSetting->IsDebugDraw())
+			if (DevSetting->IsDrawEnable())
 			{
 				DrawDebugCapsule(World, Center, HalfHeight, Radius, Rotation, Color, false, LifeTime,  0, Thickness);
 			}

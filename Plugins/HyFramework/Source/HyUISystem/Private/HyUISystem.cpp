@@ -7,7 +7,7 @@
 
 #define LOCTEXT_NAMESPACE "FHyUISystem"
 
-DEFINE_LOG_CATEGORY(HyFXSystem);
+DEFINE_LOG_CATEGORY(HyUISystem);
 
 void FHyUISystem::StartupModule()
 {

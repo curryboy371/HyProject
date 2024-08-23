@@ -26,6 +26,9 @@ public class HyFXSystem : ModuleRules
 				"Core",
                 "GameplayTags",
 
+
+				// Custom Modules
+
             }
             );
 			

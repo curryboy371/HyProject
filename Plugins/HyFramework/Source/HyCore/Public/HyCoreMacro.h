@@ -27,6 +27,8 @@ DECLARE_LOG_CATEGORY_EXTERN(HyFXSystem, Log, All);
 //////////////////////////////
 #pragma endregion
 
+#define GET_TAG_SUBSYSTEM() (GEngine->GetEngineSubsystem<UHyTagSubsystem>())
+
 #pragma region LogUsingMacro
 // 실제 로그 사용과 관련된 매크로
 

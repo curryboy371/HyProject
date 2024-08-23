@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Actions/ActionsBaseAction.h"
 
+#include "HyTagSubsystem.h"
 
 #include "HyActionBase.generated.h"
 
@@ -31,9 +32,7 @@ protected:
     UPROPERTY()
     TObjectPtr<class AHyCharacterBase> HyCharacterOwner;
 
-    UPROPERTY()
-    TObjectPtr<class UHyTagManager> HyTagManager;
-
+    bool bIsAIAction = false;
 
     // Action 지속 시간
     float ActionDuration = 0.0f;

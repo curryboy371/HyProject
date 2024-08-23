@@ -26,7 +26,10 @@ public class ActionsSystem : ModuleRules
 				"Core",
                 "GameplayTags",
 
+				//Custom Module
 
+				// AIControlSystem depends on ActionsSystem ( AIControlSystem.Build.cs > ActionsSystem.Build.cs )
+				"HyFXSystem", // ActionsSystem depends on HyFXSystem ( ActinosTypes.h > HyFXTypes.h )
             }
             );
 			
@@ -41,7 +44,6 @@ public class ActionsSystem : ModuleRules
 
 				//Custom Module
                 "HyCore",
-				"HyFXSystem",
 
             }
             );

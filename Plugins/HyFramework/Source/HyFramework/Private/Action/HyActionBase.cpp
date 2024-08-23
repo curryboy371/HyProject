@@ -5,13 +5,13 @@
 
 #include "Actors/Character/HyCharacterBase.h"
 #include "Game/HyGameInstance.h"
-#include "Manager/HyTagManager.h"
-
 
 #include "HyCoreMacro.h"
 
 void UHyActionBase::OnActionStarted_Implementation(const FString& InContext)
 {
+	bIsAIAction = false;
+
 	MontageSectionName = NAME_None;
 
 	Super::OnActionStarted_Implementation(InContext);
@@ -23,15 +23,8 @@ void UHyActionBase::OnActionStarted_Implementation(const FString& InContext)
 	if (!HyCharacterOwner)
 	{
 		ERR_V("HyCharacterOwner is nullptr");
+		return;
 	}
 
-	if (UHyInst* Inst = UHyInst::Get())
-	{
-		HyTagManager = Inst->GetManager<UHyTagManager>();
-	}
-
-	if (!HyTagManager)
-	{
-		ERR_V("HyTagManager is nullptr");
-	}
+	bIsAIAction = GET_TAG_SUBSYSTEM()->IsAIPlaying(ActionTag);
 }

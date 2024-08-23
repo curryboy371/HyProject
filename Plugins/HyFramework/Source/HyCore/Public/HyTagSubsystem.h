@@ -3,15 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Manager/HyManagerBase.h"
+#include "Subsystems/EngineSubsystem.h"
 
 #include "GameplayTagContainer.h"
+#include "HyTagSubsystem.generated.h"
 
-#include "CControlTypes.h"
-#include "ActionsTypes.h"
 
-#include "HyTagManager.generated.h"
-
+/**
+ *   GameplayTag로 상태나 타입 등을 확인하는 기능의 서브 시스템
+ *   
+ */
 
 struct FGameplayTuple
 {
@@ -19,22 +20,23 @@ struct FGameplayTuple
 	FGameplayTagContainer Container;
 };
 
-struct FActionExcuteSet
+struct FActionTagSet
 {
 	FGameplayTag NorActionParent;
-	FActionExcuteData ActionIdle;
-	FActionExcuteData ActionSpawn;
-	FActionExcuteData ActionMove;
-
+	FGameplayTag ActionIdle;
+	FGameplayTag ActionSpawn;
+	FGameplayTag ActionMove;
 
 	FGameplayTag DoingActionParent;
-	FActionExcuteData ActionJump;
-	FActionExcuteData ActionEquip;
-	FActionExcuteData ActionUnEquip;
-	FActionExcuteData ActionCrouching;
+	FGameplayTag ActionJump;
+	FGameplayTag ActionEquip;
+	FGameplayTag ActionUnEquip;
+	FGameplayTag ActionCrouching;
 
 	FGameplayTag AttActionParent;
-	FActionExcuteData ActionAttack;
+	FGameplayTag ActionAttack;
+	FGameplayTag ActionDashAttack;
+
 };
 
 struct FItemSlotTagSet
@@ -51,30 +53,20 @@ struct FCharacterTagSet
 };
 
 
-/**
- * 
- */
 UCLASS()
-class HYFRAMEWORK_API UHyTagManager : public UHyManagerBase
+class HYCORE_API UHyTagSubsystem : public UEngineSubsystem
 {
 	GENERATED_BODY()
-
+	
 public:
-	// UHyManagerBase을(를) 통해 상속됨
-	void InitManager() override;
-	void ReleaseManager() override;
+	UHyTagSubsystem();
 
-public:
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
 
 protected:
 	void InitTagSet();
-	
-
-	void AddActionTag(const FName& InTagName, FGameplayTag& InActionTagInst);
-	void AddActionTag(const FName& InTagName, FActionExcuteData& InActionExcuteData, EActionPriority InActionProperty = EActionPriority::EEmpty);
-
-
-	void AddOtherTag(const FName& InTagName, FGameplayTag& InActionTagInst);
+	void AddTag(const FName& InTagName, FGameplayTag& InActionTagInst);
 	void AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple);
 
 public:
@@ -90,18 +82,19 @@ public:
 	const bool IsPlayerCharacter(const FGameplayTag& InCharacterTag) const;
 	const bool IsMonsterCharacter(const FGameplayTag& InCharacterTag) const;
 
+	// check ai or user control
+	const bool IsUserPlaying(const FGameplayTag& InEquipTag) const;
+	const bool IsAIPlaying(const FGameplayTag& InEquipTag) const;
+
 public:
-	FActionExcuteSet ActionExcuteSet;
-
+	FActionTagSet ActionTagSet;
 	FItemSlotTagSet ItemSlotTagSet;
-
-
 
 	FGameplayTagContainer DeadContainer;
 
-
-	
 protected:
 	FCharacterTagSet CharacterTagSet;
-	
+
+	FGameplayTag EquipPlayerParent;
+	FGameplayTag EquipAIParent;
 };

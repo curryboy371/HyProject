@@ -17,3 +17,64 @@ UHyCoreDeveloperSettings* UHyCoreDeveloperSettings::GetDeveloperSettingRef()
 
 	return Settings;
 }
+
+const bool UHyCoreDeveloperSettings::IsDrawEnable() const
+{
+	if(DebugDrawOption != EDebugDrawOption::EDrawOption_None)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+const bool UHyCoreDeveloperSettings::IsDebugDrawMovement() const
+{
+	if (IsDrawEnable())
+	{
+		if (DebugDrawOption == EDebugDrawOption::EDrawOption_All)
+		{
+			return true;
+		}
+		else
+		{
+			return DebugDrawSelectTypes.Contains(EDebugDrawType::EDrawType_Movement);
+		}
+	}
+
+	return false;
+}
+
+const bool UHyCoreDeveloperSettings::IsDebugDrawCollision() const
+{
+	if (IsDrawEnable())
+	{
+		if (DebugDrawOption == EDebugDrawOption::EDrawOption_All)
+		{
+			return true;
+		}
+		else
+		{
+			return DebugDrawSelectTypes.Contains(EDebugDrawType::EDrawType_Collision);
+		}
+	}
+
+	return false;
+}
+
+const bool UHyCoreDeveloperSettings::IsDebugDrawWidget() const
+{
+	if (IsDrawEnable())
+	{
+		if (DebugDrawOption == EDebugDrawOption::EDrawOption_All)
+		{
+			return true;
+		}
+		else
+		{
+			return DebugDrawSelectTypes.Contains(EDebugDrawType::EDrawType_Widget);
+		}
+	}
+
+	return false;
+}

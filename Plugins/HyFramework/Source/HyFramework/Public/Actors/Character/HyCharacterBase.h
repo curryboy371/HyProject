@@ -52,6 +52,7 @@ protected:
 	virtual void ComponenetSetup();
 
 protected:
+	void CharacterActionTagSetup();
 
 	void CharacterSetup();
 	void CharacterActorComponentSetup();
@@ -221,9 +222,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Hy | Anim | Layer")
 	FOnEquipTagChanged OnEquipTagChanged;
 
-
 public:
-	
+	static FQuickActionExcuteDataSet QuickActionExcute;
 
 
 protected:

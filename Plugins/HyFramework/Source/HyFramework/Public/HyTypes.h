@@ -8,6 +8,7 @@
 
 #include "GameplayTagContainer.h"
 
+#include "ActionsTypes.h"
 
 #include "HyTypes.generated.h"
 
@@ -76,6 +77,18 @@ enum class EDebugWidgetTextType : uint8
 
 
 #pragma region HyFrameworkStruct
+
+struct FQuickActionExcuteDataSet
+{
+	FQuickActionExcuteDataSet()
+	{
+		// static 으로 사용할 것이므로 한번만 실행되도록 bool 멤버변수 존재
+		bIsInit = false;
+	}
+
+	bool bIsInit;
+	FActionExcuteData Spawn, Idle, Move, Jump, Equip, UnEquip, Crouching, Attack, DashAttack;
+};
 
 
 #pragma endregion

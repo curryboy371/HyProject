@@ -25,8 +25,9 @@
 #include "Animation/HyAnimInstance.h"
 
 #include "Game/HyGameInstance.h"
-#include "Manager/HyTagManager.h"
 #include "Manager/HySpawnManager.h"
+
+#include "HyTagSubsystem.h"
 
 
 // Widget
@@ -50,6 +51,8 @@
 #include "Table/Item_TableEntity.h"
 
 
+FQuickActionExcuteDataSet AHyCharacterBase::QuickActionExcute = FQuickActionExcuteDataSet();
+
 // MovementCom custom으로 변경
 AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UHyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -59,6 +62,7 @@ AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
 
 	ComponenetSetup();
 
+	CharacterActionTagSetup();
 }
 
 void AHyCharacterBase::CharacterDefaultSetup()
@@ -265,6 +269,34 @@ void AHyCharacterBase::SpawnCompleted()
 	MyGuid = FGuid::NewGuid();
 
 	SetActorHiddenInGame(false);
+}
+
+void AHyCharacterBase::CharacterActionTagSetup()
+{
+	if (!QuickActionExcute.bIsInit)
+	{
+		if (UHyTagSubsystem* TagSubsystem = GET_TAG_SUBSYSTEM())
+		{
+
+			// TODO 확장성을 고려한다면 좋지 않은 방법
+			// 이렇게 하면 액션 추가하거나 우선순위 변경되면 항상 수정해줘야함
+
+			QuickActionExcute.Spawn = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::EEmpty);
+			QuickActionExcute.Idle = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::ENone);
+			QuickActionExcute.Move = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::ELow);
+
+			QuickActionExcute.Jump = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::EMedium);
+			QuickActionExcute.Equip = FActionExcuteData(TagSubsystem->ActionTagSet.ActionEquip, EActionPriority::EMedium);
+			QuickActionExcute.UnEquip = FActionExcuteData(TagSubsystem->ActionTagSet.ActionUnEquip, EActionPriority::EMedium);
+			QuickActionExcute.Crouching = FActionExcuteData(TagSubsystem->ActionTagSet.ActionCrouching, EActionPriority::EMedium);
+
+			QuickActionExcute.Attack = FActionExcuteData(TagSubsystem->ActionTagSet.ActionAttack, EActionPriority::EMedium);
+
+
+			QuickActionExcute.bIsInit = true;
+			LOG_V("Action Tag Init");
+		}
+	}
 }
 
 void AHyCharacterBase::CharacterSetup()
@@ -691,20 +723,6 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 		return;
 	}
 
-	UHyInst* HyInst = UHyInst::Get();
-	if(!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if(!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
-
 
 	if (!IsCanAction(EKeyInput::IA_Attack))
 	{
@@ -713,31 +731,17 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 
 	if(IsCombatMode())
 	{
-		TriggerAction(TagManager->ActionExcuteSet.ActionAttack, FString(), true);
+		TriggerAction(QuickActionExcute.Attack, FString(), true);
 	}
 	else
 	{
 		FString Context = TEXT("Auto");
-		TriggerAction(TagManager->ActionExcuteSet.ActionEquip, Context);
+		TriggerAction(QuickActionExcute.Equip, Context);
 	}
 }
 
 void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
-
 	if (!Controller)
 	{
 		ERR_V("No Controller");
@@ -769,7 +773,7 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 		return;
 	}
 
-	TriggerAction(TagManager->ActionExcuteSet.ActionMove);
+	TriggerAction(QuickActionExcute.Move);
 
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	float AdjustedRotationSpeed = CharacterInputData.RotationSpeed * CharacterInputData.InputScale;
@@ -802,19 +806,6 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 
 void AHyCharacterBase::CompletedMove(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
 
 	if (!ActionsSystemComp)
 	{
@@ -823,53 +814,30 @@ void AHyCharacterBase::CompletedMove(const FInputActionValue& Value)
 	}
 
 	FGameplayTag CurActionTag = ActionsSystemComp->GetPerformingActionTag();
-	if (TagManager->ActionExcuteSet.ActionMove.TagName == CurActionTag)
+
+	if (UHyTagSubsystem* TagSubsystem = GET_TAG_SUBSYSTEM())
 	{
-		TriggerAction(TagManager->ActionExcuteSet.ActionIdle);
+		if (TagSubsystem->ActionTagSet.ActionMove == CurActionTag)
+		{
+			TriggerAction(QuickActionExcute.Idle);
+		}
 	}
+
 }
 
 void AHyCharacterBase::InputJump(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
-
 	if (!IsCanAction(EKeyInput::IA_Jump))
 	{
 		return;
 	}
 
-	TriggerAction(TagManager->ActionExcuteSet.ActionJump);
+	TriggerAction(QuickActionExcute.Jump);
 
 }
 
 void AHyCharacterBase::InputLook(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
-
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
@@ -883,27 +851,14 @@ void AHyCharacterBase::InputLook(const FInputActionValue& Value)
 
 void AHyCharacterBase::InputEquip(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
-
 	if (!InventorySystemComp)
 	{
 		ERR_V("InventorySystemComp is not set.");
 		return;
 	}
 
-	FGameplayTag WeaponSlot = TagManager->ItemSlotTagSet.SlotWeapon;
+
+	FGameplayTag WeaponSlot = GET_TAG_SUBSYSTEM()->ItemSlotTagSet.SlotWeapon;
 	if (InventorySystemComp->IsEquippedSlot(WeaponSlot))
 	{
 		InventorySystemComp->UnEquipItemBySlot(WeaponSlot);
@@ -916,21 +871,6 @@ void AHyCharacterBase::InputEquip(const FInputActionValue& Value)
 
 void AHyCharacterBase::InputSprint(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
-
-
 	if (!HyCharacterMovement)
 	{
 		ERR_V("HyCharacterMovement is not set.");
@@ -947,20 +887,6 @@ void AHyCharacterBase::InputSprint(const FInputActionValue& Value)
 
 void AHyCharacterBase::CompletedSprint(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
-
 	if (!HyCharacterMovement)
 	{
 		ERR_V("HyCharacterMovement is not set.");
@@ -972,26 +898,13 @@ void AHyCharacterBase::CompletedSprint(const FInputActionValue& Value)
 
 void AHyCharacterBase::InputCrouch(const FInputActionValue& Value)
 {
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return;
-	}
 
 	if (!IsCanAction(EKeyInput::IA_Crouch))
 	{
 		return;
 	}
 
-	TriggerAction(TagManager->ActionExcuteSet.ActionCrouching);
+	TriggerAction(QuickActionExcute.Crouching);
 }
 
 void AHyCharacterBase::EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet)
@@ -1051,21 +964,8 @@ const bool AHyCharacterBase::IsDead() const
 		return true;
 	}
 
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return true;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return true;
-	}
-
-	if(TagManager->IsDeadAction(ActionsSystemComp->GetPerformingActionTag()))
+	
+	if(GET_TAG_SUBSYSTEM()->IsDeadAction(ActionsSystemComp->GetPerformingActionTag()))
 	{
 		return true;
 	}
@@ -1077,20 +977,6 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 {
 	bool bRes = false;
 
-
-	UHyInst* HyInst = UHyInst::Get();
-	if (!HyInst)
-	{
-		ERR_V("HyInst is not set.");
-		return bRes;
-	}
-
-	UHyTagManager* TagManager = HyInst->GetManager<UHyTagManager>();
-	if (!TagManager)
-	{
-		ERR_V("TagManager is not set.");
-		return bRes;
-	}
 
 	if (!ActionsSystemComp)
 	{
@@ -1105,32 +991,33 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 	case EKeyInput::IA_None:
 		break;
 	case EKeyInput::IA_Attack:
-		bRes = TagManager->IsNormalAction(CurActionTag);
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 		if (!bRes)
 		{
-			bRes = TagManager->IsAttackAction(CurActionTag);
+			bRes = GET_TAG_SUBSYSTEM()->IsAttackAction(CurActionTag);
 		}
 		break;
 	case EKeyInput::IA_Equip:
-		bRes = TagManager->IsNormalAction(CurActionTag);
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 
 		break;
 	case EKeyInput::IA_Skill1:
-		bRes = TagManager->IsNormalAction(CurActionTag);
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 
 		break;
 	case EKeyInput::IA_Jump:
-		bRes = TagManager->IsNormalAction(CurActionTag);
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 
 		break;
 	case EKeyInput::IA_Move:
 	{
-		bRes = TagManager->IsNormalAction(CurActionTag);
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 		if (!bRes)
 		{
-			if (TagManager->IsAttackAction(CurActionTag))
+			if (GET_TAG_SUBSYSTEM()->IsAttackAction(CurActionTag))
 			{
-				bRes = CompareCurrentPriority(TagManager->ActionExcuteSet.ActionMove.ActionPriority);
+				// Stop Noti 이전에는 우선순위에서 이동 불가처리됨
+				bRes = true;
 			}
 		}
 	}
@@ -1139,12 +1026,12 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 
 		break;
 	case EKeyInput::IA_Sprint:
-		bRes = TagManager->IsNormalAction(CurActionTag);
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 
 		break;
 
 	case EKeyInput::IA_Crouch:
-		bRes = TagManager->IsNormalAction(CurActionTag);
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 		break;
 	default:
 		break;
@@ -1157,9 +1044,7 @@ void AHyCharacterBase::DebugUpdate()
 {
 	if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
 	{
-		bool bIsDebugDraw = DevSetting->IsDebugDraw();
-
-		if (bIsDebugDraw)
+		if (DevSetting->IsDebugDrawWidget())
 		{
 			DebugRenderWidget();
 		}

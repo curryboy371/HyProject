@@ -4,8 +4,7 @@
 #include "Action/HyAction_Idle.h"
 
 #include "Actors/Character/HyCharacterBase.h"
-
-#include "Manager/HyTagManager.h"
+#include "HyCoreMacro.h"
 
 
 void UHyAction_Idle::OnActionStarted_Implementation(const FString& InContext)
@@ -38,7 +37,7 @@ void UHyAction_Idle::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
 
-	if (HyCharacterOwner && HyTagManager)
+	if (HyCharacterOwner)
 	{
 		if (HyCharacterOwner->IsCombatMode())
 		{
@@ -46,7 +45,7 @@ void UHyAction_Idle::OnTick_Implementation(float DeltaTime)
 
 			if (CombatModeDuration > CombatModeCooldownTime)
 			{
-				HyCharacterOwner->TriggerAction(HyTagManager->ActionExcuteSet.ActionUnEquip);
+				HyCharacterOwner->TriggerAction(HyCharacterOwner->QuickActionExcute.UnEquip);
 				ResetCombatModeDuration();
 			}
 		}

@@ -8,7 +8,6 @@
 
 
 #include "Game/HyGameInstance.h"
-#include "Manager/HyTagManager.h"
 
 #include "Game/HyPlayerController.h"
 
