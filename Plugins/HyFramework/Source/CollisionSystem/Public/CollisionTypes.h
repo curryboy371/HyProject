@@ -19,12 +19,9 @@
 #define CPROFILE_HYCHARACTER TEXT("HyCharacterCapsule")
 #define CPROFILE_HYATTACK TEXT("HyAttackCollider")
 
-// HyCharacterCapsule 따로 사용
-#define CCHANNEL_HYCHARACTER ECC_GameTraceChannel1
-
 // HyAttackCollider - Character Capsule의 디테일한 Sweep 이벤트 감지를 위해 추가
-// Pawn에만 Overlapp
-#define CCHANNEL_HYATTACKCOLLIDER ECC_GameTraceChannel2
+// Pawn, HyCharacterCapsule에만 Overlapp
+#define CCHANNEL_HYATTACK ECC_GameTraceChannel1
 
 #pragma endregion
 

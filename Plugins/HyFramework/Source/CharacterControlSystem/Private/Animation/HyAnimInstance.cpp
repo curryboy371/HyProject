@@ -251,10 +251,14 @@ void UHyAnimInstance::UpdateAcceleration(const float& DeltaSeconds)
     AccelerationData.bIsAccelerating = AccelerationData.Acceleration > 0;
     AccelerationData.NormalizedAccel = AccelerationData.Acceleration2D;
     AccelerationData.NormalizedAccel.Normalize();
+
+    AccelerationData.AccelerationRatio = UKismetMathLibrary::SafeDivide(AccelerationData.Acceleration, CharacterMovementComp->GetMaxAcceleration());
+
     AccelerationData.PivotDirection = UKismetMathLibrary::VLerp(AccelerationData.PivotDirection, AccelerationData.NormalizedAccel, .5f);
     AccelerationData.PivotDirection.Normalize();
     const float AccelerationAngle = UKismetAnimationLibrary::CalculateDirection(AccelerationData.PivotDirection, RotationData.OwnerRotation);
     AccelerationData.AccelerationDirection = UCControlFunctionLibrary::GetOppositeDirectionFromAngle(AccelerationAngle);
+
 
 }
 

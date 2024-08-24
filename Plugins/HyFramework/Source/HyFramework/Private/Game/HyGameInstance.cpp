@@ -8,7 +8,7 @@
 
 #include "HyCoreMacro.h"
 
-
+#include "HyTagSubsystem.h"
 
 
 #define _CRTDBG_MAP_ALLOC
@@ -93,8 +93,21 @@ void UHyGameInstance::ExecSpawnMonsterCommand(const int32 InMonsterID)
 	UHySpawnManager* SpawnManager = GetManager<UHySpawnManager>();
 	if(SpawnManager)
 	{
-		SpawnManager->SpawnMonster(InMonsterID);
+		SpawnManager->SpawnCharacter(InMonsterID, GET_TAG_SUBSYSTEM()->CharacterTagSet.MonsterTag);
 	}
+    else
+    {
+        ERR_V("SpawnManager is nullptr");
+    }
+}
+
+void UHyGameInstance::ExecSpawnPlayerCommand(const int32 InPlayerID)
+{
+    UHySpawnManager* SpawnManager = GetManager<UHySpawnManager>();
+    if (SpawnManager)
+    {
+        SpawnManager->SpawnCharacter(InPlayerID, GET_TAG_SUBSYSTEM()->CharacterTagSet.PlayerTag);
+    }
     else
     {
         ERR_V("SpawnManager is nullptr");

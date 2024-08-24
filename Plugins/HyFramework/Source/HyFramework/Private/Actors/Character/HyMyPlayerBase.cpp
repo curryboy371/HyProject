@@ -31,7 +31,8 @@
 
 #include "HyCoreMacro.h"
 
-AHyMyPlayerBase::AHyMyPlayerBase()
+AHyMyPlayerBase::AHyMyPlayerBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 	CharacterDefaultSetup();
@@ -113,6 +114,7 @@ void AHyMyPlayerBase::InputFunctionMapping()
 
 	InputFunctionMap.Add("InputAttack", &AHyMyPlayerBase::InputAttack);
 	InputFunctionMap.Add("InputMove", &AHyMyPlayerBase::InputMove);
+	InputFunctionMap.Add("CompletedMove", &AHyMyPlayerBase::CompletedMove);
 	InputFunctionMap.Add("InputJump", &AHyMyPlayerBase::InputJump);
 	InputFunctionMap.Add("InputLook", &AHyMyPlayerBase::InputLook);
 	InputFunctionMap.Add("InputEquip", &AHyMyPlayerBase::InputEquip);

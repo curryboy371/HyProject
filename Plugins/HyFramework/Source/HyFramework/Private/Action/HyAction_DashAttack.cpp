@@ -26,8 +26,6 @@ void UHyAction_DashAttack::OnActionStarted_Implementation(const FString& context
 	}
 
 	HyCharacterOwner->ReleaseWarpingTarget();
-	HyCharacterOwner->FindTarget();
-
 	if (HyCharacterOwner->IsTargetAvailable())
 	{
 		FVector Location;

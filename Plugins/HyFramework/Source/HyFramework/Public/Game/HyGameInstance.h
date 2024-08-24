@@ -39,6 +39,9 @@ public:
 	UFUNCTION(Exec)
 	void ExecSpawnMonsterCommand(const int32 InMonsterID);
 
+	UFUNCTION(Exec)
+	void ExecSpawnPlayerCommand(const int32 InPlayerID);
+
 #pragma endregion
 
 

@@ -32,6 +32,7 @@ void UHyTagSubsystem::InitTagSet()
 
     AddTag(FName("Action.Stand.Attack"), ActionTagSet.AttActionParent);
     AddTag(FName("Action.Stand.Attack.Attacking"), ActionTagSet.ActionAttack);
+    AddTag(FName("Action.Stand.Attack.DashAttacking"), ActionTagSet.ActionDashAttack);
 
 
 
@@ -85,6 +86,16 @@ const bool UHyTagSubsystem::IsAttackAction(const FGameplayTag& InActionTag) cons
         return true;
     }
     return false;
+}
+
+const bool UHyTagSubsystem::IsComboAttackAction(const FGameplayTag& InActionTag) const
+{
+    return ActionTagSet.ActionAttack == InActionTag;
+}
+
+const bool UHyTagSubsystem::IsDashAttackAction(const FGameplayTag& InActionTag) const
+{
+    return ActionTagSet.ActionDashAttack == InActionTag;
 }
 
 const bool UHyTagSubsystem::IsDeadAction(const FGameplayTag& InActionTag) const

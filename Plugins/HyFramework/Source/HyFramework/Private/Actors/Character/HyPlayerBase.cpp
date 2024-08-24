@@ -35,5 +35,5 @@ bool AHyPlayerBase::FindTarget()
 	}
 
 	// 타겟 탐색 Temp
-	return SpawnMgr->FindTargetMonster(GetActorLocation(), 500, TargetGuid);
+	return SpawnMgr->FindTargetMonster(GetActorLocation(), EnableTargetRange, TargetGuid);
 }

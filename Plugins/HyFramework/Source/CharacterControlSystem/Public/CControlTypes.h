@@ -193,6 +193,7 @@ public:
     {
         bIsAccelerating = false;
 		Acceleration = 0.f;
+        AccelerationRatio = 0.0f;
 		Acceleration2D = FVector::ZeroVector;
 		NormalizedAccel = FVector::ZeroVector;
 		LocalAccel2D = FVector::ZeroVector;
@@ -206,6 +207,9 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
     float Acceleration;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
+    float AccelerationRatio;
 
     UPROPERTY(BlueprintReadOnly, Category = "Acceleration")
     FVector Acceleration2D;

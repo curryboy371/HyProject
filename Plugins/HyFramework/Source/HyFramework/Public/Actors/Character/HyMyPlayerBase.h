@@ -19,7 +19,7 @@ class HYFRAMEWORK_API AHyMyPlayerBase : public AHyPlayerBase, public ICControlIn
 	GENERATED_BODY()
 
 public:
-	AHyMyPlayerBase();
+	AHyMyPlayerBase(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void CharacterDefaultSetup();

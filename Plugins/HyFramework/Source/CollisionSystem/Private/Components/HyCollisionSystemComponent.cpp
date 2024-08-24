@@ -266,7 +266,7 @@ bool UHyCollisionSystemComponent::SweepSingle(const FTraceData& InTraceData, con
 		InTraceData.StartLocation,
 		InTraceData.EndLocation,
 		InTraceData.DiffTraceRotation.Quaternion(),
-		CCHANNEL_HYATTACKCOLLIDER,
+		CCHANNEL_HYATTACK,
 		FCollisionShape::MakeSphere(InTraceData.TraceRadius),
 		InCollisionParams
 	);
@@ -333,7 +333,7 @@ bool UHyCollisionSystemComponent::SweepMulti(const FTraceData& InTraceData, cons
 		InTraceData.StartLocation,
 		InTraceData.EndLocation,
 		InTraceData.DiffTraceRotation.Quaternion(),
-		CCHANNEL_HYATTACKCOLLIDER,
+		CCHANNEL_HYATTACK,
 		FCollisionShape::MakeSphere(InTraceData.TraceRadius),
 		InCollisionParams
 	);

@@ -16,6 +16,7 @@
 
 #include "InputActionValue.h"
 
+#include "Interface/HyCharacterCombatInterface.h"
 #include "Interface/CControlCharacterInterface.h"
 #include "Interface/ActionsCharacterInterface.h"
 #include "Interface/CollisionCharacterInterface.h"
@@ -32,6 +33,7 @@ class HYFRAMEWORK_API AHyCharacterBase : public ACharacter
 										, public ICControlCharacterInterface
 										, public IActionsCharacterInterface	
 										, public ICollisionCharacterInterface
+										, public IHyCharacterCombatInterface
 
 {
 	GENERATED_BODY()
@@ -43,6 +45,7 @@ public:
 
 public:
 	void SpawnCompleted();
+	void SetGroundLocation();
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -111,6 +114,18 @@ public:
 	virtual const FGameplayTag GetStoredAction() const override;
 
 public:
+	// IHyCharacterCombatInterface을(를) 통해 상속됨
+	virtual const bool IsTargetInRange(const float InRange) override;
+	virtual bool FindTarget() {	return false;	};
+
+
+
+	// Combat
+	bool GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation);
+	void SetDashWarpingTarget(const FVector& InTargetLocation);
+	void ReleaseWarpingTarget();
+public:
+
 	// Anim 
 	void SwitchEquipLayer(const FGameplayTag& InEquipTag);
 
@@ -119,13 +134,7 @@ public:
 	void SetStencilOutline(bool IsShow, EStencilOutLine StencilType );
 
 public:
-	// Combat
-	bool GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation);
 
-	void SetDashWarpingTarget(const FVector& InTargetLocation);
-	void ReleaseWarpingTarget();
-
-	virtual bool FindTarget() { return false;  };
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
@@ -156,6 +165,10 @@ public:
 	void InputCrouch(const FInputActionValue& Value);
 
 protected:
+	void TriggerAttackAction();
+
+
+protected:
 	// ICollisionCharacterInterface을(를) 통해 상속됨
 	virtual void EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet) override;
 	virtual void DisableAttackCollider() override;
@@ -172,7 +185,7 @@ protected:
 	void DebugUpdate();
 
 	void DebugRenderWidget();
-
+	void DebugDrawMovement();
 
 public:
 
@@ -253,5 +266,11 @@ protected:
 
 	FGuid MyGuid;
 	FGuid TargetGuid;
+
+
+protected:
+	// TODO TEMP
+	const float DashAttackRange = 500.f;
+	const float EnableTargetRange = 1000.f;
 
 };

@@ -62,7 +62,6 @@ AHyCharacterBase::AHyCharacterBase(const FObjectInitializer& ObjectInitializer)
 
 	ComponenetSetup();
 
-	CharacterActionTagSetup();
 }
 
 void AHyCharacterBase::CharacterDefaultSetup()
@@ -86,6 +85,9 @@ void AHyCharacterBase::CharacterDefaultSetup()
 	// Mesh
 	FRotator MeshRotator = FRotator(0.0f, -90.0f, 0.0f);
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -100.0f), MeshRotator);
+
+
+	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_HYCHARACTER);
 
 
 	// Character Guid
@@ -137,6 +139,12 @@ void AHyCharacterBase::ComponenetSetup()
 	{
 		CombatArrowParentComp->SetupAttachment(GetMesh());
 		CharacterCombatArrowSetup();
+	}
+
+	MotionWarpingComp = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComp"));
+	if(!MotionWarpingComp)
+	{
+		ERR_V("MotionWarpingComp is not set.");
 	}
 
 
@@ -191,6 +199,24 @@ void AHyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 const bool AHyCharacterBase::IsTargetAvailable()
 {
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		ERR_V("Inst is not set.");
+		return false;
+	}
+
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if(!SpawnManager)
+	{
+		ERR_V("SpawnManager is not set.");
+		return false;
+	}
+
+	if(TargetGuid.IsValid())
+	{
+		return SpawnManager->IsValidCharacter(TargetGuid);
+	}
 
 	return false;
 }
@@ -268,7 +294,25 @@ void AHyCharacterBase::SpawnCompleted()
 	// Spawn이 완료되었을때 호출되는 함수
 	MyGuid = FGuid::NewGuid();
 
+	SetGroundLocation();
+
 	SetActorHiddenInGame(false);
+}
+
+void AHyCharacterBase::SetGroundLocation()
+{
+	// 발 지면에 맞추기
+	FVector SpawnLocation = GetActorLocation();
+	FVector TraceStart = SpawnLocation;
+	FVector TraceEnd = SpawnLocation - FVector(0, 0, 1000); // 발 아래 방향으로 트레이스
+
+	FHitResult HitResult;
+	// raycast
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility))
+	{
+		FVector HitLocation = HitResult.Location;
+		SetActorLocation(FVector(SpawnLocation.X, SpawnLocation.Y, HitLocation.Z));
+	}
 }
 
 void AHyCharacterBase::CharacterActionTagSetup()
@@ -281,16 +325,17 @@ void AHyCharacterBase::CharacterActionTagSetup()
 			// TODO 확장성을 고려한다면 좋지 않은 방법
 			// 이렇게 하면 액션 추가하거나 우선순위 변경되면 항상 수정해줘야함
 
-			QuickActionExcute.Spawn = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::EEmpty);
+			QuickActionExcute.Spawn = FActionExcuteData(TagSubsystem->ActionTagSet.ActionSpawn, EActionPriority::ENone);
 			QuickActionExcute.Idle = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::ENone);
-			QuickActionExcute.Move = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::ELow);
+			QuickActionExcute.Move = FActionExcuteData(TagSubsystem->ActionTagSet.ActionMove, EActionPriority::ELow);
 
-			QuickActionExcute.Jump = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::EMedium);
+			QuickActionExcute.Jump = FActionExcuteData(TagSubsystem->ActionTagSet.ActionJump, EActionPriority::EMedium);
 			QuickActionExcute.Equip = FActionExcuteData(TagSubsystem->ActionTagSet.ActionEquip, EActionPriority::EMedium);
 			QuickActionExcute.UnEquip = FActionExcuteData(TagSubsystem->ActionTagSet.ActionUnEquip, EActionPriority::EMedium);
 			QuickActionExcute.Crouching = FActionExcuteData(TagSubsystem->ActionTagSet.ActionCrouching, EActionPriority::EMedium);
 
 			QuickActionExcute.Attack = FActionExcuteData(TagSubsystem->ActionTagSet.ActionAttack, EActionPriority::EMedium);
+			QuickActionExcute.DashAttack = FActionExcuteData(TagSubsystem->ActionTagSet.ActionDashAttack, EActionPriority::EMedium);
 
 
 			QuickActionExcute.bIsInit = true;
@@ -302,6 +347,7 @@ void AHyCharacterBase::CharacterActionTagSetup()
 void AHyCharacterBase::CharacterSetup()
 {
 	// BeginPlay에서 Character를 Setup하는 함수
+	CharacterActionTagSetup();
 
 	CharacterActorComponentSetup();
 
@@ -709,6 +755,34 @@ const FGameplayTag AHyCharacterBase::GetStoredAction() const
 	return FGameplayTag();
 }
 
+const bool AHyCharacterBase::IsTargetInRange(const float InRange)
+{
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		ERR_V("Inst is not set.");
+		return false;
+	}
+
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if (!SpawnManager)
+	{
+		ERR_V("SpawnManager is not set.");
+		return false;
+	}
+
+	if (IsTargetAvailable())
+	{
+		if (TObjectPtr<class AHyCharacterBase> TagetCharacter = SpawnManager->GetCharacterByGuid(TargetGuid))
+		{
+			float Distance = FVector::Dist(TagetCharacter->GetActorLocation(), GetActorLocation());
+			return Distance <= InRange;
+		}
+	}
+
+	return false;
+}
+
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 {
 	if (!InventorySystemComp)
@@ -731,13 +805,62 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 
 	if(IsCombatMode())
 	{
-		TriggerAction(QuickActionExcute.Attack, FString(), true);
+		FindTarget();
+		TriggerAttackAction();
 	}
 	else
 	{
 		FString Context = TEXT("Auto");
 		TriggerAction(QuickActionExcute.Equip, Context);
 	}
+}
+
+void AHyCharacterBase::TriggerAttackAction()
+{
+	UHyInst* Inst = UHyInst::Get();
+	if(!Inst)
+	{
+		ERR_V("Inst is not set.");
+		return;
+	}	
+
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if(!SpawnManager)
+	{
+		ERR_V("SpawnManager is not set.");
+		return;
+	}
+
+	if (!ActionsSystemComp)
+	{
+		ERR_V("ActionSetComponent is not set.");
+		return;
+	}
+
+	bool bIsDashAttack = false;
+
+	if (!GET_TAG_SUBSYSTEM()->IsDashAttackAction(GetCurAction()))
+	{
+		bool bIsComboAttack = GET_TAG_SUBSYSTEM()->IsComboAttackAction(GetCurAction());
+		// (콤보 어택 && 마지막 인덱스) or 콤보 어택이 아닌경우
+		if (bIsComboAttack && ActionsSystemComp->IsLastMonstageSection() || !bIsComboAttack)
+		{
+			bIsDashAttack = true;
+		}
+
+		if (bIsDashAttack)
+		{
+			// 타겟이 사정거리 안에 있다면 DashAttack
+			if (IsTargetInRange(DashAttackRange))
+			{
+				TriggerAction(QuickActionExcute.DashAttack, FString(), true);
+				return;
+			}
+		}
+	}
+
+	// 일반 콤보어택
+	TriggerAction(QuickActionExcute.Attack, FString(), true);
 }
 
 void AHyCharacterBase::InputMove(const FInputActionValue& Value)
@@ -775,6 +898,11 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 
 	TriggerAction(QuickActionExcute.Move);
 
+	if (GET_TAG_SUBSYSTEM()->IsNormalAction(GetCurAction()) == false)
+	{
+		return;
+	}
+
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	float AdjustedRotationSpeed = CharacterInputData.RotationSpeed * CharacterInputData.InputScale;
 
@@ -806,7 +934,6 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 
 void AHyCharacterBase::CompletedMove(const FInputActionValue& Value)
 {
-
 	if (!ActionsSystemComp)
 	{
 		ERR_V("ActionsSystemComp is invalid");
@@ -819,7 +946,7 @@ void AHyCharacterBase::CompletedMove(const FInputActionValue& Value)
 	{
 		if (TagSubsystem->ActionTagSet.ActionMove == CurActionTag)
 		{
-			TriggerAction(QuickActionExcute.Idle);
+			HandleAction(EActionHandleType::EActionHandle_Stop);
 		}
 	}
 
@@ -1048,6 +1175,15 @@ void AHyCharacterBase::DebugUpdate()
 		{
 			DebugRenderWidget();
 		}
+		else
+		{
+
+		}
+
+		if (DevSetting->IsDebugDrawMovement())
+		{
+			DebugDrawMovement();
+		}
 	}
 }
 
@@ -1106,5 +1242,40 @@ void AHyCharacterBase::DebugRenderWidget()
 	}
 
 
+}
+
+void AHyCharacterBase::DebugDrawMovement()
+{
+	if (!HyAnimInstance)
+	{
+		ERR_V("HyAnimInstance is not set.");
+		return;
+	}
+
+
+	float Height = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	FVector Start = GetActorLocation();
+	FVector End = GetActorLocation() + (CharacterInputData.InputDirection * 50);
+
+	// Input Direction
+	Start.Z += Height * 0.5f;
+	End.Z += Height * 0.5f;
+	UHyCoreFunctionLibrary::DrawArrow(GetWorld(), Start, End);
+
+	Start = GetActorLocation();
+	Start.Z += Height;
+
+	// Acceleration Ratio
+	const FAnimationAccelerationData& AccelerationData = HyAnimInstance->GetAccelerationData();
+	End = GetActorLocation() + AccelerationData.NormalizedAccel * AccelerationData.AccelerationRatio * 100;
+	End.Z += Height;
+	UHyCoreFunctionLibrary::DrawArrow(GetWorld(), Start, End, 30, FLinearColor::Yellow);
+
+	// Velocity Ratio
+	const FAnimationVelocityData& VelocityData = HyAnimInstance->GetVelocityData();
+	End = GetActorLocation() + VelocityData.NormalizedSpeed * VelocityData.WorldSpeed2D.GetSafeNormal2D() * 100;
+	Start.Z += 5;
+	End.Z += Height + 5;
+	UHyCoreFunctionLibrary::DrawArrow(GetWorld(), Start, End, 30, FLinearColor::Blue);
 }
 

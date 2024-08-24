@@ -2,6 +2,13 @@
 
 
 #include "Actors/Character/HyMonsterBase.h"
+#include "Components/HyCharacterMovementComponent.h"
+
+AHyMonsterBase::AHyMonsterBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+}
 
 void AHyMonsterBase::BeginPlay()
 {

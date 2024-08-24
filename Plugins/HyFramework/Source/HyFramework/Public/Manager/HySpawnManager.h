@@ -44,9 +44,9 @@ public:
 
 
 public:
-	void SpawnMonster(const int32 InMonsterID);
+	void SpawnCharacter(const int32 InCharacterID, const FGameplayTag& InCharacterTypeTag);
 
-	const bool SpawCharacter(const FName& InCharacterPath, FResourceloaderArgument* pArg);
+	const bool OnSpawCharacter(const FName& InCharacterPath, FResourceloaderArgument* pArg);
 
 protected:
 	void OnGenerateObject(FResourceloaderArgument* pArg);

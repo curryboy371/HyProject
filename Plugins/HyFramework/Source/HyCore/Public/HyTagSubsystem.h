@@ -73,7 +73,12 @@ public:
 	// Check State By ActionTag
 	const bool IsNormalAction(const FGameplayTag& InActionTag) const;
 	const bool IsDoingAction(const FGameplayTag& InActionTag) const;
+
 	const bool IsAttackAction(const FGameplayTag& InActionTag) const;
+	const bool IsComboAttackAction(const FGameplayTag& InActionTag) const;
+	const bool IsDashAttackAction(const FGameplayTag& InActionTag) const;
+
+
 	const bool IsDeadAction(const FGameplayTag& InActionTag) const;
 
 
@@ -92,8 +97,9 @@ public:
 
 	FGameplayTagContainer DeadContainer;
 
-protected:
 	FCharacterTagSet CharacterTagSet;
+
+protected:
 
 	FGameplayTag EquipPlayerParent;
 	FGameplayTag EquipAIParent;

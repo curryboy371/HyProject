@@ -13,8 +13,11 @@
 
 #include "HyTableSubsystem.h"
 #include "Table/Monster_TableEntity.h"
+#include "Table/Player_TableEntity.h"
+
 #include "Game/HyPlayerController.h"
 
+#include "HyTagSubsystem.h"
 
 #include "HyCoreMacro.h"
 
@@ -190,7 +193,7 @@ const bool UHySpawnManager::FindTargetMonster(const FVector& InCompareLocation, 
 	
 	for(auto& Monster : SpawnedMonsterMap)
 	{
-		if (Monster.Value)
+		if (!Monster.Value)
 		{
 			continue;
 		}
@@ -202,7 +205,7 @@ const bool UHySpawnManager::FindTargetMonster(const FVector& InCompareLocation, 
 
 		FVector TargetDir = Monster.Value->GetActorLocation() - InCompareLocation;
 		float TargetDistance = TargetDir.Size();
-		if (InEnableLength < TargetDistance && ClosetDistance > TargetDistance)
+		if (InEnableLength > TargetDistance && ClosetDistance > TargetDistance)
 		{
 			ClosetDistance = InEnableLength;
 			OutTargetGuid = Monster.Key;
@@ -219,11 +222,18 @@ const bool UHySpawnManager::FindTargetPlayer(const FVector& InCompareLocation, c
 	return false;
 }
 
-void UHySpawnManager::SpawnMonster(const int32 InMonsterID)
+void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const FGameplayTag& InCharacterTypeTag)
 {
-	if (InMonsterID <= 0)
+	if (InCharacterID <= 0)
 	{
-		ERR_V(TEXT("Invalid MonsterID"));
+		ERR_V(TEXT("Invalid InCharacterID"));
+		return;
+	}
+
+	UHyTagSubsystem* SubSystemTag = GET_TAG_SUBSYSTEM();
+	if (!SubSystemTag)
+	{
+		ERR_V("SubSystemTag is nullptr");
 		return;
 	}
 
@@ -248,32 +258,61 @@ void UHySpawnManager::SpawnMonster(const int32 InMonsterID)
 		return;
 	}
 	
-	if (UHyTableSubsystem* TableSubSystem = Inst->GetSubsystem<UHyTableSubsystem>())
+	UHyTableSubsystem* TableSubSystem = Inst->GetSubsystem<UHyTableSubsystem>();
+	if (!TableSubSystem)
 	{
-		if (FMonster_TableEntity* MonsterEntity = TableSubSystem->GetTableData<FMonster_TableEntity>(InMonsterID))
-		{
-			HitLocation.Z += 100.f;
+		ERR_V("TableSubSystem is not set.");
+		return;
+	}
 
-			FResourceloaderArgument* pArg = new FResourceloaderArgument(MonsterEntity->MonsterID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
-			if (SpawCharacter(MonsterEntity->MonsterPath, pArg) == false)
+
+	if (SubSystemTag->IsPlayerCharacter(InCharacterTypeTag))
+	{
+		FPlayer_TableEntity* PlayerEntity = TableSubSystem->GetTableData<FPlayer_TableEntity>(InCharacterID);
+		if (!PlayerEntity)
+		{
+			ERR_V("PlayerEntity is not set. ID=%d", InCharacterID);
+		}
+
+		HitLocation.Z += 10.f;
+		FResourceloaderArgument* pArg = new FResourceloaderArgument(PlayerEntity->PlayerID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
+		if (OnSpawCharacter(PlayerEntity->PlayerPath, pArg) == false)
+		{
+			// Success시 delete는 SpawnComplete에서
+			if (pArg)
 			{
-				// Success시 delete는 SpawnComplete에서
-				if (pArg)
-				{
-					delete pArg;
-					pArg = nullptr;
-				}
+				delete pArg;
+				pArg = nullptr;
 			}
 		}
-		else
+	}
+	else if (SubSystemTag->IsMonsterCharacter(InCharacterTypeTag))
+	{
+		FMonster_TableEntity* MonsterEntity = TableSubSystem->GetTableData<FMonster_TableEntity>(InCharacterID);
+		if (!MonsterEntity)
 		{
-			ERR_V("MonsterEntity is not set. ID=%d", InMonsterID);
+			ERR_V("MonsterEntity is not set. ID=%d", InCharacterID);
+
+		}
+
+		HitLocation.Z += 10.f;
+		FResourceloaderArgument* pArg = new FResourceloaderArgument(MonsterEntity->MonsterID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
+		if (OnSpawCharacter(MonsterEntity->MonsterPath, pArg) == false)
+		{
+			// Success시 delete는 SpawnComplete에서
+			if (pArg)
+			{
+				delete pArg;
+				pArg = nullptr;
+			}
 		}
 	}
 
+
+
 }
 
-const bool UHySpawnManager::SpawCharacter(const FName& InCharacterPath, FResourceloaderArgument* pArg)
+const bool UHySpawnManager::OnSpawCharacter(const FName& InCharacterPath, FResourceloaderArgument* pArg)
 {
 	if(!pArg)
 	{
