@@ -32,6 +32,9 @@ public:
 	const bool IsValidMonster(const FGuid& InMonsterGuid);
 	const bool IsValidPlayer(const FGuid& InPlayerGuid);
 
+	const bool IsValidCharacterWithLocation(const FGuid& InCharacterGuid, FVector& OutCharacterLocation);
+
+
 	TObjectPtr<class AHyCharacterBase> GetCharacterByGuid(const FGuid& InCharacterGuid);
 
 	TObjectPtr<class AHyMyPlayerBase> GetLocalPlayer() { return LocalPlayer; }
@@ -39,8 +42,8 @@ public:
 
 
 public:
-	const bool FindTargetMonster(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid);
-	const bool FindTargetPlayer(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid);
+	const bool FindTargetMonster(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid, FVector& OutTargetLocation);
+	const bool FindTargetPlayer(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid, FVector& OutTargetLocation);
 
 
 public:

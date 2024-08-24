@@ -25,15 +25,29 @@ bool AHyPlayerBase::FindTarget()
 		return false;
 	}
 
+	FVector TargetLocation = FVector::ZeroVector;
+	bool bHasTarget = false;
 	if (TargetGuid.IsValid())
 	{
 		// 타겟이 이미 있는경우
-		if (SpawnMgr->IsValidCharacter(TargetGuid))
+		if (SpawnMgr->IsValidCharacterWithLocation(TargetGuid, TargetLocation))
 		{
-			return false;
+			bHasTarget = true;
+		}
+	}
+	
+	if (!bHasTarget)
+	{
+		if (SpawnMgr->FindTargetMonster(GetActorLocation(), EnableTargetRange, TargetGuid, TargetLocation))
+		{
+			bHasTarget = true;
 		}
 	}
 
-	// 타겟 탐색 Temp
-	return SpawnMgr->FindTargetMonster(GetActorLocation(), EnableTargetRange, TargetGuid);
+	if (bHasTarget)
+	{
+		return SetCharacterRotationIfInRange(TargetLocation, EnableTargetRange);
+	}
+
+	return false;
 }

@@ -115,6 +115,7 @@ public:
 
 	const bool IsEmptyStoredAction() const { return StoredActionExcuteData == FGameplayTag::EmptyTag; };
 
+	const bool IsActionMontagePlaying() const;
 
 protected:
 	void ResetActionState();

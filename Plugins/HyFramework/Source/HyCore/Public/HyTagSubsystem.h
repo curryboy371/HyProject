@@ -39,6 +39,13 @@ struct FActionTagSet
 
 };
 
+struct FActionLocationTagSet
+{
+	FGameplayTag StandActionTag;
+	FGameplayTag DownActionTag;
+	FGameplayTag InAirActionTag;
+};
+
 struct FItemSlotTagSet
 {
 	FGameplayTag SlotParent;
@@ -81,7 +88,12 @@ public:
 
 	const bool IsDeadAction(const FGameplayTag& InActionTag) const;
 
+	const bool IsStandAction(const FGameplayTag& InActionTag) const;
+	const bool IsDownAction(const FGameplayTag& InActionTag) const;
+	const bool IsInAirAction(const FGameplayTag& InActionTag) const;
 
+	// DamageType To ActionType
+	const FGameplayTag GetActionTypeByDamageType(const FGameplayTag& InDamageType, const FGameplayTag& CurActionTag) const;
 public:
 	// check character type
 	const bool IsPlayerCharacter(const FGameplayTag& InCharacterTag) const;
@@ -90,6 +102,7 @@ public:
 	// check ai or user control
 	const bool IsUserPlaying(const FGameplayTag& InEquipTag) const;
 	const bool IsAIPlaying(const FGameplayTag& InEquipTag) const;
+
 
 public:
 	FActionTagSet ActionTagSet;
@@ -103,4 +116,11 @@ protected:
 
 	FGameplayTag EquipPlayerParent;
 	FGameplayTag EquipAIParent;
+
+	FActionLocationTagSet ActionLocationTagSet;
+
+
+public:
+	static FGameplayTag DefaultHitTag;
+
 };

@@ -139,6 +139,36 @@ const bool UHySpawnManager::IsValidPlayer(const FGuid& InPlayerGuid)
 	return false;
 }
 
+const bool UHySpawnManager::IsValidCharacterWithLocation(const FGuid& InCharacterGuid, FVector& OutCharacterLocation)
+{
+	if (InCharacterGuid.IsValid() == false)
+	{
+		ERR_V("Invalid Character Guid");
+		return false;
+	}
+
+	if (TObjectPtr<class AHyCharacterBase>* FindCharacter = SpawnedCharacterMap.Find(InCharacterGuid))
+	{
+		if (*FindCharacter)
+		{
+
+			if ((*FindCharacter)->IsDead())
+			{
+				ERR_V("Character is dead %s", *InCharacterGuid.ToString());
+				return false;
+			}
+			else
+			{
+				OutCharacterLocation = (*FindCharacter)->GetActorLocation();
+				return true;
+			}
+		}
+	}
+
+	ERR_V("Character is not exist %s", *InCharacterGuid.ToString());
+	return false;
+}
+
 TObjectPtr<class AHyCharacterBase> UHySpawnManager::GetCharacterByGuid(const FGuid& InCharacterGuid)
 {
 	if (IsValidCharacter(InCharacterGuid), false)
@@ -184,10 +214,10 @@ void UHySpawnManager::SetLocalPlayer(TObjectPtr<class AHyMyPlayerBase> InLocalPl
 
 }
 
-const bool UHySpawnManager::FindTargetMonster(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid)
+const bool UHySpawnManager::FindTargetMonster(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid, FVector& OutTargetLocation)
 {
 	bool bFindTarget = false;
-	float ClosetDistance = 1000000.f;
+	float ClosetDistance = MAX_FLT;
 
 	OutTargetGuid.Invalidate();
 	
@@ -209,6 +239,7 @@ const bool UHySpawnManager::FindTargetMonster(const FVector& InCompareLocation, 
 		{
 			ClosetDistance = InEnableLength;
 			OutTargetGuid = Monster.Key;
+			OutTargetLocation = Monster.Value->GetActorLocation();
 			bFindTarget = true;
 		}
 	}
@@ -216,7 +247,7 @@ const bool UHySpawnManager::FindTargetMonster(const FVector& InCompareLocation, 
 	return bFindTarget;
 }
 
-const bool UHySpawnManager::FindTargetPlayer(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid)
+const bool UHySpawnManager::FindTargetPlayer(const FVector& InCompareLocation, const float InEnableLength, FGuid& OutTargetGuid, FVector& OutTargetLocation)
 {
 
 	return false;

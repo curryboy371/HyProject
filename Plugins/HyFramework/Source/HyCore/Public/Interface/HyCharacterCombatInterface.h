@@ -25,4 +25,7 @@ public:
 	virtual const bool IsTargetInRange(const float InRange) { return false; };
 	virtual bool FindTarget() { return false; };
 
+	virtual const bool SetCharacterRotationIfInRange(const FVector& InTargetLotation, const float InEnableRange) { return false; };
+
 };
+

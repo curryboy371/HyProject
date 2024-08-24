@@ -291,6 +291,9 @@ struct FHyDamageEvent : public FDamageEvent
     UPROPERTY()
     EHyDamageType DamageType;
 
+    UPROPERTY()
+    FString ActionContext;
+
 };
 
 #pragma endregion

@@ -97,12 +97,18 @@ public:
 
 
 public:
+	// Test
+	UFUNCTION(BlueprintCallable)
+	virtual bool TriggerActionBlueprint(FActionExcuteData InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false);
+
 	// IActionsCharacterInterface을(를) 통해 상속됨
 	virtual bool TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false) override;
+
+
 	virtual void SetStoredAction(FActionExcuteData& InActionExcuteData, const FString InContext = "", bool bForce = false) override;
 	virtual void HandleAction(EActionHandleType InExitType, float BlendOut = 0.5f) override;
 
-	virtual void SetPerformingActionPriority(EActionPriority InPriority = EActionPriority::ENone) override;
+	virtual void SetPerformingActionPriority(EActionPriority InPriority = EActionPriority::EEmpty) override;
 
 	virtual bool CompareCurrentPriority(EActionPriority InPriority) const override;
 
@@ -116,7 +122,7 @@ public:
 public:
 	// IHyCharacterCombatInterface을(를) 통해 상속됨
 	virtual const bool IsTargetInRange(const float InRange) override;
-	virtual bool FindTarget() {	return false;	};
+	virtual const bool SetCharacterRotationIfInRange(const FVector& InTargetLotation, const float InEnableRange) override;
 
 
 
@@ -134,7 +140,7 @@ public:
 	void SetStencilOutline(bool IsShow, EStencilOutLine StencilType );
 
 public:
-
+	
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Input")

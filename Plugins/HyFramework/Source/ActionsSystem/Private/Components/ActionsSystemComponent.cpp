@@ -483,6 +483,25 @@ const bool UActionsSystemComponent::IsLastMonstageSection() const
     return false;
 }
 
+const bool UActionsSystemComponent::IsActionMontagePlaying() const
+{
+    if (!AnimInst)
+    {
+        ERR_V("AnimInst is nullptr");
+		return false;
+    }
+
+    if(bIsPerformingAction && PerformingAction)
+	{
+        if (TObjectPtr<UAnimMontage> AnimMontage = PerformingAction->GetActionMontageInfo().ActionMontage)
+        { 
+            return AnimInst->Montage_IsPlaying(AnimMontage);
+        }
+	}
+
+    return false;
+}
+
 void UActionsSystemComponent::ResetActionState()
 {
     // reset value

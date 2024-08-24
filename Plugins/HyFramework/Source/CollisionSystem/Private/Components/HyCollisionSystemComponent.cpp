@@ -19,6 +19,8 @@
 
 #include "HyCoreDeveloperSettings.h"
 
+#include "HyTagSubsystem.h"
+
 UHyCollisionSystemComponent::UHyCollisionSystemComponent()
 {
 	CharacterOwner = nullptr;
@@ -393,10 +395,53 @@ bool UHyCollisionSystemComponent::SweepMulti(const FTraceData& InTraceData, cons
 
 bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisionTag, const FGameplayTag& InHitTag, const FHitResult& InHitResult)
 {
-	if (!InHitResult.GetActor() || !CharacterOwner)
+	if (!CharacterOwner)
 	{
 		return false;
 	}
+
+	TObjectPtr<AActor> TargetActor = InHitResult.GetActor();
+	if (!TargetActor)
+	{
+		return false;
+	}
+
+	const FVector Forward = TargetActor->GetActorForwardVector();
+	// Lower Impact Point to the Enemy's Actor Location Z
+	const FVector ImpactLowered(InHitResult.ImpactPoint.X, InHitResult.ImpactPoint.Y, TargetActor->GetActorLocation().Z);
+	const FVector ToHit = (ImpactLowered - TargetActor->GetActorLocation()).GetSafeNormal();
+
+	// Forward * ToHit = |Forward||ToHit| * cos(theta)
+	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
+	const double CosTheta = FVector::DotProduct(Forward, ToHit);
+	// Take the inverse cosine (arc-cosine) of cos(theta) to get theta
+	double Theta = FMath::Acos(CosTheta);
+	// convert from radians to degrees
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	// if CrossProduct points down, Theta should be negative
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= -1.f;
+	}
+
+	FName Section("Forward");
+
+	if (Theta >= -45.f && Theta < 45.f)
+	{
+		Section = FName("Back");
+	}
+	else if (Theta >= -135.f && Theta < -45.f)
+	{
+		Section = FName("Right");
+	}
+	else if (Theta >= 45.f && Theta < 135.f)
+	{
+		Section = FName("Left");
+	}
+
+	LOG_V("Theta %f %s" , Theta, *Section.ToString());
 
 	int32 RandType = FMath::RandRange((int32)EHyDamageType::EHyDamage_Normal, (int32)EHyDamageType::EHyDamage_Miss);
 	
@@ -404,10 +449,19 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 	DamageEvent.HitTag = InHitTag;
 	DamageEvent.SetHitResult(InHitResult);
 	DamageEvent.DamageType = (EHyDamageType)RandType;
+	DamageEvent.ActionContext = Section.ToString();
 	
 	int32 DamageAmount = FMath::RandRange(10, 100); // TODO TEMP;
 
 	InHitResult.GetActor()->TakeDamage(DamageAmount, DamageEvent, CharacterOwner->GetController(), CharacterOwner);
+
+	if (UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSettingRef())
+	{
+		if (DevSetting->IsDebugDrawCollision())
+		{
+			UHyCoreFunctionLibrary::DrawArrow(GetWorld(), TargetActor->GetActorLocation(), ImpactLowered, 12, FLinearColor::Red, 1, 2);
+		}
+	}
 	return true;
 }
 

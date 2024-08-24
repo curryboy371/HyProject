@@ -621,6 +621,12 @@ void AHyCharacterBase::ReleaseWarpingTarget()
 	MotionWarpingComp->RemoveWarpTarget(FName("Dash"));
 }
 
+bool AHyCharacterBase::TriggerActionBlueprint(FActionExcuteData InActionExcuteData, const FString& InContext, bool bCanBeStored)
+{
+	return TriggerAction(InActionExcuteData, InContext, bCanBeStored);
+
+}
+
 bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext, bool bCanBeStored)
 {
 	bool bSuccessAction = false;
@@ -631,8 +637,11 @@ bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, cons
 		return bSuccessAction;
 	}
 
+	if(!InContext.IsEmpty())
+	{
+		InActionExcuteData.ActionContext = InContext;
+	}
 
-	InActionExcuteData.ActionContext = InContext;
 	bSuccessAction = ActionsSystemComp->TriggerAction(InActionExcuteData, bCanBeStored);
 
 	if (bSuccessAction)
@@ -783,6 +792,21 @@ const bool AHyCharacterBase::IsTargetInRange(const float InRange)
 	return false;
 }
 
+const bool AHyCharacterBase::SetCharacterRotationIfInRange(const FVector& InTargetLotation, const float InEnableRange)
+{
+	FVector LookVector = InTargetLotation - GetActorLocation();
+
+	if (LookVector.Length() < InEnableRange)
+	{
+		FRotator InputRotation = FRotationMatrix::MakeFromX(LookVector).Rotator();
+		InputRotation.Pitch = 0;
+		SetActorRotation(InputRotation);
+		return true;
+	}
+
+	return false;
+}
+
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 {
 	if (!InventorySystemComp)
@@ -871,6 +895,12 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 		return;
 	}
 
+	if (!ActionsSystemComp)
+	{
+		ERR_V("No ActionsSystemComp");
+		return;
+	}
+
 	CharacterInputData.bIsMoveInputing = true;
 	bool bIsRotating = true; // 회전중인지 체크
 
@@ -896,12 +926,13 @@ void AHyCharacterBase::InputMove(const FInputActionValue& Value)
 		return;
 	}
 
-	TriggerAction(QuickActionExcute.Move);
-
-	if (GET_TAG_SUBSYSTEM()->IsNormalAction(GetCurAction()) == false)
+	// attack stop 가능 구간이 넘어선 경우
+	if (GET_TAG_SUBSYSTEM()->IsAttackAction(GetCurAction()))
 	{
-		return;
+		HandleAction(EActionHandleType::EActionHandle_Stop);
 	}
+
+	TriggerAction(QuickActionExcute.Move);
 
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	float AdjustedRotationSpeed = CharacterInputData.RotationSpeed * CharacterInputData.InputScale;
@@ -1065,12 +1096,33 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		return 0.0f;
 	}
 
+	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-	LOG_V("TakeDamage : %f", Damage);
+	if (DamageEvent.GetTypeID() == FHyDamageEvent::ClassID)
+	{
+		const FHyDamageEvent& HyDamageEvent = static_cast<const FHyDamageEvent&>(DamageEvent);
 
 
+		const FGameplayTag HitActionTag = GET_TAG_SUBSYSTEM()->GetActionTypeByDamageType(HyDamageEvent.HitTag, GetCurAction());
 
-	return 0.0f;
+		// Action
+		FActionExcuteData ChangeActionData = FActionExcuteData(HitActionTag, EActionPriority::EHigh, HyDamageEvent.ActionContext);
+
+		TriggerAction(ChangeActionData);
+
+		//if (CanChangeHit(HyDamageEvent.HitTag, ChangeTag, ChangeStoreTag, ChangeStorePriority))
+		//{
+		//	SetStoredAction(ChangeStoreTag);
+		//}
+
+		// DamageFont
+		//if (FXComponent)
+		//{
+		//	FXComponent->SpawnDamageText(DamageAmount, HyDamageEvent.DamageType);
+		//}
+	}
+
+	return Damage;
 }
 
 const bool AHyCharacterBase::IsDead() const
@@ -1143,8 +1195,10 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 		{
 			if (GET_TAG_SUBSYSTEM()->IsAttackAction(CurActionTag))
 			{
-				// Stop Noti 이전에는 우선순위에서 이동 불가처리됨
-				bRes = true;
+				if (CompareCurrentPriority(EActionPriority::ENone))
+				{
+					bRes = true;
+				}
 			}
 		}
 	}

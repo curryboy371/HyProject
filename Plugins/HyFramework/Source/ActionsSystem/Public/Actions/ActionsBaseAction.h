@@ -81,6 +81,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Actions")
     void SetActionMontageInfo(const FActionMontageInfo& InMontageInfo) {};
 
+    FActionMontageInfo& GetActionMontageInfo() { return MontageInfo; };
+
+
     /*Interrupt current action AND animation Immediately*/
     UFUNCTION(BlueprintCallable, Category = "Actions")
     void StopActionImmediately() {};

@@ -160,7 +160,7 @@ bool UActionsBaseAction::GetMontageProgress(float& OutPregress)
             // 현재까지 진행된 섹션의 길이
             //float MontageLength = 0.0f;
             //int32 CurSectionIdx = MontageInfo.ActionMontage->GetSectionIndex(GetMontageSectionName());
-            //CurSectionIdx = FMath::Clamp(CurSectionIdx, 0, CurSectionIdx);
+            //CurSectionIdx = FMath::Clamp(CurSectioisnIdx, 0, CurSectionIdx);
             //
             //for (int32 i = 0; i <= CurSectionIdx; ++i)
             //{

@@ -4,11 +4,14 @@
 #include "Animation/HyAnimNotifyState_Attack.h"
 
 #include "Interface/CollisionCharacterInterface.h"
+
+#include "HyTagSubsystem.h"
 #include "HyCoreMacro.h"
 
 UHyAnimNotifyState_Attack::UHyAnimNotifyState_Attack()
 {
 	AttackCollisionSet.ResetState();
+	AttackCollisionSet.TagName = UHyTagSubsystem::DefaultHitTag;
 }
 
 void UHyAnimNotifyState_Attack::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)

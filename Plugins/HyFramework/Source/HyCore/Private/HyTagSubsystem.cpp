@@ -3,8 +3,13 @@
 
 #include "HyTagSubsystem.h"
 
+// 편리한 사용을 위해 디폴트 태그 설정
+FGameplayTag UHyTagSubsystem::DefaultHitTag = FGameplayTag::RequestGameplayTag(FName("Damaged.Hit"));
+
 UHyTagSubsystem::UHyTagSubsystem()
 {
+
+
 }
 
 void UHyTagSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -48,6 +53,11 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Player"), EquipPlayerParent);
     AddTag(FName("AI"), EquipAIParent);
 
+    AddTag(FName("Action.Stand"), ActionLocationTagSet.StandActionTag);
+    AddTag(FName("Action.Down"), ActionLocationTagSet.DownActionTag);
+    AddTag(FName("Action.InAir"), ActionLocationTagSet.InAirActionTag);
+
+    
 }
 
 void UHyTagSubsystem::AddTag(const FName& InTagName, FGameplayTag& InActionTagInst)
@@ -101,6 +111,65 @@ const bool UHyTagSubsystem::IsDashAttackAction(const FGameplayTag& InActionTag) 
 const bool UHyTagSubsystem::IsDeadAction(const FGameplayTag& InActionTag) const
 {
     return DeadContainer.HasTag(InActionTag);
+}
+
+const bool UHyTagSubsystem::IsStandAction(const FGameplayTag& InActionTag) const
+{
+    if (InActionTag.MatchesTag(ActionLocationTagSet.StandActionTag))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+const bool UHyTagSubsystem::IsDownAction(const FGameplayTag& InActionTag) const
+{
+    if (InActionTag.MatchesTag(ActionLocationTagSet.DownActionTag))
+    {
+
+        return true;
+    }
+
+    return false;
+}
+
+const bool UHyTagSubsystem::IsInAirAction(const FGameplayTag& InActionTag) const
+{
+    if (InActionTag.MatchesTag(ActionLocationTagSet.InAirActionTag))
+    {
+        return true;
+    }
+
+
+    return false;
+}
+
+const FGameplayTag UHyTagSubsystem::GetActionTypeByDamageType(const FGameplayTag& InDamageType, const FGameplayTag& CurActionTag) const
+{
+    // HitTag와 현재 base Action으로 HitAction Tag를 만드는 함수
+    // Action.Stand + Damaged.Hit = Action.Stand.Damaged.Hit
+
+    FGameplayTag HitActionTag = FGameplayTag::EmptyTag;
+    if (IsStandAction(CurActionTag))
+    {
+        FString TagString = ActionLocationTagSet.StandActionTag.ToString() + "." + InDamageType.ToString();
+        HitActionTag = FGameplayTag::RequestGameplayTag(FName(*TagString));
+
+    }
+	else if (IsDownAction(CurActionTag))
+	{
+        FString TagString = ActionLocationTagSet.DownActionTag.ToString() + "." + InDamageType.ToString();
+        HitActionTag = FGameplayTag::RequestGameplayTag(FName(*TagString));
+	}
+	else if (IsInAirAction(CurActionTag))
+	{
+        FString TagString = ActionLocationTagSet.InAirActionTag.ToString() + "." + InDamageType.ToString();
+        HitActionTag = FGameplayTag::RequestGameplayTag(FName(*TagString));
+
+	}
+
+    return HitActionTag;
 }
 
 const bool UHyTagSubsystem::IsPlayerCharacter(const FGameplayTag& InCharacterTag) const
