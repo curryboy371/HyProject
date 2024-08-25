@@ -17,8 +17,6 @@ void UHyAction_DashAttack::OnActionStarted_Implementation(const FString& context
 {
 	Super::OnActionStarted_Implementation(contextString);
 
-
-
 	if (!HyCharacterOwner)
 	{
 		ERR_V("HyCharacterOwner is nullptr");
@@ -36,7 +34,7 @@ void UHyAction_DashAttack::OnActionStarted_Implementation(const FString& context
 			{
 				if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
 				{
-					if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), 300, Location))
+					if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
 					{
 						HyCharacterOwner->SetDashWarpingTarget(Location);
 					}

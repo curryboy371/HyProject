@@ -195,6 +195,7 @@ protected:
 	void DebugRenderWidget();
 	void DebugDrawMovement();
 
+	void DebugDrawTargetHitDirection();
 public:
 
 
@@ -276,9 +277,10 @@ protected:
 	FGuid TargetGuid;
 
 
-protected:
+public:
 	// TODO TEMP
-	const float DashAttackRange = 500.f;
+	const float DashAttackRange = 700.f;
 	const float EnableTargetRange = 1000.f;
+	float KeepDownTime = 0.0f;
 
 };

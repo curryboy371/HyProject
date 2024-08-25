@@ -2,12 +2,14 @@
 
 
 #include "Action/HyAction_LargeHit.h"
+#include "Math/UnrealMathUtility.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void UHyAction_LargeHit::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
 
-
+    SectionIndex = FMath::RandRange(0, 1); // Rand;
 }
 
 void UHyAction_LargeHit::OnActionEnded_Implementation()
@@ -27,5 +29,18 @@ void UHyAction_LargeHit::OnTick_Implementation(float DeltaTime)
 
 FName UHyAction_LargeHit::GetMontageSectionName_Implementation()
 {
-	return FName();
+    if (animMontage)
+    {
+        const FName SectionName = animMontage->GetSectionName(SectionIndex);
+
+        if (SectionName != NAME_None)
+        {
+            return SectionName;
+        }
+        else
+        {
+            return animMontage->GetSectionName(0);
+        }
+    }
+    return NAME_None;
 }

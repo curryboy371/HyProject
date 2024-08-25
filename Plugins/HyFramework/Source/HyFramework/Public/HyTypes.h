@@ -87,7 +87,7 @@ struct FQuickActionExcuteDataSet
 	}
 
 	bool bIsInit;
-	FActionExcuteData Spawn, Idle, Move, Jump, Equip, UnEquip, Crouching, Attack, DashAttack;
+	FActionExcuteData Spawn, Idle, Move, Jump, Equip, UnEquip, Crouching, Attack, DashAttack, KeepDown, Standing;
 };
 
 

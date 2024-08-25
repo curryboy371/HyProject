@@ -40,7 +40,6 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Action.Stand.Attack.DashAttacking"), ActionTagSet.ActionDashAttack);
 
 
-
     AddTag(FName("ItemSlot"), ItemSlotTagSet.SlotParent);
     AddTag(FName("ItemSlot.Weapon"), ItemSlotTagSet.SlotWeapon);
 
@@ -61,6 +60,15 @@ void UHyTagSubsystem::InitTagSet()
     AddContainerTag(FName("Action.Stand.Damaged.Dead"), DeadContainer);
     AddContainerTag(FName("Action.Down.Damaged.Dead"), DeadContainer);
     AddContainerTag(FName("Action.InAir.Damaged.Dead"), DeadContainer);
+
+
+    AddTag(FName("Damaged.KeepDown"), HitTagSet.DamagedDown);
+    AddTag(FName("Damaged.Standing"), HitTagSet.DamagedStanding);
+
+    AddTag(FName("Damaged.Hit"), HitTagSet.DamagedNormal);
+    AddTag(FName("Damaged.LargeHit"), HitTagSet.DamagedLarge);
+    AddTag(FName("Damaged.CriticalHit"), HitTagSet.DamagedCritical);
+    AddTag(FName("Damaged.Dead"), HitTagSet.DamagedDead);
 
 
     AddContainerTag(FName("Action.Stand.Damaged"), DamagedParentContainer);
@@ -193,6 +201,21 @@ const FGameplayTag UHyTagSubsystem::GetActionTypeByDamageType(const FGameplayTag
 	}
 
     return HitActionTag;
+}
+
+const bool UHyTagSubsystem::IsNormalHit(const FGameplayTag& InDamageType) const
+{
+    return HitTagSet.DamagedNormal == InDamageType;
+}
+
+const bool UHyTagSubsystem::IsLargeHit(const FGameplayTag& InDamageType) const
+{
+    return HitTagSet.DamagedLarge == InDamageType;
+}
+
+const bool UHyTagSubsystem::IsCriticalHit(const FGameplayTag& InDamageType) const
+{
+    return HitTagSet.DamagedCritical == InDamageType;
 }
 
 const bool UHyTagSubsystem::IsPlayerCharacter(const FGameplayTag& InCharacterTag) const

@@ -21,4 +21,7 @@ public:
     virtual bool IsStopConditional_Implementation() { return true; };
 
     virtual FName GetMontageSectionName_Implementation();
+
+protected:
+    int32 SectionIndex = 0;
 };

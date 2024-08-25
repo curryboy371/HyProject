@@ -27,7 +27,8 @@ public class HyFramework : ModuleRules
                 "GameplayTags",
                 "EnhancedInput",
 				"MotionWarping",
-				"UMG",
+
+                "UMG",
 
 
 				// Custom Modules

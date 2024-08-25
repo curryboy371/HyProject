@@ -61,6 +61,7 @@ UENUM(BlueprintType)
 enum class EHyDamageType : uint8
 {
     EHyDamage_Normal UMETA(DisplayName = "Normal Damage"),
+    EHyDamage_Large UMETA(DisplayName = "Normal Damage"),
     EHyDamage_Critical UMETA(DisplayName = "Critical Damage"),
     EHyDamage_Miss UMETA(DisplayName = "Miss Damage"),
 };
@@ -268,7 +269,11 @@ struct FHyDamageEvent : public FDamageEvent
 
     FHyDamageEvent()
         : HitTag(FGameplayTag::EmptyTag), DamageType(EHyDamageType::EHyDamage_Normal)
-    { }
+    {
+        ActionContext = "";
+        DownTime = 0.0f;
+    }
+
 
     virtual ~FHyDamageEvent() { }
 
@@ -293,6 +298,9 @@ struct FHyDamageEvent : public FDamageEvent
 
     UPROPERTY()
     FString ActionContext;
+
+    UPROPERTY()
+    float DownTime;
 
 };
 

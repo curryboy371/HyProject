@@ -344,6 +344,10 @@ void AHyCharacterBase::CharacterActionTagSetup()
 			QuickActionExcute.DashAttack = FActionExcuteData(TagSubsystem->ActionTagSet.ActionDashAttack, EActionPriority::EMedium);
 
 
+			QuickActionExcute.KeepDown = FActionExcuteData(TagSubsystem->ActionTagSet.ActionDashAttack, EActionPriority::EHigh);
+			QuickActionExcute.Standing = FActionExcuteData(TagSubsystem->ActionTagSet.ActionDashAttack, EActionPriority::EHigh);
+
+
 			QuickActionExcute.bIsInit = true;
 			LOG_V("Action Tag Init");
 		}
@@ -1100,9 +1104,10 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 		const FGameplayTag HitActionTag = GET_TAG_SUBSYSTEM()->GetActionTypeByDamageType(HyDamageEvent.HitTag, GetCurAction());
 
+		KeepDownTime = HyDamageEvent.DownTime;
+
 		// Action
 		FActionExcuteData ChangeActionData = FActionExcuteData(HitActionTag, EActionPriority::EHigh, HyDamageEvent.ActionContext);
-
 		TriggerAction(ChangeActionData);
 
 		//if (CanChangeHit(HyDamageEvent.HitTag, ChangeTag, ChangeStoreTag, ChangeStorePriority))
@@ -1233,6 +1238,12 @@ void AHyCharacterBase::DebugUpdate()
 		{
 			DebugDrawMovement();
 		}
+
+		if (DevSetting->IsDebugDrawCollision())
+		{
+			DebugDrawTargetHitDirection();
+
+		}
 	}
 }
 
@@ -1326,5 +1337,45 @@ void AHyCharacterBase::DebugDrawMovement()
 	Start.Z += 5;
 	End.Z += Height + 5;
 	UHyCoreFunctionLibrary::DrawArrow(GetWorld(), Start, End, 30, FLinearColor::Blue);
+}
+
+void AHyCharacterBase::DebugDrawTargetHitDirection()
+{
+	if (IsTargetAvailable())
+	{
+		UHyInst* Inst = UHyInst::Get();
+		if (!Inst)
+		{
+			ERR_V("Inst is not set.");
+			return;
+		}
+
+		UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+		if (!SpawnManager)
+		{
+			ERR_V("SpawnManager is not set.");
+			return;
+		}
+
+		if (TObjectPtr<class AHyCharacterBase> TargetCharacter = SpawnManager->GetCharacterByGuid(TargetGuid))
+		{
+			FVector AttackDirection = TargetCharacter->GetActorLocation() - GetActorLocation();
+			AttackDirection.Normalize();
+
+			// 상대방의 로컬 좌표계에서의 공격 방향 계산
+			FVector LocalAttackDirection = TargetCharacter->GetActorTransform().InverseTransformVector(AttackDirection);
+			FVector TargetForward = TargetCharacter->GetActorForwardVector();
+			float DotProduct = FVector::DotProduct(LocalAttackDirection, TargetForward);
+			FVector CrossProduct = FVector::CrossProduct(TargetForward, LocalAttackDirection);
+
+			//LOG_V("DotProduct %f CrossProduct Z %f", DotProduct, CrossProduct.Z);
+
+			//UHyCoreFunctionLibrary::DrawArrow(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorLocation() + LocalAttackDirection * 100, 10, FLinearColor::Red);
+			//LOG_V("TargetDirection : %s", *UHyCoreFunctionLibrary::HyDirectionToString(TargetDirection));
+
+		}
+
+
+	}
 }
 

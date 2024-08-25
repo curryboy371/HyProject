@@ -31,7 +31,6 @@ struct FActionTagSet
 	FGameplayTag AttActionParent;
 	FGameplayTag ActionAttack;
 	FGameplayTag ActionDashAttack;
-
 };
 
 struct FActionLocationTagSet
@@ -40,6 +39,19 @@ struct FActionLocationTagSet
 	FGameplayTag DownActionTag;
 	FGameplayTag InAirActionTag;
 };
+
+
+struct FHitTagSet
+{
+	FGameplayTag DamagedStanding;
+	FGameplayTag DamagedDown;
+
+	FGameplayTag DamagedDead;
+	FGameplayTag DamagedNormal;
+	FGameplayTag DamagedLarge;
+	FGameplayTag DamagedCritical;
+};
+
 
 struct FItemSlotTagSet
 {
@@ -91,6 +103,12 @@ public:
 
 	// DamageType To ActionType
 	const FGameplayTag GetActionTypeByDamageType(const FGameplayTag& InDamageType, const FGameplayTag& CurActionTag) const;
+
+	const bool IsNormalHit (const FGameplayTag& InDamageType) const;
+	const bool IsLargeHit(const FGameplayTag& InDamageType) const;
+	const bool IsCriticalHit(const FGameplayTag& InDamageType) const;
+
+
 public:
 	// check character type
 	const bool IsPlayerCharacter(const FGameplayTag& InCharacterTag) const;
@@ -107,15 +125,18 @@ public:
 
 	FGameplayTagContainer DeadContainer;
 	FGameplayTagContainer DamagedParentContainer;
+	FHitTagSet HitTagSet;
 
 	FCharacterTagSet CharacterTagSet;
+
+	FActionLocationTagSet ActionLocationTagSet;
 
 protected:
 
 	FGameplayTag EquipPlayerParent;
 	FGameplayTag EquipAIParent;
 
-	FActionLocationTagSet ActionLocationTagSet;
+
 
 
 public:

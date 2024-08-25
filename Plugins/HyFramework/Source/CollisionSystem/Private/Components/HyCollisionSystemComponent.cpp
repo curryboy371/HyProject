@@ -400,68 +400,91 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 		return false;
 	}
 
+	UHyTagSubsystem* TagSubSystem = GET_TAG_SUBSYSTEM();
+	if (!TagSubSystem)
+	{
+		return false;
+	}
+
 	TObjectPtr<AActor> TargetActor = InHitResult.GetActor();
 	if (!TargetActor)
 	{
 		return false;
 	}
 
-	const FVector Forward = TargetActor->GetActorForwardVector();
-	// Lower Impact Point to the Enemy's Actor Location Z
-	const FVector ImpactLowered(InHitResult.ImpactPoint.X, InHitResult.ImpactPoint.Y, TargetActor->GetActorLocation().Z);
-	const FVector ToHit = (ImpactLowered - TargetActor->GetActorLocation()).GetSafeNormal();
+	FVector AttackDirection = TargetActor->GetActorLocation() - CharacterOwner->GetActorLocation();
+	AttackDirection.Normalize();
 
-	// Forward * ToHit = |Forward||ToHit| * cos(theta)
-	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
-	const double CosTheta = FVector::DotProduct(Forward, ToHit);
-	// Take the inverse cosine (arc-cosine) of cos(theta) to get theta
-	double Theta = FMath::Acos(CosTheta);
-	// convert from radians to degrees
-	Theta = FMath::RadiansToDegrees(Theta);
+	// Target의 로컬 좌표계에서의 AttackDirection 계산
+	// LocalAttackDirection : Attacker 위치를  기준으로 타겟이 밀려나는 방향 벡터
+	FVector LocalAttackDirection = TargetActor->GetActorTransform().InverseTransformVector(AttackDirection);
+	FVector TargetForward = TargetActor->GetActorForwardVector();
+	float DotProduct = FVector::DotProduct(LocalAttackDirection, TargetForward);
+	FVector CrossProduct = FVector::CrossProduct(TargetForward, LocalAttackDirection);
 
-	// if CrossProduct points down, Theta should be negative
-	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
-	if (CrossProduct.Z < 0)
-	{
-		Theta *= -1.f;
-	}
-
-	FName Section("Forward");
-
-	if (Theta >= -45.f && Theta < 45.f)
-	{
-		Section = FName("Back");
-	}
-	else if (Theta >= -135.f && Theta < -45.f)
-	{
-		Section = FName("Right");
-	}
-	else if (Theta >= 45.f && Theta < 135.f)
-	{
-		Section = FName("Left");
-	}
-
-	LOG_V("Theta %f %s" , Theta, *Section.ToString());
-
-	int32 RandType = FMath::RandRange((int32)EHyDamageType::EHyDamage_Normal, (int32)EHyDamageType::EHyDamage_Miss);
-	
 	FHyDamageEvent DamageEvent;
 	DamageEvent.HitTag = InHitTag;
 	DamageEvent.SetHitResult(InHitResult);
-	DamageEvent.DamageType = (EHyDamageType)RandType;
-	DamageEvent.ActionContext = Section.ToString();
 	
-	int32 DamageAmount = FMath::RandRange(10, 100); // TODO TEMP;
-
-	InHitResult.GetActor()->TakeDamage(DamageAmount, DamageEvent, CharacterOwner->GetController(), CharacterOwner);
-
-	if (UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSettingRef())
+	if (TagSubSystem->IsCriticalHit(InHitTag))
 	{
-		if (DevSetting->IsDebugDrawCollision())
+		DamageEvent.DamageType = EHyDamageType::EHyDamage_Critical;
+
+		// 타겟의 방향벡터와 LocalAttackDirection가 일치해야 백어택. 
+		if(DotProduct > 0.2f)
 		{
-			UHyCoreFunctionLibrary::DrawArrow(GetWorld(), TargetActor->GetActorLocation(), ImpactLowered, 12, FLinearColor::Red, 1, 2);
+			DamageEvent.ActionContext = TEXT("Back");
+			DamageEvent.DownTime = 5.f;
 		}
 	}
+	else if (TagSubSystem->IsLargeHit(InHitTag))
+	{
+		DamageEvent.DamageType = EHyDamageType::EHyDamage_Large;
+	}
+	else if (TagSubSystem->IsNormalHit(InHitTag))
+	{
+		DamageEvent.DamageType = EHyDamageType::EHyDamage_Normal;
+
+		if (DotProduct > 0.7f)
+		{
+			DamageEvent.ActionContext = TEXT("Back");
+		}
+		else
+		{
+			if (DotProduct < -0.8f)
+			{
+				DamageEvent.ActionContext = TEXT("Front");
+			}
+			else if(DotProduct < -0.5f)
+			{
+				if (CrossProduct.Z > 0.0f)
+				{
+					DamageEvent.ActionContext = TEXT("FrontRight");
+				}
+				else
+				{
+					DamageEvent.ActionContext = TEXT("FrontLeft");
+				}
+			}
+			else
+			{
+				if (CrossProduct.Z > 0.0f)
+				{
+					DamageEvent.ActionContext = TEXT("Right");
+				}
+				else
+				{
+					DamageEvent.ActionContext = TEXT("Left");
+				}
+			}
+		}
+
+	}
+
+	int32 DamageAmount = FMath::RandRange(10, 100); // TODO TEMP;
+
+	LOG_V("DotProduct %f CrossProduct Z %f %s", DotProduct, CrossProduct.Z, *DamageEvent.ActionContext);
+	InHitResult.GetActor()->TakeDamage(DamageAmount, DamageEvent, CharacterOwner->GetController(), CharacterOwner);
 	return true;
 }
 
