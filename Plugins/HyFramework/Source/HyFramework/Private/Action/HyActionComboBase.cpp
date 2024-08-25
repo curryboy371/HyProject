@@ -18,11 +18,11 @@ void UHyActionComboBase::OnActionEnded_Implementation()
 
 }
 
-void UHyActionComboBase::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)
+void UHyActionComboBase::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
 {
-	Super::OnActionTransition_Implementation(InpreAction);
+	Super::OnActionTransition_Implementation(InPreAction);
 
-    if (InpreAction && InpreAction->IsA(GetClass()))
+    if (InPreAction && InPreAction->IsA(GetClass()))
     {
         if (animMontage && CurrentComboIndex > animMontage->CompositeSections.Num())
         {

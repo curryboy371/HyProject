@@ -17,7 +17,7 @@ class HYFRAMEWORK_API UHyAction_HitBase : public UHyActionBase
 public:
     virtual void OnActionStarted_Implementation(const FString& InContext = FString());
     virtual void OnActionEnded_Implementation();
-    virtual void OnActionTransition_Implementation(class UActionsBaseAction* InpreAction);
+    virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
     virtual void OnTick_Implementation(float DeltaTime);
     virtual bool IsStopConditional_Implementation() { return true; };
 };

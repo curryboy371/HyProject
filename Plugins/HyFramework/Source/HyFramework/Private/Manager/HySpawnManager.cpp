@@ -303,6 +303,7 @@ void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const FGameplayT
 		if (!PlayerEntity)
 		{
 			ERR_V("PlayerEntity is not set. ID=%d", InCharacterID);
+			return;
 		}
 
 		HitLocation.Z += 10.f;
@@ -323,6 +324,7 @@ void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const FGameplayT
 		if (!MonsterEntity)
 		{
 			ERR_V("MonsterEntity is not set. ID=%d", InCharacterID);
+			return;
 
 		}
 

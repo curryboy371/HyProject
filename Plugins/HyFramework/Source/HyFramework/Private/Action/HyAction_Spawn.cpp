@@ -32,9 +32,9 @@ void UHyAction_Spawn::OnActionEnded_Implementation()
 
 }
 
-void UHyAction_Spawn::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)
+void UHyAction_Spawn::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
 {
-	Super::OnActionTransition_Implementation(InpreAction);
+	Super::OnActionTransition_Implementation(InPreAction);
 
 }
 

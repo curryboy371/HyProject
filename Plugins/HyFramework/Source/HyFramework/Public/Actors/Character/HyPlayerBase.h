@@ -17,6 +17,8 @@ class HYFRAMEWORK_API AHyPlayerBase : public AHyCharacterBase
 	GENERATED_BODY()
 	
 public:
+	AHyPlayerBase(const FObjectInitializer& ObjectInitializer);
+public:
 	virtual bool FindTarget();
 
 };

@@ -14,11 +14,6 @@
  *   
  */
 
-struct FGameplayTuple
-{
-	FGameplayTag Tag;
-	FGameplayTagContainer Container;
-};
 
 struct FActionTagSet
 {
@@ -74,7 +69,7 @@ public:
 protected:
 	void InitTagSet();
 	void AddTag(const FName& InTagName, FGameplayTag& InActionTagInst);
-	void AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple);
+	void AddContainerTag(const FName& InTagName, FGameplayTagContainer& InTagContainer);
 
 public:
 	// Check State By ActionTag
@@ -91,6 +86,8 @@ public:
 	const bool IsStandAction(const FGameplayTag& InActionTag) const;
 	const bool IsDownAction(const FGameplayTag& InActionTag) const;
 	const bool IsInAirAction(const FGameplayTag& InActionTag) const;
+
+	const bool IsDamagedAction(const FGameplayTag& InActionTag) const;
 
 	// DamageType To ActionType
 	const FGameplayTag GetActionTypeByDamageType(const FGameplayTag& InDamageType, const FGameplayTag& CurActionTag) const;
@@ -109,6 +106,7 @@ public:
 	FItemSlotTagSet ItemSlotTagSet;
 
 	FGameplayTagContainer DeadContainer;
+	FGameplayTagContainer DamagedParentContainer;
 
 	FCharacterTagSet CharacterTagSet;
 

@@ -7,7 +7,7 @@
 AHyMonsterBase::AHyMonsterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	CharacterAIDefaultSetup();
 }
 
 void AHyMonsterBase::BeginPlay()

@@ -43,9 +43,9 @@ void UHyAction_Equip::OnActionEnded_Implementation()
 
 }
 
-void UHyAction_Equip::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)
+void UHyAction_Equip::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
 {
-	Super::OnActionTransition_Implementation(InpreAction);
+	Super::OnActionTransition_Implementation(InPreAction);
 
 }
 

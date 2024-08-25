@@ -50,13 +50,22 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Character.Monster"), CharacterTagSet.MonsterTag);
 
 
-    AddTag(FName("Player"), EquipPlayerParent);
-    AddTag(FName("AI"), EquipAIParent);
+    AddTag(FName("Control.Player"), EquipPlayerParent);
+    AddTag(FName("Control.AI"), EquipAIParent);
 
     AddTag(FName("Action.Stand"), ActionLocationTagSet.StandActionTag);
     AddTag(FName("Action.Down"), ActionLocationTagSet.DownActionTag);
     AddTag(FName("Action.InAir"), ActionLocationTagSet.InAirActionTag);
 
+
+    AddContainerTag(FName("Action.Stand.Damaged.Dead"), DeadContainer);
+    AddContainerTag(FName("Action.Down.Damaged.Dead"), DeadContainer);
+    AddContainerTag(FName("Action.InAir.Damaged.Dead"), DeadContainer);
+
+
+    AddContainerTag(FName("Action.Stand.Damaged"), DamagedParentContainer);
+    AddContainerTag(FName("Action.Down.Damaged"), DamagedParentContainer);
+    AddContainerTag(FName("Action.InAir.Damaged"), DamagedParentContainer);
     
 }
 
@@ -65,9 +74,13 @@ void UHyTagSubsystem::AddTag(const FName& InTagName, FGameplayTag& InActionTagIn
     InActionTagInst = FGameplayTag::RequestGameplayTag(InTagName);
 }
 
-void UHyTagSubsystem::AddContainerTag(const FName& InTagName, FGameplayTuple& InTagTuple)
+void UHyTagSubsystem::AddContainerTag(const FName& InTagName, FGameplayTagContainer& InTagContainer)
 {
+	InTagContainer.AddTag(FGameplayTag::RequestGameplayTag(InTagName));
+
+
 }
+
 
 const bool UHyTagSubsystem::IsNormalAction(const FGameplayTag& InActionTag) const
 {
@@ -141,6 +154,16 @@ const bool UHyTagSubsystem::IsInAirAction(const FGameplayTag& InActionTag) const
         return true;
     }
 
+
+    return false;
+}
+
+const bool UHyTagSubsystem::IsDamagedAction(const FGameplayTag& InActionTag) const
+{
+    if (DamagedParentContainer.HasTag(InActionTag))
+	{
+		return true;
+	}
 
     return false;
 }

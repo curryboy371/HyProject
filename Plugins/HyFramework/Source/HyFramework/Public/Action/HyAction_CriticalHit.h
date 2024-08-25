@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Action/HyActionBase.h"
-#include "HyAction_Jump.generated.h"
+#include "Action/HyAction_HitBase.h"
+#include "HyAction_CriticalHit.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYFRAMEWORK_API UHyAction_Jump : public UHyActionBase
+class HYFRAMEWORK_API UHyAction_CriticalHit : public UHyAction_HitBase
 {
 	GENERATED_BODY()
+	
 public:
 	virtual void OnActionStarted_Implementation(const FString& InContext = FString());
-	virtual void OnActionSetupCompleted_Implementation(const FString& InContext = FString());
 	virtual void OnActionEnded_Implementation();
 	virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
 	virtual void OnTick_Implementation(float DeltaTime);

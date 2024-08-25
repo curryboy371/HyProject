@@ -55,6 +55,8 @@ protected:
 	virtual void ComponenetSetup();
 
 protected:
+	void CharacterAIDefaultSetup();
+
 	void CharacterActionTagSetup();
 
 	void CharacterSetup();

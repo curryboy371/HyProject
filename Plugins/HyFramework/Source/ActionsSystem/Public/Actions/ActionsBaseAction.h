@@ -49,8 +49,8 @@ public:
 
     /*Called when the action is successfully triggered and BEFORE the OnActionStarted.*/
     UFUNCTION(BlueprintNativeEvent, Category = "Actions")
-    void OnActionTransition(class UActionsBaseAction* InpreAction);
-    virtual void OnActionTransition_Implementation(class UActionsBaseAction* InpreAction) {};
+    void OnActionTransition(class UActionsBaseAction* InPreAction);
+    virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction) {};
 
     /*Called every frame if the ActionsManagerComponent of this character has bCanTick set to true*/
     UFUNCTION(BlueprintNativeEvent, Category = "Actions")

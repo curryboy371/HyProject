@@ -15,9 +15,9 @@ void UHyAction_LargeHit::OnActionEnded_Implementation()
 	Super::OnActionEnded_Implementation();
 }
 
-void UHyAction_LargeHit::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)
+void UHyAction_LargeHit::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
 {
-	Super::OnActionTransition_Implementation(InpreAction);
+	Super::OnActionTransition_Implementation(InPreAction);
 }
 
 void UHyAction_LargeHit::OnTick_Implementation(float DeltaTime)

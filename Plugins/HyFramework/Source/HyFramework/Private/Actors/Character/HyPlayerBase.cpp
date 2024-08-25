@@ -9,6 +9,12 @@
 
 #include "HyCoreMacro.h"
 
+AHyPlayerBase::AHyPlayerBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	CharacterAIDefaultSetup();
+}
+
 bool AHyPlayerBase::FindTarget()
 {
 	UHyInst* Inst = UHyInst::Get();

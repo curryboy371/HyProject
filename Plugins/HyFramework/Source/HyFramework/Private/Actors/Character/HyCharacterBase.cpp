@@ -315,6 +315,12 @@ void AHyCharacterBase::SetGroundLocation()
 	}
 }
 
+void AHyCharacterBase::CharacterAIDefaultSetup()
+{
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	GetCharacterMovement()->bRunPhysicsWithNoController = true;
+}
+
 void AHyCharacterBase::CharacterActionTagSetup()
 {
 	if (!QuickActionExcute.bIsInit)
@@ -496,7 +502,6 @@ void AHyCharacterBase::SetDelegateFunctions()
 
 void AHyCharacterBase::CharacterWidgetSetup()
 {
-	CharacterDebugHudSetup();
 
 }
 
@@ -861,29 +866,18 @@ void AHyCharacterBase::TriggerAttackAction()
 		return;
 	}
 
-	bool bIsDashAttack = false;
-
 	if (!GET_TAG_SUBSYSTEM()->IsDashAttackAction(GetCurAction()))
 	{
 		bool bIsComboAttack = GET_TAG_SUBSYSTEM()->IsComboAttackAction(GetCurAction());
 		// (콤보 어택 && 마지막 인덱스) or 콤보 어택이 아닌경우
 		if (bIsComboAttack && ActionsSystemComp->IsLastMonstageSection() || !bIsComboAttack)
 		{
-			bIsDashAttack = true;
-		}
-
-		if (bIsDashAttack)
-		{
-			// 타겟이 사정거리 안에 있다면 DashAttack
-			if (IsTargetInRange(DashAttackRange))
-			{
-				TriggerAction(QuickActionExcute.DashAttack, FString(), true);
-				return;
-			}
+			TriggerAction(QuickActionExcute.DashAttack, FString(), true);
+			return;
 		}
 	}
 
-	// 일반 콤보어택
+	// Dash Atack이 아니면 콤보어택
 	TriggerAction(QuickActionExcute.Attack, FString(), true);
 }
 
@@ -1093,6 +1087,7 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 {
 	if (IsDead())
 	{
+		ERR_V("Character is already dead");
 		return 0.0f;
 	}
 

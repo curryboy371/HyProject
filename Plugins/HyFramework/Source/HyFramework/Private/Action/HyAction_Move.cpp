@@ -24,9 +24,9 @@ void UHyAction_Move::OnActionEnded_Implementation()
 
 }
 
-void UHyAction_Move::OnActionTransition_Implementation(UActionsBaseAction* InpreAction)
+void UHyAction_Move::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
 {
-	Super::OnActionTransition_Implementation(InpreAction);
+	Super::OnActionTransition_Implementation(InPreAction);
 
 }
 
