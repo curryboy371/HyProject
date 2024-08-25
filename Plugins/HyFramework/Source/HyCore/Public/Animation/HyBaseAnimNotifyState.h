@@ -32,6 +32,7 @@ protected:
 	bool  bStartNotiState;
 	float StartTime;
 	float EndTime;
+	float TotalDurationTime;
 	float DeltaTime;
 	float RemainAlphaRatio;
 };

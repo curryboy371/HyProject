@@ -85,7 +85,7 @@ public:
 public:
 	// ICControlCharacterInterface을(를) 통해 상속됨
 	virtual const bool IsDead() override;
-	virtual const bool IsCombatMode() override;
+	virtual const bool IsCombatMode() const override;
 
 	virtual FGameplayTag GetEquipTag() override;
 
@@ -130,7 +130,7 @@ public:
 
 	// Combat
 	bool GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation);
-	void SetDashWarpingTarget(const FVector& InTargetLocation);
+	void SetWarpingTarget(const FVector& InTargetLocation, const FName& InWarpName);
 	void ReleaseWarpingTarget();
 public:
 
@@ -147,6 +147,9 @@ public:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputAttack(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void CompletedAttack(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputMove(const FInputActionValue& Value);
@@ -172,6 +175,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputCrouch(const FInputActionValue& Value);
 
+	
 protected:
 	void TriggerAttackAction();
 
@@ -276,6 +280,8 @@ protected:
 	FGuid MyGuid;
 	FGuid TargetGuid;
 
+
+	int32 InputAttackCount = 0;
 
 public:
 	// TODO TEMP

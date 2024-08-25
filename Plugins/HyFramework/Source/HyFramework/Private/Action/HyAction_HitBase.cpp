@@ -2,6 +2,9 @@
 
 
 #include "Action/HyAction_HitBase.h"
+#include "Actors/Character/HyCharacterBase.h"
+#include "HyCoreMacro.h"
+
 
 void UHyAction_HitBase::OnActionStarted_Implementation(const FString& InContext)
 {
@@ -23,5 +26,17 @@ void UHyAction_HitBase::OnTick_Implementation(float DeltaTime)
 {
     Super::OnTick_Implementation(DeltaTime);
 
+}
+
+bool UHyAction_HitBase::IsStopConditional_Implementation()
+{
+    if (!HyCharacterOwner)
+    {
+        ERR_V("HyCharacterOwner  Is nullptr");
+        return false;
+    }
+
+    HyCharacterOwner->SetPerformingActionPriority(EActionPriority::EMedium);
+    return false;
 }
 

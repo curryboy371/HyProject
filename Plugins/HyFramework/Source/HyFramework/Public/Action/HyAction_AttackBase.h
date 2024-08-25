@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Action/HyAction_AttackBase.h"
-#include "HyAction_DashAttack.generated.h"
+#include "Action/HyActionBase.h"
+#include "HyAction_AttackBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYFRAMEWORK_API UHyAction_DashAttack : public UHyAction_AttackBase
+class HYFRAMEWORK_API UHyAction_AttackBase : public UHyActionBase
 {
 	GENERATED_BODY()
 	
@@ -19,6 +19,5 @@ public:
 	virtual void OnTick_Implementation(float DeltaTime);
 	virtual void OnActionEnded_Implementation();
 
-protected:
-	FVector WarpLocation;
+	virtual bool IsStopConditional_Implementation();
 };

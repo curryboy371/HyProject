@@ -23,11 +23,16 @@ protected:
 	virtual void NotifyOutRatio(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference);
 
 protected:
-	UPROPERTY(EditAnywhere, Category = Hy, meta = (ClampMin = 100.f, UIMax = 1000.f))
-	float TargetZoom = 100.0f; // 목표 Zoom Length
-
+	UPROPERTY(EditAnywhere, Category = Hy, meta = (ClampMin = 0.1f, UIMax = 2.f))
+	float TargetZoomRatio = 1.0f; // 목표 Zoom Length
 
 private:
+	UPROPERTY()
+	TObjectPtr<class AHyMyPlayerBase> MyPlayer;
+
+
+	float TargetZoom = 0.0f;
+	float CurZoomLength = 0.0f;
 	float OriginZoomLength = 0.0f;
 
 };

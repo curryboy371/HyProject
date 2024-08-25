@@ -38,6 +38,8 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Action.Stand.Attack"), ActionTagSet.AttActionParent);
     AddTag(FName("Action.Stand.Attack.Attacking"), ActionTagSet.ActionAttack);
     AddTag(FName("Action.Stand.Attack.DashAttacking"), ActionTagSet.ActionDashAttack);
+    AddTag(FName("Action.Stand.Attack.JumpAttacking"), ActionTagSet.ActionJumpAttack);
+    AddTag(FName("Action.Stand.Attack.ChargeAttacking"), ActionTagSet.ActionChargeAttack);
 
 
     AddTag(FName("ItemSlot"), ItemSlotTagSet.SlotParent);
@@ -108,6 +110,11 @@ const bool UHyTagSubsystem::IsDoingAction(const FGameplayTag& InActionTag) const
     }
 
     return false;
+}
+
+const bool UHyTagSubsystem::IsJumpAction(const FGameplayTag& InActionTag) const
+{
+    return ActionTagSet.ActionJump == InActionTag;
 }
 
 const bool UHyTagSubsystem::IsAttackAction(const FGameplayTag& InActionTag) const

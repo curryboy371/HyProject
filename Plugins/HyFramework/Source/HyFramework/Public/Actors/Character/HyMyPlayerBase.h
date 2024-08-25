@@ -43,6 +43,10 @@ public:
 
 	void UpdateBlurWeight();
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void CameraZoom(const FInputActionValue& Value);
+
 protected:
 	// ICControlInputInterface을(를) 통해 상속됨
 	void InputSetup() override;
@@ -55,8 +59,16 @@ protected:
 
 
 
+
 public:
 	const bool IsLocalPlayer();
+
+public:
+	// Camera
+	const float GetCameraArmLength() const;
+	void SetCameraArmLenth(const float InCameraArmLength, const bool bForce = false);
+
+	void SetCameraZoomLock(const bool InLock);
 
 protected:
 	TObjectPtr<class USpringArmComponent> GetCameraBoom() { return CameraBoomComp; }
@@ -83,6 +95,10 @@ protected:
 
 protected:
 	bool bSprintBlurOn;
+
+
+
+	bool bCameraZoomLock;
 };
 
 

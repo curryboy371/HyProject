@@ -70,6 +70,9 @@ enum class EKeyInput : uint8
 
     IA_Crouch,
     IA_Sprint,
+
+    IA_CameraZoom,
+
 };
 
 #pragma endregion

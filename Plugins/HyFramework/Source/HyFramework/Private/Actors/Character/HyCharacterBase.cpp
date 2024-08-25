@@ -226,7 +226,7 @@ const bool AHyCharacterBase::IsDead()
 	return CharacterStateData.bIsDead;
 }
 
-const bool AHyCharacterBase::IsCombatMode()
+const bool AHyCharacterBase::IsCombatMode() const
 {
 	return CharacterStateData.CombatMode == ECombatMode::ECombat;
 }
@@ -342,6 +342,8 @@ void AHyCharacterBase::CharacterActionTagSetup()
 
 			QuickActionExcute.Attack = FActionExcuteData(TagSubsystem->ActionTagSet.ActionAttack, EActionPriority::EMedium);
 			QuickActionExcute.DashAttack = FActionExcuteData(TagSubsystem->ActionTagSet.ActionDashAttack, EActionPriority::EMedium);
+			QuickActionExcute.AttackJump = FActionExcuteData(TagSubsystem->ActionTagSet.ActionJumpAttack, EActionPriority::EHigh); // Jump보다 높게
+			QuickActionExcute.ChargeAttack = FActionExcuteData(TagSubsystem->ActionTagSet.ActionChargeAttack, EActionPriority::EMedium); // Jump보다 높게
 
 
 			QuickActionExcute.KeepDown = FActionExcuteData(TagSubsystem->ActionTagSet.ActionDashAttack, EActionPriority::EHigh);
@@ -599,7 +601,7 @@ bool AHyCharacterBase::GetClosestCombatArrow(const FVector& InAttackerLocation, 
 	return bRes;
 }
 
-void AHyCharacterBase::SetDashWarpingTarget(const FVector& InTargetLocation)
+void AHyCharacterBase::SetWarpingTarget(const FVector& InTargetLocation, const FName& InWarpName)
 {
 	if (!MotionWarpingComp)
 	{
@@ -610,13 +612,16 @@ void AHyCharacterBase::SetDashWarpingTarget(const FVector& InTargetLocation)
 	FTransform TargetTransform = GetTransform();
 	TargetTransform.SetLocation(InTargetLocation);
 
-	FVector LookVec = InTargetLocation - GetActorLocation();
-	FRotator TargetRot = FRotationMatrix::MakeFromX(LookVec).Rotator();
-	TargetRot.Pitch = 0;
-	FQuat QuatRot = TargetRot.Quaternion();
-	TargetTransform.SetRotation(QuatRot);
+	if(InWarpName == FName("Dash"))
+	{
+		FVector LookVec = InTargetLocation - GetActorLocation();
+		FRotator TargetRot = FRotationMatrix::MakeFromX(LookVec).Rotator();
+		TargetRot.Pitch = 0;
+		FQuat QuatRot = TargetRot.Quaternion();
+		TargetTransform.SetRotation(QuatRot);
+	}
 
-	MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(FName("Dash"), TargetTransform);
+	MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(InWarpName, TargetTransform);
 }
 
 void AHyCharacterBase::ReleaseWarpingTarget()
@@ -628,6 +633,7 @@ void AHyCharacterBase::ReleaseWarpingTarget()
 	}
 
 	MotionWarpingComp->RemoveWarpTarget(FName("Dash"));
+	MotionWarpingComp->RemoveWarpTarget(FName("Jump"));
 }
 
 bool AHyCharacterBase::TriggerActionBlueprint(FActionExcuteData InActionExcuteData, const FString& InContext, bool bCanBeStored)
@@ -818,6 +824,7 @@ const bool AHyCharacterBase::SetCharacterRotationIfInRange(const FVector& InTarg
 
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 {
+
 	if (!InventorySystemComp)
 	{
 		ERR_V("InventorySystemComp is not set.");
@@ -830,7 +837,6 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 		return;
 	}
 
-
 	if (!IsCanAction(EKeyInput::IA_Attack))
 	{
 		return;
@@ -838,8 +844,20 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 
 	if(IsCombatMode())
 	{
+		// 여기서 강공격 체크
+
+		if (InputAttackCount > 3)
+		{
+			// 강공격
+		}
+
+
+
 		FindTarget();
 		TriggerAttackAction();
+
+		++InputAttackCount;
+
 	}
 	else
 	{
@@ -848,8 +866,29 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 	}
 }
 
+void AHyCharacterBase::CompletedAttack(const FInputActionValue& Value)
+{
+	InputAttackCount = 0;
+
+	// attack key 놓음
+
+}
+
 void AHyCharacterBase::TriggerAttackAction()
 {
+	if (!HyAnimInstance)
+	{
+		ERR_V("HyAnimInstance is not set.");
+		return;
+	}
+
+	if (!HyCharacterMovement)
+	{
+		ERR_V("HyCharacterMovement is not set.");
+		return;
+	}
+
+
 	UHyInst* Inst = UHyInst::Get();
 	if(!Inst)
 	{
@@ -870,19 +909,30 @@ void AHyCharacterBase::TriggerAttackAction()
 		return;
 	}
 
-	if (!GET_TAG_SUBSYSTEM()->IsDashAttackAction(GetCurAction()))
+	// JumpAttack 
+	if (HyAnimInstance->GetJumpData().bIsInAir)
 	{
-		bool bIsComboAttack = GET_TAG_SUBSYSTEM()->IsComboAttackAction(GetCurAction());
-		// (콤보 어택 && 마지막 인덱스) or 콤보 어택이 아닌경우
-		if (bIsComboAttack && ActionsSystemComp->IsLastMonstageSection() || !bIsComboAttack)
+		TriggerAction(QuickActionExcute.AttackJump, FString());
+	}
+	else
+	{
+		if (!GET_TAG_SUBSYSTEM()->IsDashAttackAction(GetCurAction()))
 		{
-			TriggerAction(QuickActionExcute.DashAttack, FString(), true);
-			return;
+			bool bIsComboAttack = GET_TAG_SUBSYSTEM()->IsComboAttackAction(GetCurAction());
+			// (콤보 어택 && 마지막 인덱스) or 콤보 어택이 아닌경우
+			if (bIsComboAttack && ActionsSystemComp->IsLastMonstageSection() || !bIsComboAttack)
+			{
+				TriggerAction(QuickActionExcute.DashAttack, FString(), true);
+				return;
+			}
 		}
+
+		// Dash Atack이 아니면 콤보어택
+		TriggerAction(QuickActionExcute.Attack, FString(), true);
 	}
 
-	// Dash Atack이 아니면 콤보어택
-	TriggerAction(QuickActionExcute.Attack, FString(), true);
+
+
 }
 
 void AHyCharacterBase::InputMove(const FInputActionValue& Value)
@@ -1054,7 +1104,6 @@ void AHyCharacterBase::CompletedSprint(const FInputActionValue& Value)
 
 void AHyCharacterBase::InputCrouch(const FInputActionValue& Value)
 {
-
 	if (!IsCanAction(EKeyInput::IA_Crouch))
 	{
 		return;
@@ -1108,7 +1157,7 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 		// Action
 		FActionExcuteData ChangeActionData = FActionExcuteData(HitActionTag, EActionPriority::EHigh, HyDamageEvent.ActionContext);
-		TriggerAction(ChangeActionData);
+		TriggerAction(ChangeActionData, "", true);
 
 		//if (CanChangeHit(HyDamageEvent.HitTag, ChangeTag, ChangeStoreTag, ChangeStorePriority))
 		//{
@@ -1173,7 +1222,16 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 		if (!bRes)
 		{
-			bRes = GET_TAG_SUBSYSTEM()->IsAttackAction(CurActionTag);
+			// 전투모드인 경우
+			// 점프 or Attack이라면 인풋 허용
+			if (IsCombatMode())
+			{
+				if (GET_TAG_SUBSYSTEM()->IsJumpAction(CurActionTag) || GET_TAG_SUBSYSTEM()->IsAttackAction(CurActionTag))
+				{
+					bRes = true;
+				}
+			}
+
 		}
 		break;
 	case EKeyInput::IA_Equip:
@@ -1231,7 +1289,10 @@ void AHyCharacterBase::DebugUpdate()
 		}
 		else
 		{
-
+			if (SCharacterDebugWidget.IsValid())
+			{
+				SCharacterDebugWidget->SetVisibility(EVisibility::Hidden);
+			}
 		}
 
 		if (DevSetting->IsDebugDrawMovement())
@@ -1263,6 +1324,8 @@ void AHyCharacterBase::DebugRenderWidget()
 
 	if (SCharacterDebugWidget.IsValid() && GetWorld()->GetFirstPlayerController())
 	{
+		SCharacterDebugWidget->SetVisibility(EVisibility::Visible);
+
 		FVector2D ScreenPosition;
 		if (GetWorld()->GetFirstPlayerController()->ProjectWorldLocationToScreen(GetActorLocation() + CharacterDebugData.DebugWidgetLocation, ScreenPosition))
 		{

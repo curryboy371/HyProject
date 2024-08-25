@@ -50,5 +50,5 @@ void UHyAction_CriticalHit::OnTick_Implementation(float DeltaTime)
 
 bool UHyAction_CriticalHit::IsStopConditional_Implementation()
 {
-	return false;
+	return Super::IsStopConditional_Implementation();
 }

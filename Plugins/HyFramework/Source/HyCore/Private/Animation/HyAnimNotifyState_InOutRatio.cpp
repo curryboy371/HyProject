@@ -22,11 +22,6 @@ void UHyAnimNotifyState_InOutRatio::NotifyBegin(USkeletalMeshComponent* MeshComp
 		return;
 	}
 
-	if (!IsStartNotiState())
-	{
-		return;
-	}
-
 	InOutAlphaRatio = OutStartTime = OutDuration = InDuration = TargetValue = 0.0f;
 
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
@@ -66,9 +61,9 @@ void UHyAnimNotifyState_InOutRatio::NotifyTick(USkeletalMeshComponent* MeshComp,
 
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
 
-	InDuration = EndTime * InRatio; 
-	OutDuration = EndTime * (1.0 - OutRatio);
-	OutStartTime = EndTime * OutRatio;
+	InDuration = TotalDurationTime * InRatio;
+	OutStartTime = TotalDurationTime * (1.0 - OutRatio);
+	OutDuration = TotalDurationTime * OutRatio;
 
 	if (DeltaTime <= InDuration)
 	{
@@ -79,12 +74,12 @@ void UHyAnimNotifyState_InOutRatio::NotifyTick(USkeletalMeshComponent* MeshComp,
 			NotifyInRatio(MeshComp, Animation, FrameDeltaTime, EventReference);
 		}
 	}
-	else if (DeltaTime <= OutStartTime)
+	else if (DeltaTime >= OutStartTime)
 	{
 		// Out Ratio 실행
 		if(OutDuration > 0.0f)
 		{
-			InOutAlphaRatio = (DeltaTime - StartTime) / OutDuration;
+			InOutAlphaRatio = (DeltaTime - OutStartTime) / OutDuration;
 			NotifyOutRatio(MeshComp, Animation, FrameDeltaTime, EventReference);
 		}
 	}

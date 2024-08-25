@@ -3,6 +3,13 @@
 
 #include "Action/HyAction_Hit.h"
 
+
+#include "Actors/Character/HyCharacterBase.h"
+
+#include "HyCoreMacro.h"
+
+#include "HyTagSubsystem.h"
+
 void UHyAction_Hit::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
@@ -23,4 +30,6 @@ void UHyAction_Hit::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
 }
+
+
 

@@ -30,6 +30,9 @@ struct FActionTagSet
 
 	FGameplayTag AttActionParent;
 	FGameplayTag ActionAttack;
+	FGameplayTag ActionJumpAttack;
+	FGameplayTag ActionChargeAttack;
+
 	FGameplayTag ActionDashAttack;
 };
 
@@ -87,6 +90,9 @@ public:
 	// Check State By ActionTag
 	const bool IsNormalAction(const FGameplayTag& InActionTag) const;
 	const bool IsDoingAction(const FGameplayTag& InActionTag) const;
+
+	const bool IsJumpAction(const FGameplayTag& InActionTag) const;
+
 
 	const bool IsAttackAction(const FGameplayTag& InActionTag) const;
 	const bool IsComboAttackAction(const FGameplayTag& InActionTag) const;

@@ -20,6 +20,8 @@ void UHyBaseAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnim
 
     StartTime = MeshComp->GetWorld()->GetTimeSeconds();
     EndTime = StartTime + TotalDuration;
+    TotalDurationTime = TotalDuration;
+
     DeltaTime = 0.0f;
     RemainAlphaRatio = 0.0f;
 }

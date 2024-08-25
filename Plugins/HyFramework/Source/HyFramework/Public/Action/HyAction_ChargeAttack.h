@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Action/HyActionBase.h"
-#include "HyAction_HitBase.generated.h"
+#include "Action/HyAction_AttackBase.h"
+#include "HyAction_ChargeAttack.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYFRAMEWORK_API UHyAction_HitBase : public UHyActionBase
+class HYFRAMEWORK_API UHyAction_ChargeAttack : public UHyAction_AttackBase
 {
 	GENERATED_BODY()
 	
@@ -19,5 +19,10 @@ public:
     virtual void OnActionEnded_Implementation();
     virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
     virtual void OnTick_Implementation(float DeltaTime);
-    virtual bool IsStopConditional_Implementation();
+
+    virtual FName GetMontageSectionName_Implementation();
+
+
+protected:
+    int32 SectionIndex = 0;
 };

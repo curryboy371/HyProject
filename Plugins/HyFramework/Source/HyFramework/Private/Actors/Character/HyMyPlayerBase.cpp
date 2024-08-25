@@ -42,6 +42,8 @@ AHyMyPlayerBase::AHyMyPlayerBase(const FObjectInitializer& ObjectInitializer)
 void AHyMyPlayerBase::CharacterDefaultSetup()
 {
 	bSprintBlurOn = false;
+	bCameraZoomLock = false;
+
 
 	CameraBoomComp = nullptr;
 	FollowCameraComp = nullptr;
@@ -113,6 +115,7 @@ void AHyMyPlayerBase::InputFunctionMapping()
 	// Input 함수를 함수 이름으로 동적 바인딩 하지만, 실제로 실행시는 정적 바인딩처럼 함수 포인터로 호출하기 위함.
 
 	InputFunctionMap.Add("InputAttack", &AHyMyPlayerBase::InputAttack);
+	InputFunctionMap.Add("CompletedAttack", &AHyMyPlayerBase::CompletedAttack);
 	InputFunctionMap.Add("InputMove", &AHyMyPlayerBase::InputMove);
 	InputFunctionMap.Add("CompletedMove", &AHyMyPlayerBase::CompletedMove);
 	InputFunctionMap.Add("InputJump", &AHyMyPlayerBase::InputJump);
@@ -123,6 +126,8 @@ void AHyMyPlayerBase::InputFunctionMapping()
 	InputFunctionMap.Add("CompletedSprint", &AHyMyPlayerBase::CompletedSprint);
 
 	InputFunctionMap.Add("InputCrouch", &AHyMyPlayerBase::InputCrouch);
+
+	InputFunctionMap.Add("CameraZoom", &AHyMyPlayerBase::CameraZoom);
 
 }
 
@@ -362,6 +367,29 @@ void AHyMyPlayerBase::UpdateBlurWeight()
 	}
 }
 
+void AHyMyPlayerBase::CameraZoom(const FInputActionValue& Value)
+{
+	const float Zoomvalue = Value.Get<float>();
+
+	if (!CameraBoomComp)
+	{
+		ERR_V("CameraBoomComp is invaild");
+		return;
+	}
+
+	// TODO TEMP
+	float ZoomSpeed = 10.0f;
+	
+	float ZoomMin = 200.0f;
+	float ZoomMax = 600.0f;
+
+	float NewLength = FMath::Clamp(CameraBoomComp->TargetArmLength - (Zoomvalue * ZoomSpeed),
+		ZoomMin, ZoomMax);
+
+	SetCameraArmLenth(NewLength);
+}
+
+
 void AHyMyPlayerBase::InputActionMapping(UEnhancedInputComponent* EnhancedInputComponent)
 {
 	// Input Data가 셋업이 완료된 후 호출됨
@@ -433,4 +461,38 @@ const bool AHyMyPlayerBase::IsLocalPlayer()
 	}
 
 	return false;
+}
+
+const float AHyMyPlayerBase::GetCameraArmLength() const
+{
+	if (CameraBoomComp)
+	{
+		return CameraBoomComp->TargetArmLength;
+	}
+
+	return 0.0f;
+}
+
+void AHyMyPlayerBase::SetCameraArmLenth(const float InCameraArmLength, const bool bForce/* = false*/)
+{
+	if (!bForce && bCameraZoomLock)
+	{
+		return;
+	}
+
+
+	if (!CameraBoomComp)
+	{
+		ERR_V("CameraBoomComp is invaild");
+		return;
+	}
+
+	CameraBoomComp->TargetArmLength = InCameraArmLength;
+
+	LOG_V("CameraArmLength %f", InCameraArmLength);
+}
+
+void AHyMyPlayerBase::SetCameraZoomLock(const bool InLock)
+{
+	bCameraZoomLock = InLock;
 }
