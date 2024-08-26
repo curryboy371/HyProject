@@ -34,7 +34,7 @@ EBTNodeResult::Type UBTTaskNode_ExcuteAction::ExecuteTask(UBehaviorTreeComponent
 		return EBTNodeResult::Type::Failed;
 	}
 
-	if (CharacterBase->TriggerAction(ActionTag, ActionPriority, ActionContext))
+	if (CharacterBase->TriggerAction(ActionTag, ActionPriority, ActionContext, bCanStore))
 	{
 		return EBTNodeResult::Succeeded;
 	}

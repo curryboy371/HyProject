@@ -137,7 +137,7 @@ void AHyAIController::BlackBoardKeyInit()
 		return;
 	}
 
-	BlackboardComponent->SetValue<UBlackboardKeyType_Float>(targetDistanceKey, MAX_FLT);
+	BlackboardComponent->SetValue<UBlackboardKeyType_Float>(targetDistanceKey, 9999999.f);
 	BlackboardComponent->SetValue<UBlackboardKeyType_Vector>(targetPointLocationKey, HomeLocation);
 	BlackboardComponent->SetValue<UBlackboardKeyType_Bool>(isPausedKey, false);
 	BlackboardComponent->SetValue<UBlackboardKeyType_Enum>(aiStateKey, static_cast<uint8>(EAIState::EWait));

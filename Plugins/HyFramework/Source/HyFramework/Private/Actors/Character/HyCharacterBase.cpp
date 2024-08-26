@@ -378,12 +378,17 @@ void AHyCharacterBase::CharacterSetup()
 		if (FItem_TableEntity* ItemEntity = TableSubSystem->GetTableData<FItem_TableEntity>(TestItem))
 		{
 			InventorySystemComp->AddInventoryItem(*ItemEntity);
+			FGameplayTag WeaponSlot = GET_TAG_SUBSYSTEM()->ItemSlotTagSet.SlotWeapon;
+			InventorySystemComp->EquipItemBySlot(WeaponSlot);
 		}
 		else
 		{
 			ERR_V("ItemEntity is not set. ID=%d", TestItem);
 		}
 	}
+
+
+
 
 }
 
@@ -1432,6 +1437,9 @@ void AHyCharacterBase::DebugDrawMovement()
 	FVector Start = GetActorLocation();
 	FVector End = GetActorLocation() + (CharacterInputData.InputDirection * 50);
 
+	// Forward	
+	UHyCoreFunctionLibrary::DrawArrow(GetWorld(), Start, Start + GetActorForwardVector() * 50.f, 30, FLinearColor::Black);
+
 	// Input Direction
 	Start.Z += Height * 0.5f;
 	End.Z += Height * 0.5f;
@@ -1452,6 +1460,9 @@ void AHyCharacterBase::DebugDrawMovement()
 	Start.Z += 5;
 	End.Z += Height + 5;
 	UHyCoreFunctionLibrary::DrawArrow(GetWorld(), Start, End, 30, FLinearColor::Blue);
+
+
+
 }
 
 void AHyCharacterBase::DebugDrawTargetHitDirection()
@@ -1478,15 +1489,13 @@ void AHyCharacterBase::DebugDrawTargetHitDirection()
 			AttackDirection.Normalize();
 
 			// 상대방의 로컬 좌표계에서의 공격 방향 계산
-			FVector LocalAttackDirection = TargetCharacter->GetActorTransform().InverseTransformVector(AttackDirection);
+			//FVector LocalAttackDirection = TargetCharacter->GetActorTransform().InverseTransformVector(AttackDirection);
 			FVector TargetForward = TargetCharacter->GetActorForwardVector();
-			float DotProduct = FVector::DotProduct(LocalAttackDirection, TargetForward);
-			FVector CrossProduct = FVector::CrossProduct(TargetForward, LocalAttackDirection);
+			float DotProduct = FVector::DotProduct(AttackDirection, TargetForward);
+			FVector CrossProduct = FVector::CrossProduct(TargetForward, AttackDirection);
 
-			//LOG_V("DotProduct %f CrossProduct Z %f", DotProduct, CrossProduct.Z);
-
-			//UHyCoreFunctionLibrary::DrawArrow(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorLocation() + LocalAttackDirection * 100, 10, FLinearColor::Red);
-			//LOG_V("TargetDirection : %s", *UHyCoreFunctionLibrary::HyDirectionToString(TargetDirection));
+			LOG_V("DotProduct %f CrossProduct Z %f", DotProduct, CrossProduct.Z);
+			UHyCoreFunctionLibrary::DrawArrow(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorLocation() + AttackDirection * 100, 10, FLinearColor::Red);
 
 		}
 

@@ -95,6 +95,7 @@ public:
 
 	const bool IsMoveAction(const FGameplayTag& InActionTag) const;
 
+	const bool IsSkillAction(const FGameplayTag& InActionTag) const;
 
 	const bool IsAttackAction(const FGameplayTag& InActionTag) const;
 	const bool IsComboAttackAction(const FGameplayTag& InActionTag) const;

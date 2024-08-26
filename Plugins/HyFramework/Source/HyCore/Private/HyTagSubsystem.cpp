@@ -122,6 +122,11 @@ const bool UHyTagSubsystem::IsMoveAction(const FGameplayTag& InActionTag) const
     return ActionTagSet.ActionMove == InActionTag;
 }
 
+const bool UHyTagSubsystem::IsSkillAction(const FGameplayTag& InActionTag) const
+{
+    return false;
+}
+
 const bool UHyTagSubsystem::IsAttackAction(const FGameplayTag& InActionTag) const
 {
     if (InActionTag.MatchesTag(ActionTagSet.AttActionParent))

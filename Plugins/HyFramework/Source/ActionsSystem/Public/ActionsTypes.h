@@ -49,6 +49,16 @@ enum class EActionPriority : uint8
 	EHighest UMETA(DisplayName = "Highest"),
 };
 
+// Action 타입 종류
+UENUM(BlueprintType)
+enum class EActionType : uint8
+{
+    EActionType_Normal UMETA(DisplayName = "EActionType_Normal"),
+    EActionType_Doing UMETA(DisplayName = "EActionType_Doing"),
+    EActionType_Damaged UMETA(DisplayName = "EActionType_Damaged"),
+    EActionType_Attack UMETA(DisplayName = "EActionType_Attack"),
+    EActionType_Skill UMETA(DisplayName = "EActionType_Skill"),
+};
 
 
 

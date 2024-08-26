@@ -31,5 +31,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Action)
 	FString ActionContext;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Action)
+	bool bCanStore = false;
 };

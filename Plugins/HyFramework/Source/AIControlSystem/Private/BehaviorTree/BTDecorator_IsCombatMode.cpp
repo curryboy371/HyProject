@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BehaviorTree/BTDecorator_CheckMoving.h"
+#include "BehaviorTree/BTDecorator_IsCombatMode.h"
 
 #include "AI/HyAIController.h"
 #include "Actors/Character/HyCharacterBase.h"
@@ -9,10 +9,10 @@
 #include "HyCoreMacro.h"
 
 
-bool UBTDecorator_CheckMoving::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
+bool UBTDecorator_IsCombatMode::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	// Velocity만 체크해줌
 	bool bResult = Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
+
 	APawn* OwnerPlayer = OwnerComp.GetAIOwner()->GetPawn();
 	if (OwnerPlayer == nullptr)
 	{
@@ -27,10 +27,7 @@ bool UBTDecorator_CheckMoving::CalculateRawConditionValue(UBehaviorTreeComponent
 		return false;
 	}
 
-	if (HyChracter->GetVelocity().Size() > 0.f)
-	{
-		return true;
-	}
+	bResult = HyChracter->IsCombatMode();
 
-	return false;
+	return bResult;
 }
