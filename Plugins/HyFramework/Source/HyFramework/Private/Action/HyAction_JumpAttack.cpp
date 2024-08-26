@@ -3,6 +3,10 @@
 
 #include "Action/HyAction_JumpAttack.h"
 
+
+#include "Game/HyGameInstance.h"
+#include "Manager/HySpawnManager.h"
+
 #include "Actors/Character/HyCharacterBase.h"
 #include "Components/HyCharacterMovementComponent.h"
 #include "HyCoreMacro.h"
@@ -21,12 +25,31 @@ void UHyAction_JumpAttack::OnActionStarted_Implementation(const FString& InConte
 	}
 
 	HyCharacterOwner->ReleaseWarpingTarget();
+	FVector LandLocation = HyCharacterOwner->GetActorLocation();
 
 	if (TObjectPtr<class UHyCharacterMovementComponent> HyMovement = HyCharacterOwner->GetCharacterMovementComp())
 	{
-		FVector LandLocation = HyCharacterOwner->GetActorLocation();
-		LandLocation.Z -= HyMovement->GetGroundDistance();
+		if (HyCharacterOwner->IsTargetAvailable())
+		{
+			if (UHyInst* Inst = UHyInst::Get())
+			{
+				if (UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>())
+				{
+					if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+					{
+						FVector TargetLocation = TargetCharacter->GetActorLocation();
+						FVector Dist = HyCharacterOwner->GetActorLocation() - TargetLocation;
+						if (Dist.Length() < 300.f)
+						{
+							LandLocation.X = TargetLocation.X;
+							LandLocation.Y = TargetLocation.Y;
+						}
+					}
+				}
+			}
+		}
 
+		LandLocation.Z -= HyMovement->GetGroundDistance();
 		HyCharacterOwner->SetWarpingTarget(LandLocation, TEXT("Jump"));
 	}
 }

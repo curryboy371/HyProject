@@ -5,17 +5,54 @@
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/KismetMathLibrary.h"
 
+#include "Actors/Character/HyCharacterBase.h"
+#include "Game/HyGameInstance.h"
+#include "Manager/HySpawnManager.h"
+
+
 void UHyAction_ChargeAttack::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
+	if (!HyCharacterOwner)
+	{
+		ERR_V("HyCharacterOwner is nullptr");
+		return;
+	}
 
 	SectionIndex = FMath::RandRange(0, 5); // Rand;
 
+	HyCharacterOwner->ReleaseWarpingTarget();
+	if (HyCharacterOwner->IsTargetAvailable())
+	{
+		FVector Location;
+
+		if (UHyInst* Inst = UHyInst::Get())
+		{
+			if (UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>())
+			{
+				if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+				{
+					if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
+					{
+						HyCharacterOwner->SetWarpingTarget(Location, TEXT("Dash"));
+					}
+				}
+			}
+		}
+	}
 }
 
 void UHyAction_ChargeAttack::OnActionEnded_Implementation()
 {
 	Super::OnActionEnded_Implementation();
+	if (!HyCharacterOwner)
+	{
+		ERR_V("HyCharacterOwner is nullptr");
+		return;
+	}
+
+	HyCharacterOwner->ReleaseWarpingTarget();
+
 }
 
 void UHyAction_ChargeAttack::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)

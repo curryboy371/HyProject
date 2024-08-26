@@ -26,6 +26,8 @@ public class AIControlSystem : ModuleRules
 				"Core",
                 "GameplayTags",
                 "AIModule",
+                "NavigationSystem",
+
 
 				//Custom Module
 
@@ -44,7 +46,9 @@ public class AIControlSystem : ModuleRules
 
 				// Custom Modules
                 "HyCore",
+				"HyFramework",
                 "ActionsSystem",
+                "CollisionSystem",
 
             }
             );

@@ -37,10 +37,10 @@ public:
 	void ExecTestCommand(const int32 InTestID);
 
 	UFUNCTION(Exec)
-	void ExecSpawnMonsterCommand(const int32 InMonsterID);
+	void ExecSpawnMonsterCommand(const int32 InMonsterID, const int32 InSpawnID = 0);
 
 	UFUNCTION(Exec)
-	void ExecSpawnPlayerCommand(const int32 InPlayerID);
+	void ExecSpawnPlayerCommand(const int32 InPlayerID, const int32 InSpawnID = 0);
 
 #pragma endregion
 

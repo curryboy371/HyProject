@@ -27,6 +27,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipTagChanged, const FGameplayTag&, EquipTag);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDamageReceived, const FHyDamageEvent&, DamageReceived, const FGuid&, InDealerGuid);
+
+
 
 UCLASS()
 class HYFRAMEWORK_API AHyCharacterBase : public ACharacter
@@ -44,7 +47,7 @@ public:
 
 
 public:
-	void SpawnCompleted();
+	void SpawnCompleted(const int32 InSpawnID = 0);
 	void SetGroundLocation();
 protected:
 	virtual void BeginPlay() override;
@@ -82,6 +85,8 @@ public:
 
 	const FGameplayTag& GetCharacterTypeTag() const { return CharacterTypeTag; }
 
+	const int32 GetSpawnID() const { return SpawnID; }
+
 public:
 	// ICControlCharacterInterface을(를) 통해 상속됨
 	virtual const bool IsDead() override;
@@ -104,10 +109,10 @@ public:
 	virtual bool TriggerActionBlueprint(FActionExcuteData InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false);
 
 	// IActionsCharacterInterface을(를) 통해 상속됨
+	virtual bool TriggerAction(FGameplayTag& InActionTag, EActionPriority InPriority, const FString& InContext = "", bool bCanBeStored = false) override;
 	virtual bool TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false) override;
-
-
 	virtual void SetStoredAction(FActionExcuteData& InActionExcuteData, const FString InContext = "", bool bForce = false) override;
+	virtual void SetStoredAction(FGameplayTag& InActionTag, EActionPriority InPriority, const FString& InContext = "", bool bForce = false) override;
 	virtual void HandleAction(EActionHandleType InExitType, float BlendOut = 0.5f) override;
 
 	virtual void SetPerformingActionPriority(EActionPriority InPriority = EActionPriority::EEmpty) override;
@@ -248,6 +253,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Hy | Anim | Layer")
 	FOnEquipTagChanged OnEquipTagChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "Hy | Combat")
+	FOnDamageReceived OnDamageReceived;
+
 public:
 	static FQuickActionExcuteDataSet QuickActionExcute;
 
@@ -280,7 +288,7 @@ protected:
 	FGuid MyGuid;
 	FGuid TargetGuid;
 
-
+	int32 SpawnID = 0;
 	int32 InputAttackCount = 0;
 
 public:

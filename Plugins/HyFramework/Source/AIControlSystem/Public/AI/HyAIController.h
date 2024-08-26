@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "AIControlTypes.h"
+
+#include "CollisionTypes.h"
 
 #include <BehaviorTree/Blackboard/BlackboardKey.h>
 
@@ -31,14 +34,46 @@ protected:
 	void BlackBoardKeyInit();
 
 
-protected:
-	TObjectPtr<class IActionsCharacterInterface> OwnerActionsInterface;
+
+
+	UFUNCTION(BlueprintCallable, Category = "Hy | Target")
+	void HandleOwnerCharacterDamaged(const FHyDamageEvent& InDamageEvent, const FGuid& InDealerGuid);
+
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Hy | Target")
+	void SetTarget(AActor* InTarget);
+
+	AActor* GetTargetActorBBK() const;
+	const FVector GetTargetLocationBBK() const;
+	const float GetHomeDistanceBBK() const;
+
+	EAIState GetAIStateBBK() const;
+
+
+
+	void SetAIStateBBK(EAIState InaiState);
+	void SetTargetActorBBK(AActor* InTarget);
+	void SetTargetLocationBBK(const FVector& InTargetLocation);
+	void SetTargetDistanceBBK(float InDistance);
+	void SetHomeDistanceBBK(float InDistance);
+
+
+public:
+	FORCEINLINE const FVector& GetHomeLocation() const {return HomeLocation; };
+
+	FORCEINLINE float GetLoseTargetDistance() const { return LoseTargetDistance; }
+	FORCEINLINE float GetHomeRange() const { return HomeRange; }
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	UPROPERTY(BlueprintReadOnly, Category = Hy)
+	TObjectPtr<class AHyCharacterBase> CharacterOwner;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class UBehaviorTreeComponent> BehaviorTreeComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	UPROPERTY(BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class UBlackboardComponent> BlackboardComponent;
 
 protected:
@@ -53,8 +88,16 @@ protected:
 		targetPointLocationKey,
 		targetDistanceKey,
 		isPausedKey,
+		aiStateKey,
 		homeDistanceKey;
 
 	FVector HomeLocation;
 
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI | Config")
+	float LoseTargetDistance = 2000.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI | Config")
+	float HomeRange = 500.f;
 };

@@ -30,6 +30,7 @@ struct FResourceloaderArgument
 public:
 	bool bIsError = false;
 	int32 ObjectID = 0;
+	int32 SpawnID = 0;
 	EGenerateType GenType = EGenerateType::EGen_None;
 	FVector Location;
 	FRotator Rotation;
@@ -41,13 +42,16 @@ public:
 	FResourceloaderArgument()
 	{
 		ObjectID = 0;
+		SpawnID = 0;
+
 		GenType = EGenerateType::EGen_None;
 		Location = FVector::ZeroVector;
 		Rotation = FRotator::ZeroRotator;
 	}
-	FResourceloaderArgument(uint32 InID, EGenerateType InGenType, FVector InLocation, FRotator InRotation)
+	FResourceloaderArgument(uint32 InID, uint32 InSpawnID, EGenerateType InGenType, FVector InLocation, FRotator InRotation)
 	{
 		ObjectID = InID;
+		SpawnID = InSpawnID;
 		GenType = InGenType;
 		Location = InLocation;
 		Rotation = InRotation;

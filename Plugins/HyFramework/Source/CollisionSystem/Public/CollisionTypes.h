@@ -270,6 +270,7 @@ struct FHyDamageEvent : public FDamageEvent
     FHyDamageEvent()
         : HitTag(FGameplayTag::EmptyTag), DamageType(EHyDamageType::EHyDamage_Normal)
     {
+        DealerGuid.Invalidate();
         ActionContext = "";
         DownTime = 0.0f;
     }
@@ -286,6 +287,9 @@ struct FHyDamageEvent : public FDamageEvent
 
     void SetHitResult(const FHitResult& InHitResult) { HitResult = InHitResult; };
     const FHitResult& GetHitResult() const { return HitResult; };
+
+    UPROPERTY()
+    FGuid DealerGuid;
 
     UPROPERTY()
     FGameplayTag HitTag;

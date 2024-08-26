@@ -182,9 +182,6 @@ void AHyMyPlayerBase::BeginPlay()
 	Super::BeginPlay();
 
 	LocalPlayerSetup();
-
-	CharacterDebugHudSetup();
-
 }
 
 void AHyMyPlayerBase::Tick(float DeltaTime)

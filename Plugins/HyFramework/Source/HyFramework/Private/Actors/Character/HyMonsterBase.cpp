@@ -13,6 +13,7 @@ AHyMonsterBase::AHyMonsterBase(const FObjectInitializer& ObjectInitializer)
 void AHyMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 }
 
 void AHyMonsterBase::Tick(float DeltaTime)

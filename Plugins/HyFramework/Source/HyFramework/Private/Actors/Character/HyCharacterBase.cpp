@@ -49,6 +49,7 @@
 
 #include "HyTableSubsystem.h"
 #include "Table/Item_TableEntity.h"
+#include "Table/SpawnInfo_TableEntity.h"
 
 
 FQuickActionExcuteDataSet AHyCharacterBase::QuickActionExcute = FQuickActionExcuteDataSet();
@@ -80,7 +81,7 @@ void AHyCharacterBase::CharacterDefaultSetup()
 
 	// Movement
 	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 500.0f); // ...at this rotation rate
+	GetCharacterMovement()->RotationRate = FRotator(500.0f, 500.0f, 500.0f); // ...at this rotation rate
 
 	// Mesh
 	FRotator MeshRotator = FRotator(0.0f, -90.0f, 0.0f);
@@ -157,8 +158,10 @@ void AHyCharacterBase::ComponenetSetup()
 // Called when the game starts or when spawned
 void AHyCharacterBase::BeginPlay()
 {
-
 	Super::BeginPlay();
+
+	SpawnDefaultController();
+
 	SetHyAnimInstance();
 
 	CharacterSetup();
@@ -289,7 +292,7 @@ const bool AHyCharacterBase::IsWeaponOnHand()
 	return false;
 }
 
-void AHyCharacterBase::SpawnCompleted()
+void AHyCharacterBase::SpawnCompleted(const int32 InSpawnID)
 {
 	// Spawn이 완료되었을때 호출되는 함수
 	MyGuid = FGuid::NewGuid();
@@ -297,6 +300,7 @@ void AHyCharacterBase::SpawnCompleted()
 	SetGroundLocation();
 
 	SetActorHiddenInGame(false);
+	SpawnID = InSpawnID;
 }
 
 void AHyCharacterBase::SetGroundLocation()
@@ -508,7 +512,7 @@ void AHyCharacterBase::SetDelegateFunctions()
 
 void AHyCharacterBase::CharacterWidgetSetup()
 {
-
+	CharacterDebugHudSetup();
 }
 
 void AHyCharacterBase::CharacterDebugHudSetup()
@@ -642,6 +646,12 @@ bool AHyCharacterBase::TriggerActionBlueprint(FActionExcuteData InActionExcuteDa
 
 }
 
+bool AHyCharacterBase::TriggerAction(FGameplayTag& InActionTag, EActionPriority InPriority, const FString& InContext, bool bCanBeStored)
+{
+	FActionExcuteData ActionData(InActionTag, InPriority);
+	return TriggerAction(ActionData, InContext, bCanBeStored);
+}
+
 bool AHyCharacterBase::TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext, bool bCanBeStored)
 {
 	bool bSuccessAction = false;
@@ -678,6 +688,12 @@ void AHyCharacterBase::SetStoredAction(FActionExcuteData& InActionExcuteData, co
 	InActionExcuteData.ActionContext = InContext;
 	ActionsSystemComp->SetStoredActionTag(InActionExcuteData, bForce);
 
+}
+
+void AHyCharacterBase::SetStoredAction(FGameplayTag& InActionTag, EActionPriority InPriority, const FString& InContext, bool bForce)
+{
+	FActionExcuteData ActionData(InActionTag, InPriority);
+	SetStoredAction(ActionData, InContext, bForce);
 }
 
 void AHyCharacterBase::HandleAction(EActionHandleType InExitType, float BlendOut)
@@ -845,33 +861,53 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 	if(IsCombatMode())
 	{
 		// 여기서 강공격 체크
-
-		if (InputAttackCount > 3)
+		if (InputAttackCount > 1)
 		{
-			// 강공격
+			if (GET_TAG_SUBSYSTEM()->IsChargeAttackAction(GetCurAction()) == false)
+			{
+				FindTarget();
+				TriggerAction(QuickActionExcute.ChargeAttack, "", true);
+			}
 		}
-
-
-
-		FindTarget();
-		TriggerAttackAction();
-
-		++InputAttackCount;
-
 	}
 	else
 	{
 		FString Context = TEXT("Auto");
 		TriggerAction(QuickActionExcute.Equip, Context);
 	}
+	++InputAttackCount;
 }
 
 void AHyCharacterBase::CompletedAttack(const FInputActionValue& Value)
 {
+	if (!InventorySystemComp)
+	{
+		ERR_V("InventorySystemComp is not set.");
+		return;
+	}
+
+	if (InventorySystemComp->GetWeaponArmState() == EWeaponArmState::EWS_None)
+	{
+		// 장착한 무기가 없음
+		return;
+	}
+
+	if (!IsCanAction(EKeyInput::IA_Attack))
+	{
+		return;
+	}
+
+	if (IsCombatMode())
+	{
+		// 여기서 강공격 체크
+		if (GET_TAG_SUBSYSTEM()->IsChargeAttackAction(GetCurAction()) == false)
+		{
+			FindTarget();
+			TriggerAttackAction();
+		}
+	}
+
 	InputAttackCount = 0;
-
-	// attack key 놓음
-
 }
 
 void AHyCharacterBase::TriggerAttackAction()
@@ -1144,7 +1180,16 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		return 0.0f;
 	}
 
+	if (!DamageCauser)
+	{
+		ERR_V("DamageCauser is invalid");
+		return 0.0f;
+	}
+
+
+
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
 
 	if (DamageEvent.GetTypeID() == FHyDamageEvent::ClassID)
 	{
@@ -1157,7 +1202,14 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 		// Action
 		FActionExcuteData ChangeActionData = FActionExcuteData(HitActionTag, EActionPriority::EHigh, HyDamageEvent.ActionContext);
-		TriggerAction(ChangeActionData, "", true);
+		TriggerAction(ChangeActionData);
+
+		AHyCharacterBase* DealerCharacter = Cast<AHyCharacterBase>(DamageCauser);
+		if (DealerCharacter)
+		{
+			TargetGuid = DealerCharacter->GetMyGuidRef();
+			OnDamageReceived.Broadcast(HyDamageEvent, DealerCharacter->GetMyGuidRef());
+		}
 
 		//if (CanChangeHit(HyDamageEvent.HitTag, ChangeTag, ChangeStoreTag, ChangeStorePriority))
 		//{

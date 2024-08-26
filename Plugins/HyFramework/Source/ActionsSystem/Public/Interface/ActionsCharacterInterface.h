@@ -26,7 +26,9 @@ class ACTIONSSYSTEM_API IActionsCharacterInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual bool TriggerAction(FGameplayTag& InActionTag, EActionPriority InPriority, const FString& InContext = "", bool bCanBeStored = false) { return false; }
 	virtual bool TriggerAction(FActionExcuteData& InActionExcuteData, const FString& InContext = "", bool bCanBeStored = false) { return false; };
+	virtual void SetStoredAction(FGameplayTag& InActionTag, EActionPriority InPriority, const FString& InContext = "", bool bForce = false) {}
 	virtual void SetStoredAction(FActionExcuteData& InActionExcuteData, const FString InContext = "", bool bForce = false) {};
 	virtual void HandleAction(EActionHandleType InExitType, float BlendOut = 0.5f) {};
 

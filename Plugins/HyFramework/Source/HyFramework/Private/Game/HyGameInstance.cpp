@@ -88,12 +88,12 @@ void UHyGameInstance::ExecTestCommand(const int32 InTestID)
     WAR_V("(%d)", InTestID);
 }
 
-void UHyGameInstance::ExecSpawnMonsterCommand(const int32 InMonsterID)
+void UHyGameInstance::ExecSpawnMonsterCommand(const int32 InMonsterID, const int32 InSpawnID/* = 0*/)
 {
 	UHySpawnManager* SpawnManager = GetManager<UHySpawnManager>();
 	if(SpawnManager)
 	{
-		SpawnManager->SpawnCharacter(InMonsterID, GET_TAG_SUBSYSTEM()->CharacterTagSet.MonsterTag);
+		SpawnManager->SpawnCharacter(InMonsterID, InSpawnID, GET_TAG_SUBSYSTEM()->CharacterTagSet.MonsterTag);
 	}
     else
     {
@@ -101,12 +101,12 @@ void UHyGameInstance::ExecSpawnMonsterCommand(const int32 InMonsterID)
     }
 }
 
-void UHyGameInstance::ExecSpawnPlayerCommand(const int32 InPlayerID)
+void UHyGameInstance::ExecSpawnPlayerCommand(const int32 InPlayerID, const int32 InSpawnID/* = 0*/)
 {
     UHySpawnManager* SpawnManager = GetManager<UHySpawnManager>();
     if (SpawnManager)
     {
-        SpawnManager->SpawnCharacter(InPlayerID, GET_TAG_SUBSYSTEM()->CharacterTagSet.PlayerTag);
+        SpawnManager->SpawnCharacter(InPlayerID, InSpawnID, GET_TAG_SUBSYSTEM()->CharacterTagSet.PlayerTag);
     }
     else
     {

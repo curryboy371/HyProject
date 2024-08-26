@@ -33,6 +33,9 @@ public class HyFramework : ModuleRules
 
 				// Custom Modules
                 //"ActionsSystem",
+                "ActionsSystem",
+                "CharacterControlSystem",
+                "CollisionSystem",
 
 
 				// ... add other public dependencies that you statically link with here ...
@@ -53,10 +56,7 @@ public class HyFramework : ModuleRules
 
 				// Custom Modules
                 "HyCore",
-                "CharacterControlSystem",
-                "ActionsSystem",
                 "HyFXSystem",
-                "CollisionSystem",
 				"HyUISystem",
                 "InventorySystem",
 

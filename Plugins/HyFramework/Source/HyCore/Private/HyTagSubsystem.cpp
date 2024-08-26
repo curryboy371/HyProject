@@ -117,6 +117,11 @@ const bool UHyTagSubsystem::IsJumpAction(const FGameplayTag& InActionTag) const
     return ActionTagSet.ActionJump == InActionTag;
 }
 
+const bool UHyTagSubsystem::IsMoveAction(const FGameplayTag& InActionTag) const
+{
+    return ActionTagSet.ActionMove == InActionTag;
+}
+
 const bool UHyTagSubsystem::IsAttackAction(const FGameplayTag& InActionTag) const
 {
     if (InActionTag.MatchesTag(ActionTagSet.AttActionParent))
@@ -134,6 +139,11 @@ const bool UHyTagSubsystem::IsComboAttackAction(const FGameplayTag& InActionTag)
 const bool UHyTagSubsystem::IsDashAttackAction(const FGameplayTag& InActionTag) const
 {
     return ActionTagSet.ActionDashAttack == InActionTag;
+}
+
+const bool UHyTagSubsystem::IsChargeAttackAction(const FGameplayTag& InActionTag) const
+{
+    return ActionTagSet.ActionChargeAttack == InActionTag;
 }
 
 const bool UHyTagSubsystem::IsDeadAction(const FGameplayTag& InActionTag) const

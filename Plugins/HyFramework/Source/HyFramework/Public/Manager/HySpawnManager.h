@@ -47,7 +47,7 @@ public:
 
 
 public:
-	void SpawnCharacter(const int32 InCharacterID, const FGameplayTag& InCharacterTypeTag);
+	void SpawnCharacter(const int32 InCharacterID, const int32 InSpawnID, const FGameplayTag& InCharacterTypeTag);
 
 	const bool OnSpawCharacter(const FName& InCharacterPath, FResourceloaderArgument* pArg);
 

@@ -43,7 +43,6 @@ public:
 	void InitializeHyActorComponent() override;
 
 	bool TriggerAction(const FActionExcuteData& InActionExcuteData, bool bCanBeStored = false);
-
 	void LaunchAction(const FActionExcuteData& InActionExcuteData);
 	void StoreAction(const FActionExcuteData& InActionExcuteData);
 	void FreeAction();

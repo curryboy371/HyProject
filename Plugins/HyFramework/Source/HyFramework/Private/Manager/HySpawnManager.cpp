@@ -14,6 +14,7 @@
 #include "HyTableSubsystem.h"
 #include "Table/Monster_TableEntity.h"
 #include "Table/Player_TableEntity.h"
+#include "Table/SpawnInfo_TableEntity.h"
 
 #include "Game/HyPlayerController.h"
 
@@ -207,6 +208,7 @@ void UHySpawnManager::SetLocalPlayer(TObjectPtr<class AHyMyPlayerBase> InLocalPl
 	{
 		LocalPlayer = InLocalPlayer;
 		SpawnedPlayerMap.Add(LocalPlayer->GetMyGuidRef(), LocalPlayer);
+		SpawnedCharacterMap.Add(LocalPlayer->GetMyGuidRef(), LocalPlayer);
 	}
 
 
@@ -253,7 +255,7 @@ const bool UHySpawnManager::FindTargetPlayer(const FVector& InCompareLocation, c
 	return false;
 }
 
-void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const FGameplayTag& InCharacterTypeTag)
+void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const int32 InSpawnID, const FGameplayTag& InCharacterTypeTag)
 {
 	if (InCharacterID <= 0)
 	{
@@ -296,6 +298,28 @@ void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const FGameplayT
 		return;
 	}
 
+	FSpawnInfo_TableEntity* SpawnEntity = nullptr;
+	if(InSpawnID != 0)
+	{
+		SpawnEntity = TableSubSystem->GetTableData<FSpawnInfo_TableEntity>(InSpawnID);
+		if (!SpawnEntity)
+		{
+			ERR_V("SpawnEntity is not set. ID=%d", InSpawnID);
+			return;
+		}
+	}
+
+	if (InSpawnID == 0)
+	{
+		HitLocation.Z += 10.f;
+	}
+	else
+	{
+		if (SpawnEntity)
+		{
+			HitLocation = SpawnEntity->HomeLocation;
+		}
+	}
 
 	if (SubSystemTag->IsPlayerCharacter(InCharacterTypeTag))
 	{
@@ -306,8 +330,7 @@ void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const FGameplayT
 			return;
 		}
 
-		HitLocation.Z += 10.f;
-		FResourceloaderArgument* pArg = new FResourceloaderArgument(PlayerEntity->PlayerID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
+		FResourceloaderArgument* pArg = new FResourceloaderArgument(PlayerEntity->PlayerID, InSpawnID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
 		if (OnSpawCharacter(PlayerEntity->PlayerPath, pArg) == false)
 		{
 			// Success시 delete는 SpawnComplete에서
@@ -328,8 +351,7 @@ void UHySpawnManager::SpawnCharacter(const int32 InCharacterID, const FGameplayT
 
 		}
 
-		HitLocation.Z += 10.f;
-		FResourceloaderArgument* pArg = new FResourceloaderArgument(MonsterEntity->MonsterID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
+		FResourceloaderArgument* pArg = new FResourceloaderArgument(MonsterEntity->MonsterID, InSpawnID, EGenerateType::EGen_Character, HitLocation, FRotator::ZeroRotator);
 		if (OnSpawCharacter(MonsterEntity->MonsterPath, pArg) == false)
 		{
 			// Success시 delete는 SpawnComplete에서
@@ -484,7 +506,7 @@ void UHySpawnManager::SpawnComplete(TObjectPtr<AActor> InSpawnActor, bool bError
 				{
 					if (AHyPlayerBase* Player = Cast<AHyPlayerBase>(InSpawnActor))
 					{
-						Player->SpawnCompleted();
+						Player->SpawnCompleted(pArg->SpawnID);
 
 						SpawnedPlayerMap.Add(Player->GetMyGuidRef(), Player);
 						SpawnedCharacterMap.Add(Player->GetMyGuidRef(), Player);
@@ -495,7 +517,7 @@ void UHySpawnManager::SpawnComplete(TObjectPtr<AActor> InSpawnActor, bool bError
 				{
 					if (AHyMonsterBase* Monster = Cast<AHyMonsterBase>(InSpawnActor))
 					{
-						Monster->SpawnCompleted();
+						Monster->SpawnCompleted(pArg->SpawnID);
 						SpawnedMonsterMap.Add(Monster->GetMyGuidRef(), Monster);
 						SpawnedCharacterMap.Add(Monster->GetMyGuidRef(), Monster);
 						bSpawnComplete = true;
