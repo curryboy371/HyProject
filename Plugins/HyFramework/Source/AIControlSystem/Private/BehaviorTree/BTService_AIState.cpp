@@ -37,5 +37,4 @@ void UBTService_AIState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 
 	// 2....
 
-
 }

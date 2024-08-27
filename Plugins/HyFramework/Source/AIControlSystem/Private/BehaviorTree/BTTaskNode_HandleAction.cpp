@@ -7,7 +7,7 @@
 
 UBTTaskNode_HandleAction::UBTTaskNode_HandleAction()
 {
-
+	NodeName = "HandleAction";
 }
 
 EBTNodeResult::Type UBTTaskNode_HandleAction::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

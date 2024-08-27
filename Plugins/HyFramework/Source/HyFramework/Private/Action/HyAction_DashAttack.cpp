@@ -36,6 +36,7 @@ void UHyAction_DashAttack::OnActionStarted_Implementation(const FString& context
 				{
 					if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
 					{
+						LastTargetLocation = TargetCharacter->GetActorLocation();
 						HyCharacterOwner->SetWarpingTarget(Location, TEXT("Dash"));
 					}
 				}
@@ -47,6 +48,7 @@ void UHyAction_DashAttack::OnActionStarted_Implementation(const FString& context
 void UHyAction_DashAttack::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
+
 }
 
 void UHyAction_DashAttack::OnActionEnded_Implementation()
@@ -60,4 +62,36 @@ void UHyAction_DashAttack::OnActionEnded_Implementation()
 	}
 
 	HyCharacterOwner->ReleaseWarpingTarget();
+}
+
+void UHyAction_DashAttack::TargetMovementCheck()
+{
+	if (!HyCharacterOwner)
+	{
+		return;
+	}
+
+	if (HyCharacterOwner->IsTargetAvailable())
+	{
+		FVector Location;
+
+		if (UHyInst* Inst = UHyInst::Get())
+		{
+			if (UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>())
+			{
+				if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+				{
+					FVector MoveDir = LastTargetLocation - TargetCharacter->GetActorLocation();
+					if (MoveDir.IsNearlyZero(0.1f) == false)
+					{
+						if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
+						{
+							LastTargetLocation = TargetCharacter->GetActorLocation();
+							HyCharacterOwner->SetWarpingTarget(Location, TEXT("Dash"));
+						}
+					}
+				}
+			}
+		}
+	}
 }

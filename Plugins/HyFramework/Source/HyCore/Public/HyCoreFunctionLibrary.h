@@ -103,6 +103,31 @@ public:
 			}
 		}
 	}
+
+	UFUNCTION(BlueprintCallable, Category = "HyCore | Debug")
+	static void DrawDebugCircle(UWorld* World, FVector Center, float Radius, int32 Segments, FColor Color, float Duration = 0.0f)
+	{
+		if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
+		{
+			if (DevSetting->IsDrawEnable())
+			{
+
+				const float AngleStep = 2.0f * PI / Segments;
+				FVector PreviousPoint = Center + FVector(Radius, 0, 0);
+
+				for (int32 i = 1; i <= Segments; ++i)
+				{
+					const float Angle = i * AngleStep;
+					FVector CurrentPoint = Center + FVector(Radius * FMath::Cos(Angle), Radius * FMath::Sin(Angle), 0);
+					DrawDebugLine(World, PreviousPoint, CurrentPoint, Color, false, Duration);
+					PreviousPoint = CurrentPoint;
+				}
+			}
+		}
+	}
+
+
+	
 	
 
 	static FString HyDirectionToString(EHyDirection InDirection)

@@ -29,6 +29,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+
+	bool MoveToTargetLocation();
+
 protected:
 	void BlackBoardKeyBindings();
 	void BlackBoardKeyInit();
@@ -100,4 +103,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI | Config")
 	float HomeRange = 500.f;
+
+protected:
+
 };

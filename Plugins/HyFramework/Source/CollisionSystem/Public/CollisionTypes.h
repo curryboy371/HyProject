@@ -272,6 +272,7 @@ struct FHyDamageEvent : public FDamageEvent
     {
         DealerGuid.Invalidate();
         ActionContext = "";
+        AttackDirection = FVector::ZeroVector;
         DownTime = 0.0f;
     }
 
@@ -302,6 +303,9 @@ struct FHyDamageEvent : public FDamageEvent
 
     UPROPERTY()
     FString ActionContext;
+
+    UPROPERTY()
+    FVector AttackDirection;
 
     UPROPERTY()
     float DownTime;

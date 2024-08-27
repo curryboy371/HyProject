@@ -27,14 +27,17 @@
 #include <Navigation/PathFollowingComponent.h>
 
 
+#include "ActionsTypes.h"
+#include "CControlTypes.h"
+#include "Components/HyCharacterMovementComponent.h"
 #include "HyCoreMacro.h"
+#include "HyTagSubsystem.h"
 
 
 
 AHyAIController::AHyAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
-
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoardComp"));
 }
@@ -123,7 +126,7 @@ void AHyAIController::BlackBoardKeyBindings()
 	targetActorDistanceKey = BlackboardComponent->GetKeyID("TargetActorDistance");
 	targetDistanceKey = BlackboardComponent->GetKeyID("TargetLocationDistance");
 	isPausedKey = BlackboardComponent->GetKeyID("Paused");
-	aiStateKey = BlackboardComponent->GetKeyID("AIState");
+	aiStateKey = BlackboardComponent->GetKeyID("aiState");
 	homeDistanceKey = BlackboardComponent->GetKeyID("HomeDistance");
 
 	BlackBoardKeyInit();
@@ -211,8 +214,6 @@ void AHyAIController::SetHomeDistanceBBK(float InDistance)
 	}
 }
 
-
-
 void AHyAIController::SetAIStateBBK(EAIState InaiState)
 {
 	if (GetAIStateBBK() == InaiState)
@@ -220,23 +221,47 @@ void AHyAIController::SetAIStateBBK(EAIState InaiState)
 		return;
 	}
 
-	if (!BlackboardComponent)
+	if (!CharacterOwner)
 	{
+		ERR_V("CharacterOwner is nullptr");
 		return;
 	}
+	UHyCharacterMovementComponent* CharacterMovement = Cast<UHyCharacterMovementComponent>(CharacterOwner->GetCharacterMovement());
+	if (!CharacterMovement)
+	{
+		ERR_V("CharacterMovement is nullptr");
+		return;
+	}
+	if (!BlackboardComponent)
+	{
+		ERR_V("BlackboardComponent is nullptr");
+		return;
+	}
+
+	// ai 상태 변경시 이동중이면 action stop
+	// 이동 move를 blackboard 추적하게 해둬서 해당 selector 탈출을 위한 수단
+	if (GET_TAG_SUBSYSTEM()->IsMoveAction(CharacterOwner->GetCurAction()))
+	{
+		CharacterOwner->HandleAction(EActionHandleType::EActionHandle_Stop);
+	}
+
+	
 
 	switch (InaiState)
 	{
 	case EAIState::EPatrol:
-		SetTargetLocationBBK(HomeLocation);
+		CharacterMovement->SetLocomotionState(ELocomotionState::EWalk);
 		break;
 	case EAIState::ECombat:
+		CharacterMovement->SetLocomotionState(ELocomotionState::EJog);
+
 		if (AActor* Target = GetTargetActorBBK())
 		{
 			SetTargetLocationBBK(Target->GetActorLocation());
 		}
 		break;
 	case EAIState::EReturnHome:
+		CharacterMovement->SetLocomotionState(ELocomotionState::ESprint);
 		SetTargetLocationBBK(HomeLocation);
 		break;
 	case EAIState::EWait:

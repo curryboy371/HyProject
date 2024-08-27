@@ -866,7 +866,7 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 	if(IsCombatMode())
 	{
 		// 여기서 강공격 체크
-		if (InputAttackCount > 1)
+		if (InputAttackCount > 0)
 		{
 			if (GET_TAG_SUBSYSTEM()->IsChargeAttackAction(GetCurAction()) == false)
 			{
@@ -1206,9 +1206,10 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		KeepDownTime = HyDamageEvent.DownTime;
 
 		// Action
+		LastAttackDirection = HyDamageEvent.AttackDirection;
 		FActionExcuteData ChangeActionData = FActionExcuteData(HitActionTag, EActionPriority::EHigh, HyDamageEvent.ActionContext);
 		TriggerAction(ChangeActionData);
-
+		
 		AHyCharacterBase* DealerCharacter = Cast<AHyCharacterBase>(DamageCauser);
 		if (DealerCharacter)
 		{
@@ -1494,7 +1495,10 @@ void AHyCharacterBase::DebugDrawTargetHitDirection()
 			float DotProduct = FVector::DotProduct(AttackDirection, TargetForward);
 			FVector CrossProduct = FVector::CrossProduct(TargetForward, AttackDirection);
 
-			LOG_V("DotProduct %f CrossProduct Z %f", DotProduct, CrossProduct.Z);
+			if(GET_TAG_SUBSYSTEM()->IsMonsterCharacter(TargetCharacter->GetCharacterTypeTag()))
+			{
+				LOG_V("DotProduct %f CrossProduct Z %f", DotProduct, CrossProduct.Z);
+			}
 			UHyCoreFunctionLibrary::DrawArrow(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorLocation() + AttackDirection * 100, 10, FLinearColor::Red);
 
 		}

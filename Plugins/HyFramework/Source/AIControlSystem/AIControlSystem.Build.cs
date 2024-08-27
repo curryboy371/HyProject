@@ -48,6 +48,7 @@ public class AIControlSystem : ModuleRules
                 "HyCore",
 				"HyFramework",
                 "ActionsSystem",
+                "CharacterControlSystem",
                 "CollisionSystem",
 
             }

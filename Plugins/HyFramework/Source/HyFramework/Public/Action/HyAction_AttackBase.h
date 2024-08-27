@@ -20,4 +20,12 @@ public:
 	virtual void OnActionEnded_Implementation();
 
 	virtual bool IsStopConditional_Implementation();
+
+	virtual void TargetMovementCheck() {};
+
+
+protected:
+	FVector LastTargetLocation;
+	float TargetMovementCheckInterval = 0.0f;
+	const float MovementCheckDelay = 0.1f;
 };

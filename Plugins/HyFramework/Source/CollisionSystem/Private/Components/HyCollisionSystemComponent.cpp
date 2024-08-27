@@ -417,15 +417,14 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 
 	// Target의 로컬 좌표계에서의 AttackDirection 계산
 	// LocalAttackDirection : Attacker 위치를  기준으로 타겟이 밀려나는 방향 벡터
-	FVector LocalAttackDirection = TargetActor->GetActorTransform().InverseTransformVector(AttackDirection);
 	FVector TargetForward = TargetActor->GetActorForwardVector();
-	float DotProduct = FVector::DotProduct(LocalAttackDirection, TargetForward);
-	FVector CrossProduct = FVector::CrossProduct(TargetForward, LocalAttackDirection);
+	float DotProduct = FVector::DotProduct(AttackDirection, TargetForward);
+	FVector CrossProduct = FVector::CrossProduct(TargetForward, AttackDirection);
 
 	FHyDamageEvent DamageEvent;
 	DamageEvent.HitTag = InHitTag;
 	DamageEvent.SetHitResult(InHitResult);
-	
+	DamageEvent.AttackDirection = AttackDirection;
 	if (TagSubSystem->IsCriticalHit(InHitTag))
 	{
 		DamageEvent.DamageType = EHyDamageType::EHyDamage_Critical;
@@ -453,17 +452,17 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 		{
 			if (DotProduct < -0.8f)
 			{
-				DamageEvent.ActionContext = TEXT("Front");
+				DamageEvent.ActionContext = TEXT("Forward");
 			}
 			else if(DotProduct < -0.5f)
 			{
 				if (CrossProduct.Z > 0.0f)
 				{
-					DamageEvent.ActionContext = TEXT("FrontRight");
+					DamageEvent.ActionContext = TEXT("ForwardRight");
 				}
 				else
 				{
-					DamageEvent.ActionContext = TEXT("FrontLeft");
+					DamageEvent.ActionContext = TEXT("ForwardLeft");
 				}
 			}
 			else
@@ -483,7 +482,7 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 
 	int32 DamageAmount = FMath::RandRange(10, 100); // TODO TEMP;
 
-	LOG_V("DotProduct %f CrossProduct Z %f %s", DotProduct, CrossProduct.Z, *DamageEvent.ActionContext);
+	//LOG_V("DotProduct %f CrossProduct Z %f %s", DotProduct, CrossProduct.Z, *DamageEvent.ActionContext);
 	InHitResult.GetActor()->TakeDamage(DamageAmount, DamageEvent, CharacterOwner->GetController(), CharacterOwner);
 	return true;
 }

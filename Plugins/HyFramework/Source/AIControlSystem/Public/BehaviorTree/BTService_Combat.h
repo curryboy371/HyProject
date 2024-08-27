@@ -29,4 +29,15 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = AI)
 	TObjectPtr<class AHyCharacterBase> CharacterOwner;
+
+
+
+protected:
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = AI)
+	float ForceMoveCheckTime = 0.2f;
+
+	float SpendTime = 0.f;
+
+
+	FVector LastTargetLocation;
 };

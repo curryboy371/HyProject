@@ -88,3 +88,8 @@ bool UHyAction_JumpAttack::IsStopConditional_Implementation()
 	// 다음동작이 있는 경우에만 중지
 	return !HyCharacterOwner->IsEmptyStoredAction();
 }
+
+void UHyAction_JumpAttack::TargetMovementCheck()
+{
+	// 여기는 추적 x
+}

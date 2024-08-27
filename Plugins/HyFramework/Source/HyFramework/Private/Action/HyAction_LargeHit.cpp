@@ -17,6 +17,16 @@ void UHyAction_LargeHit::OnActionStarted_Implementation(const FString& InContext
 	Super::OnActionStarted_Implementation(InContext);
 
     SectionIndex = FMath::RandRange(0, 1); // Rand;
+
+    if (HyCharacterOwner)
+    {
+        // LargeHit은 항상 공격자와 마주보도록
+        FVector LastAttackDir = HyCharacterOwner->GetLastAttackDirection() * 1.f;
+
+        FRotator InputRotation = FRotationMatrix::MakeFromX(LastAttackDir).Rotator();
+        InputRotation.Pitch = 0;
+        HyCharacterOwner->SetActorRotation(InputRotation);
+    }
 }
 
 void UHyAction_LargeHit::OnActionEnded_Implementation()

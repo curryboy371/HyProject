@@ -23,6 +23,9 @@ public:
     virtual FName GetMontageSectionName_Implementation();
 
 
+    virtual void TargetMovementCheck();
+
+
 protected:
     int32 SectionIndex = 0;
 };

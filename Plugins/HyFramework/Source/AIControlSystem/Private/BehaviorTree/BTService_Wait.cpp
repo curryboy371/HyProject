@@ -9,6 +9,10 @@
 #include "AIControlFunctionLibrary.h"
 #include "HyCoreMacro.h"
 
+#include "NavigationSystem.h"
+
+
+
 
 void UBTService_Wait::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -53,5 +57,18 @@ void UBTService_Wait::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	}
 
 	// 3. 순찰
-	HyAIController->SetAIStateBBK(EAIState::EPatrol);
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	if (NavSystem)
+	{
+		// RandomPos
+		FNavLocation NextPatrolPos;
+		if (NavSystem->GetRandomPointInNavigableRadius(CharacterOwner->GetActorLocation(), 2000.f, NextPatrolPos))
+		{
+			HyAIController->SetTargetLocationBBK(NextPatrolPos.Location);
+			FVector Distance = CharacterOwner->GetActorLocation() - NextPatrolPos.Location;
+			HyAIController->SetTargetDistanceBBK(Distance.Size());
+
+			HyAIController->SetAIStateBBK(EAIState::EPatrol);
+		}
+	}
 }

@@ -20,9 +20,18 @@ void UHyAction_CriticalHit::OnActionStarted_Implementation(const FString& InCont
 		return;
 	}
 
+
+	// Critical Hit은 공격자와 마주보도록, Back은 공격맞은 방향을 보도록
+	FVector LastAttackDir = FVector::ZeroVector;
+	FRotator InputRotation = FRotator::ZeroRotator;
+
 	// 뒤에서 공격시 Donw 상태로	
 	if (InContext == TEXT("Back"))
 	{
+		LastAttackDir = HyCharacterOwner->GetLastAttackDirection();
+		InputRotation.Pitch = 0;
+		InputRotation = FRotationMatrix::MakeFromX(LastAttackDir).Rotator();
+
 		MontageSectionName = FName(InContext);
 
 		// To Down 상태로 만들어야하므로 현재 액션이 아닌 donw parent를 넣음
@@ -31,6 +40,15 @@ void UHyAction_CriticalHit::OnActionStarted_Implementation(const FString& InCont
 		FActionExcuteData ExcuteAction = FActionExcuteData(KeepDownAction, EActionPriority::EHighest);
 		HyCharacterOwner->SetStoredAction(ExcuteAction, "", true);
 	}
+	else
+	{
+		LastAttackDir = HyCharacterOwner->GetLastAttackDirection() * -1.f;
+		InputRotation.Pitch = 0;
+		InputRotation = FRotationMatrix::MakeFromX(LastAttackDir).Rotator();
+	}
+
+	HyCharacterOwner->SetActorRotation(InputRotation);
+
 }
 
 void UHyAction_CriticalHit::OnActionEnded_Implementation()

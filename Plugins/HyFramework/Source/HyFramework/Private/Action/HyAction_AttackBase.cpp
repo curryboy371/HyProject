@@ -14,6 +14,13 @@ void UHyAction_AttackBase::OnActionStarted_Implementation(const FString& context
 void UHyAction_AttackBase::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
+	TargetMovementCheckInterval += DeltaTime;
+
+	if (TargetMovementCheckInterval > MovementCheckDelay)
+	{
+		TargetMovementCheck();
+		TargetMovementCheckInterval = 0.0f;
+	}
 }
 
 void UHyAction_AttackBase::OnActionEnded_Implementation()

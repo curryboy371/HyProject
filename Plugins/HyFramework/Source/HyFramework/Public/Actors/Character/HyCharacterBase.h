@@ -133,10 +133,13 @@ public:
 
 
 
+
 	// Combat
 	bool GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation);
 	void SetWarpingTarget(const FVector& InTargetLocation, const FName& InWarpName);
 	void ReleaseWarpingTarget();
+
+	FVector GetLastAttackDirection() { return LastAttackDirection; }
 public:
 
 	// Anim 
@@ -290,7 +293,7 @@ protected:
 
 	int32 SpawnID = 0;
 	int32 InputAttackCount = 0;
-
+	FVector LastAttackDirection;
 public:
 	// TODO TEMP
 	const float DashAttackRange = 700.f;

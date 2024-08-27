@@ -190,11 +190,14 @@ const bool UHyTagSubsystem::IsInAirAction(const FGameplayTag& InActionTag) const
 
 const bool UHyTagSubsystem::IsDamagedAction(const FGameplayTag& InActionTag) const
 {
-    if (DamagedParentContainer.HasTag(InActionTag))
-	{
-		return true;
-	}
-
+    for (const FGameplayTag& Tag : DamagedParentContainer)
+    {
+        if (InActionTag.MatchesTag(Tag))
+        {
+            return true;
+        }
+    }
+ 
     return false;
 }
 

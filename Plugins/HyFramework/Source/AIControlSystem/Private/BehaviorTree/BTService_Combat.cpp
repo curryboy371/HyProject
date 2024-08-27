@@ -11,11 +11,13 @@
 #include "AIControlFunctionLibrary.h"
 
 #include "AI/HyAIController.h"
+#include "HyCoreFunctionLibrary.h"
 
 void UBTService_Combat::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+	SpendTime += DeltaSeconds;
 
 	UpdateCombatService(OwnerComp);
 }
@@ -26,13 +28,10 @@ void UBTService_Combat::OnSearchStart(FBehaviorTreeSearchData& SearchData)
 	TargetActor = nullptr;
 	CharacterOwner = nullptr;
 
-
-	// 여기서는 타겟이 유효한지 체크해서
-	
-	// UpdateCombat
-
-
     Super::OnSearchStart(SearchData);
+
+
+	// 타겟이 유효한지 체크
 
 	UpdateCombatService(SearchData.OwnerComp);
 }
@@ -42,14 +41,13 @@ void UBTService_Combat::UpdateCombatService(UBehaviorTreeComponent& OwnerComp)
 	HyAIController = Cast<AHyAIController>(OwnerComp.GetAIOwner());
 	if (!HyAIController)
 	{
-		ERR_V("HyAIController is nullptr");
 		return;
 	}
 
 	TargetActor = HyAIController->GetTargetActorBBK();
 	if(!TargetActor)
 	{
-		ERR_V("TargetActor is nullptr");
+		HyAIController->SetTarget(nullptr);
 		return;
 	}
 
@@ -70,7 +68,9 @@ void UBTService_Combat::UpdateCombatService(UBehaviorTreeComponent& OwnerComp)
 		CharacterDistance = UAIControlFunctionLibrary::CalcDistanceBetweenCharacter(CharacterOwner, TargetChar);
 	}
 	
+	HyAIController->SetTargetLocationBBK(TargetActor->GetActorLocation());
 	HyAIController->SetTargetDistanceBBK(CharacterDistance);
 
+	UHyCoreFunctionLibrary::DrawDebugCircle(GetWorld(), CharacterOwner->GetActorLocation(), HyAIController->GetLoseTargetDistance(), 32, FColor::Red, 0.5f);
 
 }

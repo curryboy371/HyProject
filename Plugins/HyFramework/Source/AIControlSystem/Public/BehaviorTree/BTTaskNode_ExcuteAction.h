@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/BTTaskNode.h"
-
+#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "ActionsTypes.h"
 #include "GameplayTagContainer.h"
 
@@ -14,7 +13,7 @@
  * 
  */
 UCLASS()
-class AICONTROLSYSTEM_API UBTTaskNode_ExcuteAction : public UBTTaskNode
+class AICONTROLSYSTEM_API UBTTaskNode_ExcuteAction : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 public:

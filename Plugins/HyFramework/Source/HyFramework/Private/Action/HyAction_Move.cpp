@@ -3,7 +3,7 @@
 
 #include "Action/HyAction_Move.h"
 #include "Actors/Character/HyCharacterBase.h"
-
+#include "GameFramework/Controller.h"
 
 
 void UHyAction_Move::OnActionStarted_Implementation(const FString& InContext)
@@ -22,6 +22,16 @@ void UHyAction_Move::OnActionEnded_Implementation()
 {
 	Super::OnActionEnded_Implementation();
 
+	if (bIsAIAction)
+	{
+		if (CharacterOwner)
+		{
+			if (CharacterOwner->GetController())
+			{
+				CharacterOwner->GetController()->StopMovement();
+			}
+		}
+	}
 }
 
 void UHyAction_Move::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)

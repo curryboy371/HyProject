@@ -19,6 +19,10 @@ public:
 	virtual void OnTick_Implementation(float DeltaTime);
 	virtual void OnActionEnded_Implementation();
 
+	virtual void TargetMovementCheck();
+
 protected:
 	FVector WarpLocation;
+
+
 };

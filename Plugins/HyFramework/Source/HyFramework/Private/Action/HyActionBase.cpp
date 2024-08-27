@@ -25,6 +25,6 @@ void UHyActionBase::OnActionStarted_Implementation(const FString& InContext)
 		ERR_V("HyCharacterOwner is nullptr");
 		return;
 	}
-
-	bIsAIAction = GET_TAG_SUBSYSTEM()->IsAIPlaying(ActionTag);
+	
+	bIsAIAction = GET_TAG_SUBSYSTEM()->IsAIPlaying(HyCharacterOwner->GetEquipTag());
 }
