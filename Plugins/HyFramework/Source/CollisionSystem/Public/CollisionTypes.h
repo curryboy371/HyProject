@@ -23,6 +23,9 @@
 // Pawn, HyCharacterCapsule에만 Overlapp
 #define CCHANNEL_HYATTACK ECC_GameTraceChannel1
 
+// HyAttackCollider에만 Overlapp - 캐릭터 주변 attack collider를 탐지하여 회피 액션을 취할 수 있도록 함
+#define CCHANNEL_HYCHARACTER ECC_GameTraceChannel2
+
 #pragma endregion
 
 

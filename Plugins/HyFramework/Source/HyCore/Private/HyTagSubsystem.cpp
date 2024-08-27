@@ -42,6 +42,16 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Action.Stand.Attack.ChargeAttacking"), ActionTagSet.ActionChargeAttack);
 
 
+    AddTag(FName("Action.InAir.Attack"), ActionTagSet.ActionAirAttackParent);
+    AddTag(FName("Action.InAir.Attack.AirStartAttacking"), ActionTagSet.ActionAirStartAttacking);
+    AddTag(FName("Action.InAir.Attack.Attacking"), ActionTagSet.ActionAirAttacking);
+
+
+    AddTag(FName("Action.Stand.Skill"), ActionTagSet.SkillActionParent);
+    AddTag(FName("Action.Stand.Skill.Slide"), ActionTagSet.ActionSlide);
+    AddTag(FName("Action.Stand.Skill.Avoid"), ActionTagSet.ActionAvoid);
+    AddTag(FName("Action.Stand.Skill.Dodge"), ActionTagSet.ActionDodge);
+    
     AddTag(FName("ItemSlot"), ItemSlotTagSet.SlotParent);
     AddTag(FName("ItemSlot.Weapon"), ItemSlotTagSet.SlotWeapon);
 
@@ -124,6 +134,22 @@ const bool UHyTagSubsystem::IsMoveAction(const FGameplayTag& InActionTag) const
 
 const bool UHyTagSubsystem::IsSkillAction(const FGameplayTag& InActionTag) const
 {
+    if (InActionTag.MatchesTag(ActionTagSet.SkillActionParent))
+    {
+        return true;
+    }
+    return false;
+}
+
+const bool UHyTagSubsystem::IsDodgeAction(const FGameplayTag& InActionTag) const
+{
+    // TODO 임시 회피
+    if (InActionTag == ActionTagSet.ActionDodge)
+    {
+        return true;
+    }
+
+
     return false;
 }
 
@@ -133,6 +159,12 @@ const bool UHyTagSubsystem::IsAttackAction(const FGameplayTag& InActionTag) cons
     {
         return true;
     }
+
+    if (InActionTag.MatchesTag(ActionTagSet.ActionAirAttackParent))
+    {
+        return true;
+    }
+
     return false;
 }
 

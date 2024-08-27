@@ -62,6 +62,8 @@ enum class EKeyInput : uint8
 {
     IA_None = 0,
 	IA_Attack,
+	IA_RAttack,
+	IA_ChargeAttack,
     IA_Equip,
 	IA_Skill1,
 	IA_Jump,
@@ -70,6 +72,8 @@ enum class EKeyInput : uint8
 
     IA_Crouch,
     IA_Sprint,
+    IA_Dodge,
+
 
     IA_CameraZoom,
 

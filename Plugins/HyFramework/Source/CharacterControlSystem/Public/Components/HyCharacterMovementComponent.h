@@ -48,12 +48,14 @@ public:
 	FORCEINLINE float GetGroundDistance() const { return GroundDistance; }
 	FORCEINLINE void SetGroundDistance(float InGroundDistance) { GroundDistance = InGroundDistance; }
 
+	FORCEINLINE const bool IsDefaultLocomotionState() const;
 
 	UFUNCTION(BlueprintPure, Category = "CControl | Movement")
 	FORCEINLINE ELocomotionState GetCurLocomotionState() const { return CurLocomotionState; }
 
 	UFUNCTION(BlueprintPure, Category = "CControl | Movement")
 	FORCEINLINE ELocomotionState GetTargetLocomotionState() const { return TargetLocomotionState.State; }
+
 
 	UFUNCTION(BlueprintCallable, Category = "CControl | Movement")
 	const float GetCharacterMaxStateSpeed(ELocomotionState InState);

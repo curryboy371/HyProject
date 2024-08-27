@@ -32,8 +32,19 @@ struct FActionTagSet
 	FGameplayTag ActionAttack;
 	FGameplayTag ActionJumpAttack;
 	FGameplayTag ActionChargeAttack;
-
 	FGameplayTag ActionDashAttack;
+
+
+	FGameplayTag ActionAirAttackParent;
+	FGameplayTag ActionAirStartAttacking; // air Start 
+	FGameplayTag ActionAirAttacking; // air Combo
+
+
+	FGameplayTag SkillActionParent;
+	FGameplayTag ActionSlide;
+	FGameplayTag ActionAvoid;
+	FGameplayTag ActionDodge;
+
 };
 
 struct FActionLocationTagSet
@@ -96,6 +107,8 @@ public:
 	const bool IsMoveAction(const FGameplayTag& InActionTag) const;
 
 	const bool IsSkillAction(const FGameplayTag& InActionTag) const;
+	const bool IsDodgeAction(const FGameplayTag& InActionTag) const;
+
 
 	const bool IsAttackAction(const FGameplayTag& InActionTag) const;
 	const bool IsComboAttackAction(const FGameplayTag& InActionTag) const;

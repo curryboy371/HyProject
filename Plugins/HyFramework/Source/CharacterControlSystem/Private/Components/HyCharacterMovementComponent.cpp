@@ -247,6 +247,11 @@ void UHyCharacterMovementComponent::BrakeToPreviousState()
     }
 }
 
+const bool UHyCharacterMovementComponent::IsDefaultLocomotionState() const
+{
+    return GetTargetLocomotionState() == DefaultState;
+}
+
 const float UHyCharacterMovementComponent::GetCharacterMaxStateSpeed(ELocomotionState InState)
 {
     FLocomotionState* LocomotionState = LocomotionStates.FindByKey(InState);

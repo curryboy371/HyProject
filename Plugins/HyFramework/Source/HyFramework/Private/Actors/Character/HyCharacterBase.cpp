@@ -843,47 +843,63 @@ const bool AHyCharacterBase::SetCharacterRotationIfInRange(const FVector& InTarg
 	return false;
 }
 
-void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
+const bool AHyCharacterBase::FindNearAttackCollider(const float InExtendRatio)
 {
+	// 여기서 sweep 체널으로 attack collider find
+	// 내것과 내 팀것은 제거하고 상대방것만 찾아야하고..
+	// enable 된 것만...
 
-	if (!InventorySystemComp)
+
+	// 현재 캐릭터의 캡슐 컴포넌트 크기를 가져옴
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	if (!CapsuleComp)
 	{
-		ERR_V("InventorySystemComp is not set.");
-		return;
+		return false;
 	}
 
-	if (InventorySystemComp->GetWeaponArmState() == EWeaponArmState::EWS_None)
-	{
-		// 장착한 무기가 없음
-		return;
-	}
+	float CapsuleRadius = CapsuleComp->GetUnscaledCapsuleRadius();
+	float CapsuleHalfHeight = CapsuleComp->GetUnscaledCapsuleHalfHeight();
 
-	if (!IsCanAction(EKeyInput::IA_Attack))
-	{
-		return;
-	}
+	float LargerCapsuleRadius = CapsuleRadius * InExtendRatio;
+	float LargerCapsuleHalfHeight = CapsuleHalfHeight * InExtendRatio;
 
-	if(IsCombatMode())
+	// 스윕에서 사용할 충돌 캡슐 생성
+	FCollisionShape CapsuleShape = FCollisionShape::MakeCapsule(LargerCapsuleRadius, LargerCapsuleHalfHeight);
+
+	FVector Location = GetActorLocation();
+
+	FRotator Rot = FRotator::ZeroRotator;
+
+
+	FQuat QuatRot = Rot.Quaternion();
+	FCollisionQueryParams InCollisionParams;
+	TArray<FHitResult> OutHitResults;
+
+	// 충돌 쿼리 수행
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		OutHitResults,
+		Location,
+		Location,
+		QuatRot,
+		CCHANNEL_HYCHARACTER, // 충돌 채널
+		CapsuleShape,         // 크기를 증가시킨 캡슐 모양
+		InCollisionParams
+	);
+
+	for (FHitResult& Result : OutHitResults)
 	{
-		// 여기서 강공격 체크
-		if (InputAttackCount > 0)
+		if (Result.GetActor())
 		{
-			if (GET_TAG_SUBSYSTEM()->IsChargeAttackAction(GetCurAction()) == false)
-			{
-				FindTarget();
-				TriggerAction(QuickActionExcute.ChargeAttack, "", true);
-			}
+			LOG_V("Hit Actor : %s", *Result.GetActor()->GetName());
 		}
 	}
-	else
-	{
-		FString Context = TEXT("Auto");
-		TriggerAction(QuickActionExcute.Equip, Context);
-	}
-	++InputAttackCount;
+
+	UHyCoreFunctionLibrary::DrawCapsuleQuat(GetWorld(), Location, LargerCapsuleHalfHeight, LargerCapsuleRadius, QuatRot, FColor::Blue, 1.0f, 1.f);
+
+	return true;
 }
 
-void AHyCharacterBase::CompletedAttack(const FInputActionValue& Value)
+void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 {
 	if (!InventorySystemComp)
 	{
@@ -904,15 +920,76 @@ void AHyCharacterBase::CompletedAttack(const FInputActionValue& Value)
 
 	if (IsCombatMode())
 	{
-		// 여기서 강공격 체크
+		FindTarget();
+		TriggerAttackAction();
+	}
+	else
+	{
+		FString Context = TEXT("Auto");
+		TriggerAction(QuickActionExcute.Equip, Context);
+	}
+}
+
+void AHyCharacterBase::InputChargeAttack(const FInputActionValue& Value)
+{
+	LOG_I;
+	if (!InventorySystemComp)
+	{
+		ERR_V("InventorySystemComp is not set.");
+		return;
+	}
+
+	if (InventorySystemComp->GetWeaponArmState() == EWeaponArmState::EWS_None)
+	{
+		// 장착한 무기가 없음
+		return;
+	}
+
+	if (!IsCanAction(EKeyInput::IA_Attack))
+	{
+		return;
+	}
+
+	if (IsCombatMode())
+	{
 		if (GET_TAG_SUBSYSTEM()->IsChargeAttackAction(GetCurAction()) == false)
 		{
 			FindTarget();
-			TriggerAttackAction();
+			TriggerAction(QuickActionExcute.ChargeAttack, "", true);
 		}
 	}
+	else
+	{
+		FString Context = TEXT("Auto");
+		TriggerAction(QuickActionExcute.Equip, Context);
+	}
+}
 
-	InputAttackCount = 0;
+void AHyCharacterBase::InputAirStartAttack(const FInputActionValue& Value)
+{
+	LOG_I;
+	if (!InventorySystemComp)
+	{
+		ERR_V("InventorySystemComp is not set.");
+		return;
+	}
+
+	if (InventorySystemComp->GetWeaponArmState() == EWeaponArmState::EWS_None)
+	{
+		// 장착한 무기가 없음
+		return;
+	}
+
+	if (!IsCanAction(EKeyInput::IA_RAttack))
+	{
+		return;
+	}
+
+	if (IsCombatMode())
+	{
+		FindTarget();
+		TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAirStartAttacking, EActionPriority::EMedium, "", true);
+	}
 }
 
 void AHyCharacterBase::TriggerAttackAction()
@@ -929,6 +1006,12 @@ void AHyCharacterBase::TriggerAttackAction()
 		return;
 	}
 
+	UHyTagSubsystem* HyTagSubSystem = GET_TAG_SUBSYSTEM();
+	if(!HyTagSubSystem)
+	{
+		ERR_V("HyTagSubSystem is not set.");
+		return;
+	}
 
 	UHyInst* Inst = UHyInst::Get();
 	if(!Inst)
@@ -950,30 +1033,35 @@ void AHyCharacterBase::TriggerAttackAction()
 		return;
 	}
 
-	// JumpAttack 
-	if (HyAnimInstance->GetJumpData().bIsInAir)
+	if (HyTagSubSystem->IsStandAction(GetCurAction()))
 	{
-		TriggerAction(QuickActionExcute.AttackJump, FString());
-	}
-	else
-	{
-		if (!GET_TAG_SUBSYSTEM()->IsDashAttackAction(GetCurAction()))
+		// JumpAttack 
+		if (HyAnimInstance->GetJumpData().bIsInAir)
 		{
-			bool bIsComboAttack = GET_TAG_SUBSYSTEM()->IsComboAttackAction(GetCurAction());
-			// (콤보 어택 && 마지막 인덱스) or 콤보 어택이 아닌경우
-			if (bIsComboAttack && ActionsSystemComp->IsLastMonstageSection() || !bIsComboAttack)
-			{
-				TriggerAction(QuickActionExcute.DashAttack, FString(), true);
-				return;
-			}
+			TriggerAction(QuickActionExcute.AttackJump, FString());
 		}
+		else
+		{
+			if (!GET_TAG_SUBSYSTEM()->IsDashAttackAction(GetCurAction()))
+			{
+				bool bIsComboAttack = GET_TAG_SUBSYSTEM()->IsComboAttackAction(GetCurAction());
+				// (콤보 어택 && 마지막 인덱스) or 콤보 어택이 아닌경우
+				if (bIsComboAttack && ActionsSystemComp->IsLastMonstageSection() || !bIsComboAttack)
+				{
+					TriggerAction(QuickActionExcute.DashAttack, FString(), true);
+					return;
+				}
+			}
 
-		// Dash Atack이 아니면 콤보어택
-		TriggerAction(QuickActionExcute.Attack, FString(), true);
+			// Dash Atack이 아니면 콤보어택
+			TriggerAction(QuickActionExcute.Attack, FString(), true);
+		}
 	}
-
-
-
+	else if (HyTagSubSystem->IsInAirAction(GetCurAction()))
+	{
+		FindTarget();
+		TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAirAttacking, EActionPriority::EMedium, "", true);
+	}
 }
 
 void AHyCharacterBase::InputMove(const FInputActionValue& Value)
@@ -1104,20 +1192,24 @@ void AHyCharacterBase::InputEquip(const FInputActionValue& Value)
 		return;
 	}
 
+	FString Context = TEXT("Auto");
+	TriggerAction(QuickActionExcute.UnEquip, Context);
 
-	FGameplayTag WeaponSlot = GET_TAG_SUBSYSTEM()->ItemSlotTagSet.SlotWeapon;
-	if (InventorySystemComp->IsEquippedSlot(WeaponSlot))
-	{
-		InventorySystemComp->UnEquipItemBySlot(WeaponSlot);
-	}
-	else
-	{
-		InventorySystemComp->EquipItemBySlot(WeaponSlot);
-	}
+	//FGameplayTag WeaponSlot = GET_TAG_SUBSYSTEM()->ItemSlotTagSet.SlotWeapon;
+	//if (InventorySystemComp->IsEquippedSlot(WeaponSlot))
+	//{
+	//	InventorySystemComp->UnEquipItemBySlot(WeaponSlot);
+	//}
+	//else
+	//{
+	//	InventorySystemComp->EquipItemBySlot(WeaponSlot);
+	//}
 }
 
 void AHyCharacterBase::InputSprint(const FInputActionValue& Value)
 {
+	LOG_I;
+
 	if (!HyCharacterMovement)
 	{
 		ERR_V("HyCharacterMovement is not set.");
@@ -1134,13 +1226,62 @@ void AHyCharacterBase::InputSprint(const FInputActionValue& Value)
 
 void AHyCharacterBase::CompletedSprint(const FInputActionValue& Value)
 {
+	LOG_I;
+
 	if (!HyCharacterMovement)
 	{
 		ERR_V("HyCharacterMovement is not set.");
 		return;
 	}
 
-	HyCharacterMovement->SetDefaultLocomotionState();
+	if (!HyCharacterMovement->IsDefaultLocomotionState())
+	{
+		HyCharacterMovement->SetDefaultLocomotionState();
+	}
+}
+
+void AHyCharacterBase::InputDodge(const FInputActionValue& Value)
+{
+	LOG_I;
+	if (HyAnimInstance == nullptr)
+	{
+		ERR_V("HyAnimInstance is null");
+		return;
+	}
+
+	FString ActionContext;
+	switch (HyAnimInstance->GetVelocityData().SpeedDirection)
+	{
+	case EHyDirection::Front:
+		ActionContext = TEXT("Front");
+		break;
+	case EHyDirection::Back:
+		ActionContext = TEXT("Back");
+		break;
+	case EHyDirection::Left:
+		ActionContext = TEXT("Left");
+		break;
+	case EHyDirection::Right:
+		ActionContext = TEXT("Right");
+		break;
+	default:
+		break;
+	}
+	// slide, avoid 등등..
+
+	// input direction
+
+
+	if (IsCombatMode())
+	{
+		TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAvoid, EActionPriority::EMedium, ActionContext);
+
+		FindNearAttackCollider(5);
+	}
+	else
+	{
+		TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionSlide, EActionPriority::EMedium, ActionContext);
+	}
 }
 
 void AHyCharacterBase::InputCrouch(const FInputActionValue& Value)
@@ -1285,6 +1426,21 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 			if (IsCombatMode())
 			{
 				if (GET_TAG_SUBSYSTEM()->IsJumpAction(CurActionTag) || GET_TAG_SUBSYSTEM()->IsAttackAction(CurActionTag))
+				{
+					bRes = true;
+				}
+			}
+
+		}
+		break;
+	case EKeyInput::IA_RAttack:
+		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
+		if (!bRes)
+		{
+			// 전투모드인 경우
+			if (IsCombatMode())
+			{
+				if (GET_TAG_SUBSYSTEM()->IsAttackAction(CurActionTag))
 				{
 					bRes = true;
 				}
@@ -1495,10 +1651,10 @@ void AHyCharacterBase::DebugDrawTargetHitDirection()
 			float DotProduct = FVector::DotProduct(AttackDirection, TargetForward);
 			FVector CrossProduct = FVector::CrossProduct(TargetForward, AttackDirection);
 
-			if(GET_TAG_SUBSYSTEM()->IsMonsterCharacter(TargetCharacter->GetCharacterTypeTag()))
-			{
-				LOG_V("DotProduct %f CrossProduct Z %f", DotProduct, CrossProduct.Z);
-			}
+			//if(GET_TAG_SUBSYSTEM()->IsMonsterCharacter(TargetCharacter->GetCharacterTypeTag()))
+			//{
+			//	LOG_V("DotProduct %f CrossProduct Z %f", DotProduct, CrossProduct.Z);
+			//}
 			UHyCoreFunctionLibrary::DrawArrow(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorLocation() + AttackDirection * 100, 10, FLinearColor::Red);
 
 		}

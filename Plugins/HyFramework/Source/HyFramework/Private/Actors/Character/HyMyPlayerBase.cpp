@@ -115,7 +115,9 @@ void AHyMyPlayerBase::InputFunctionMapping()
 	// Input 함수를 함수 이름으로 동적 바인딩 하지만, 실제로 실행시는 정적 바인딩처럼 함수 포인터로 호출하기 위함.
 
 	InputFunctionMap.Add("InputAttack", &AHyMyPlayerBase::InputAttack);
-	InputFunctionMap.Add("CompletedAttack", &AHyMyPlayerBase::CompletedAttack);
+	InputFunctionMap.Add("InputAirStartAttack", &AHyMyPlayerBase::InputAirStartAttack);
+	InputFunctionMap.Add("InputChargeAttack", &AHyMyPlayerBase::InputChargeAttack);
+
 	InputFunctionMap.Add("InputMove", &AHyMyPlayerBase::InputMove);
 	InputFunctionMap.Add("CompletedMove", &AHyMyPlayerBase::CompletedMove);
 	InputFunctionMap.Add("InputJump", &AHyMyPlayerBase::InputJump);
@@ -124,6 +126,8 @@ void AHyMyPlayerBase::InputFunctionMapping()
 
 	InputFunctionMap.Add("InputSprint", &AHyMyPlayerBase::InputSprint);
 	InputFunctionMap.Add("CompletedSprint", &AHyMyPlayerBase::CompletedSprint);
+	InputFunctionMap.Add("InputDodge", &AHyMyPlayerBase::InputDodge);
+
 
 	InputFunctionMap.Add("InputCrouch", &AHyMyPlayerBase::InputCrouch);
 

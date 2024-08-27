@@ -131,7 +131,8 @@ public:
 	virtual const bool IsTargetInRange(const float InRange) override;
 	virtual const bool SetCharacterRotationIfInRange(const FVector& InTargetLotation, const float InEnableRange) override;
 
-
+	// TODO 나중에 인터페이스로 옮기자
+	const bool FindNearAttackCollider(const float InExtendRatio);
 
 
 	// Combat
@@ -157,7 +158,10 @@ public:
 	void InputAttack(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
-	void CompletedAttack(const FInputActionValue& Value);
+	void InputChargeAttack(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputAirStartAttack(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputMove(const FInputActionValue& Value);
@@ -179,6 +183,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void CompletedSprint(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputDodge(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputCrouch(const FInputActionValue& Value);
@@ -292,7 +299,6 @@ protected:
 	FGuid TargetGuid;
 
 	int32 SpawnID = 0;
-	int32 InputAttackCount = 0;
 	FVector LastAttackDirection;
 public:
 	// TODO TEMP
