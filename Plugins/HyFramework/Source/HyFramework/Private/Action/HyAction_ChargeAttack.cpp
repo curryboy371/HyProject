@@ -21,7 +21,6 @@ void UHyAction_ChargeAttack::OnActionStarted_Implementation(const FString& InCon
 
 	SectionIndex = FMath::RandRange(0, 5); // Rand;
 
-	HyCharacterOwner->ReleaseWarpingTarget();
 	if (HyCharacterOwner->IsTargetAvailable())
 	{
 		FVector Location;
@@ -34,6 +33,7 @@ void UHyAction_ChargeAttack::OnActionStarted_Implementation(const FString& InCon
 				{
 					if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
 					{
+						HyCharacterOwner->ReleaseWarpingTarget("Dash");
 						HyCharacterOwner->SetWarpingTarget(Location, TEXT("Dash"));
 						LastTargetLocation = TargetCharacter->GetActorLocation();
 					}
@@ -52,7 +52,7 @@ void UHyAction_ChargeAttack::OnActionEnded_Implementation()
 		return;
 	}
 
-	HyCharacterOwner->ReleaseWarpingTarget();
+	HyCharacterOwner->ReleaseWarpingTarget("Dash");
 
 }
 
@@ -108,6 +108,7 @@ void UHyAction_ChargeAttack::TargetMovementCheck()
 						if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
 						{
 							LastTargetLocation = TargetCharacter->GetActorLocation();
+							HyCharacterOwner->ReleaseWarpingTarget("Dash");
 							HyCharacterOwner->SetWarpingTarget(Location, TEXT("Dash"));
 						}
 					}

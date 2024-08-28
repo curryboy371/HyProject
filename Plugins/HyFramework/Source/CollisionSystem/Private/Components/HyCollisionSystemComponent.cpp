@@ -425,6 +425,7 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 	DamageEvent.HitTag = InHitTag;
 	DamageEvent.SetHitResult(InHitResult);
 	DamageEvent.AttackDirection = AttackDirection;
+
 	if (TagSubSystem->IsCriticalHit(InHitTag))
 	{
 		DamageEvent.DamageType = EHyDamageType::EHyDamage_Critical;

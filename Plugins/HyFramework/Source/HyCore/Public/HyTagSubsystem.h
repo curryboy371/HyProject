@@ -28,6 +28,9 @@ struct FActionTagSet
 	FGameplayTag ActionUnEquip;
 	FGameplayTag ActionCrouching;
 
+	FGameplayTag ActionDash;
+
+
 	FGameplayTag AttActionParent;
 	FGameplayTag ActionAttack;
 	FGameplayTag ActionJumpAttack;
@@ -64,6 +67,10 @@ struct FHitTagSet
 	FGameplayTag DamagedNormal;
 	FGameplayTag DamagedLarge;
 	FGameplayTag DamagedCritical;
+	FGameplayTag DamagedAirLaunch; // Air상태로 만드는 Hit
+
+	FGameplayTag DamagedInAir; // Air 상태 유지
+
 };
 
 

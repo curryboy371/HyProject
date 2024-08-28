@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Action/HyActionBase.h"
+#include "Action/HyAction_AttackBase.h"
 #include "HyActionComboBase.generated.h"
 
 /**
- * 
+ *  자식 class에서 AttackBase 기능을 사용하기위해 AttackBase 상속
  */
 UCLASS()
-class HYFRAMEWORK_API UHyActionComboBase : public UHyActionBase
+class HYFRAMEWORK_API UHyActionComboBase : public UHyAction_AttackBase
 {
 	GENERATED_BODY()
 	
@@ -20,7 +20,7 @@ public:
     virtual void OnActionEnded_Implementation();
     virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
     virtual void OnTick_Implementation(float DeltaTime);
-    virtual bool IsStopConditional_Implementation() { return true; };
+    //virtual bool IsStopConditional_Implementation() { return true; };
 
     virtual FName GetMontageSectionName_Implementation();
 public:

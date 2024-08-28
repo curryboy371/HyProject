@@ -18,47 +18,20 @@
 void UHyAction_JumpAttack::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
-	if (!HyCharacterOwner)
-	{
-		ERR_V("HyCharacterOwner  Is nullptr");
-		return;
-	}
 
-	HyCharacterOwner->ReleaseWarpingTarget();
-	FVector LandLocation = HyCharacterOwner->GetActorLocation();
-
-	if (TObjectPtr<class UHyCharacterMovementComponent> HyMovement = HyCharacterOwner->GetCharacterMovementComp())
-	{
-		if (HyCharacterOwner->IsTargetAvailable())
-		{
-			if (UHyInst* Inst = UHyInst::Get())
-			{
-				if (UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>())
-				{
-					if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
-					{
-						FVector TargetLocation = TargetCharacter->GetActorLocation();
-						FVector Dist = HyCharacterOwner->GetActorLocation() - TargetLocation;
-						if (Dist.Length() < 300.f)
-						{
-							LandLocation.X = TargetLocation.X;
-							LandLocation.Y = TargetLocation.Y;
-						}
-					}
-				}
-			}
-		}
-
-		LandLocation.Z -= HyMovement->GetGroundDistance();
-		HyCharacterOwner->SetWarpingTarget(LandLocation, TEXT("Jump"));
-	}
+	SetJumpAttackWarpTarget();
 }
 
 void UHyAction_JumpAttack::OnActionEnded_Implementation()
 {
 	Super::OnActionEnded_Implementation();
 
+	if (!HyCharacterOwner)
+	{
+		return;
+	}
 
+	HyCharacterOwner->ReleaseWarpingTarget(WarpNameJumpAttack);
 }
 
 void UHyAction_JumpAttack::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
@@ -89,7 +62,55 @@ bool UHyAction_JumpAttack::IsStopConditional_Implementation()
 	return !HyCharacterOwner->IsEmptyStoredAction();
 }
 
-void UHyAction_JumpAttack::TargetMovementCheck()
+void UHyAction_JumpAttack::SetJumpAttackWarpTarget()
 {
-	// 여기는 추적 x
+	if (!HyCharacterOwner)
+	{
+		ERR_V("HyCharacterOwner  Is nullptr");
+		return;
+	}
+
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		ERR_V("Inst  Is nullptr");
+		return;
+	}
+
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if(!SpawnManager)
+	{
+		ERR_V("SpawnManager  Is nullptr");
+		return;
+	}
+
+
+	TObjectPtr<UHyCharacterMovementComponent> HyMovementComp = HyCharacterOwner->GetCharacterMovementComp();
+	if (!HyMovementComp)
+	{
+		ERR_V("HyMovementComp  Is nullptr");
+		return;
+	}
+
+	FVector LandLocation = HyCharacterOwner->GetActorLocation();
+
+	if (HyCharacterOwner->IsTargetAvailable())
+	{
+		if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+		{
+
+			FVector TargetLocation = TargetCharacter->GetActorLocation();
+			FVector Dist = HyCharacterOwner->GetActorLocation() - TargetLocation;
+			if (Dist.Length() < 300.f)
+			{
+				LandLocation.X = TargetLocation.X;
+				LandLocation.Y = TargetLocation.Y;
+			}
+
+		}
+	}
+
+	LandLocation.Z -= HyMovementComp->GetGroundDistance();
+	HyCharacterOwner->SetWarpingTarget(LandLocation, WarpNameJumpAttack);
+
 }

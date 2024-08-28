@@ -41,11 +41,6 @@ void UHyAction_AirStartAttack::OnActionStarted_Implementation(const FString& InC
 		{
 			if (TObjectPtr<AHyCharacterBase> TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
 			{
-				// TODO 
-				// 
-				// 여기서 타겟에게 강제어택처리 해버리는 것도 고려
-
-				// 워핑을 통한 점프중 타겟과 충돌로 인해 xy 이동이 발생하여 충돌을 꺼줘야함
 				TargetCharacter->SetCharacterCollisionEnable(false);
 			}
 

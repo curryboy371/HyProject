@@ -618,6 +618,8 @@ void AHyCharacterBase::SetWarpingTarget(const FVector& InTargetLocation, const F
 		return;
 	}
 
+	ReleaseWarpingTarget(InWarpName);
+
 	FTransform TargetTransform = GetTransform();
 	TargetTransform.SetLocation(InTargetLocation);
 
@@ -633,7 +635,7 @@ void AHyCharacterBase::SetWarpingTarget(const FVector& InTargetLocation, const F
 	MotionWarpingComp->AddOrUpdateWarpTargetFromTransform(InWarpName, TargetTransform);
 }
 
-void AHyCharacterBase::ReleaseWarpingTarget()
+void AHyCharacterBase::ReleaseWarpingTarget(const FName& InWarpName)
 {
 	if (!MotionWarpingComp)
 	{
@@ -641,8 +643,7 @@ void AHyCharacterBase::ReleaseWarpingTarget()
 		return;
 	}
 
-	MotionWarpingComp->RemoveWarpTarget(FName("Dash"));
-	MotionWarpingComp->RemoveWarpTarget(FName("Jump"));
+	MotionWarpingComp->RemoveWarpTarget(InWarpName);
 }
 
 bool AHyCharacterBase::TriggerActionBlueprint(FActionExcuteData InActionExcuteData, const FString& InContext, bool bCanBeStored)
@@ -988,7 +989,21 @@ void AHyCharacterBase::InputAirStartAttack(const FInputActionValue& Value)
 	if (IsCombatMode())
 	{
 		FindTarget();
-		TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAirStartAttacking, EActionPriority::EMedium, "", true);
+
+		LOG_V("%s", *GetActorLocation().ToString());
+
+
+		// 타겟이 있으면 타겟에 Dash > AirStartAttack
+		if (IsTargetAvailable())
+		{
+			TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionDash, EActionPriority::EMedium, "AirStart");
+		}
+		else
+		{
+			// 타겟이 없으면 AirStartAttack ( 제자리 )
+			TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAirStartAttacking, EActionPriority::EMedium);
+		}
+
 	}
 }
 
@@ -1371,6 +1386,20 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	}
 
 	return Damage;
+}
+
+void AHyCharacterBase::SetCharacterCollisionEnable(bool bEnable)
+{
+	if(bEnable)
+	{
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	else
+	{
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 const bool AHyCharacterBase::IsDead() const

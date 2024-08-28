@@ -34,6 +34,7 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Action.Stand.Doing.Equip"), ActionTagSet.ActionEquip);
     AddTag(FName("Action.Stand.Doing.UnEquip"), ActionTagSet.ActionUnEquip);
     AddTag(FName("Action.Stand.Doing.Crouching"), ActionTagSet.ActionCrouching);
+    AddTag(FName("Action.Stand.Doing.Dash"), ActionTagSet.ActionDash);
 
     AddTag(FName("Action.Stand.Attack"), ActionTagSet.AttActionParent);
     AddTag(FName("Action.Stand.Attack.Attacking"), ActionTagSet.ActionAttack);
@@ -78,6 +79,10 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Damaged.Standing"), HitTagSet.DamagedStanding);
 
     AddTag(FName("Damaged.Hit"), HitTagSet.DamagedNormal);
+    AddTag(FName("Damaged.AirLaunch"), HitTagSet.DamagedAirLaunch);
+    AddTag(FName("Damaged.InAir"), HitTagSet.DamagedInAir);
+
+
     AddTag(FName("Damaged.LargeHit"), HitTagSet.DamagedLarge);
     AddTag(FName("Damaged.CriticalHit"), HitTagSet.DamagedCritical);
     AddTag(FName("Damaged.Dead"), HitTagSet.DamagedDead);
@@ -241,14 +246,31 @@ const FGameplayTag UHyTagSubsystem::GetActionTypeByDamageType(const FGameplayTag
     FGameplayTag HitActionTag = FGameplayTag::EmptyTag;
     if (IsStandAction(CurActionTag))
     {
-        FString TagString = ActionLocationTagSet.StandActionTag.ToString() + "." + InDamageType.ToString();
-        HitActionTag = FGameplayTag::RequestGameplayTag(FName(*TagString));
+        FString TagString;
+        // 예외상황 AirLaunch이면 Stand > Air로
+        if (InDamageType == HitTagSet.DamagedAirLaunch)
+        {
+            TagString = ActionLocationTagSet.InAirActionTag.ToString() + "." + InDamageType.ToString();
+        }
+        else
+        {
+            TagString = ActionLocationTagSet.StandActionTag.ToString() + "." + InDamageType.ToString();
+        }
 
+        HitActionTag = FGameplayTag::RequestGameplayTag(FName(*TagString));
     }
 	else if (IsDownAction(CurActionTag))
 	{
-        FString TagString = ActionLocationTagSet.DownActionTag.ToString() + "." + InDamageType.ToString();
-        HitActionTag = FGameplayTag::RequestGameplayTag(FName(*TagString));
+        // 예외상황 AirLaunch이면 Stand > Air로
+        FString TagString;
+        if (InDamageType == HitTagSet.DamagedAirLaunch)
+        {
+            TagString = ActionLocationTagSet.InAirActionTag.ToString() + "." + InDamageType.ToString();
+        }
+        else
+        {
+            TagString = ActionLocationTagSet.DownActionTag.ToString() + "." + InDamageType.ToString();
+        }
 	}
 	else if (IsInAirAction(CurActionTag))
 	{

@@ -138,7 +138,7 @@ public:
 	// Combat
 	bool GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation);
 	void SetWarpingTarget(const FVector& InTargetLocation, const FName& InWarpName);
-	void ReleaseWarpingTarget();
+	void ReleaseWarpingTarget(const FName& InWarpName);
 
 	FVector GetLastAttackDirection() { return LastAttackDirection; }
 public:
@@ -202,6 +202,11 @@ protected:
 
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+public:
+	void SetCharacterCollisionEnable(bool bEnable);
+
+
 public:
 	const bool IsDead() const;
 

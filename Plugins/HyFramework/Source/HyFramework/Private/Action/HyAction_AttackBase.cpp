@@ -5,9 +5,15 @@
 #include "Actors/Character/HyCharacterBase.h"
 #include "HyCoreMacro.h"
 
+#include "HyTagSubsystem.h"
+
+#include "Game/HyGameInstance.h"
+#include "Manager/HySpawnManager.h"
 
 void UHyAction_AttackBase::OnActionStarted_Implementation(const FString& contextString)
 {
+	bUseCheckTargetMovement = false;
+
 	Super::OnActionStarted_Implementation(contextString);
 }
 
@@ -57,4 +63,57 @@ bool UHyAction_AttackBase::IsStopConditional_Implementation()
 		return true;
 	}
 
+}
+
+void UHyAction_AttackBase::TargetMovementCheck()
+{
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		return;
+	}
+
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if (!SpawnManager)
+	{
+		return;
+	}
+
+	if (HyCharacterOwner->IsTargetAvailable())
+	{
+		FVector Location;
+		if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+		{
+			FVector MoveDir = LastTargetLocation - TargetCharacter->GetActorLocation();
+			if (MoveDir.IsNearlyZero(0.1f) == false)
+			{
+				OnTargetMovement();
+			}
+		}
+	}
+}
+
+void UHyAction_AttackBase::SetDashWarpTarget()
+{
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		return;
+	}
+
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if (!SpawnManager)
+	{
+		return;
+	}
+
+	if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+	{
+		FVector Location;
+		if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
+		{
+			HyCharacterOwner->SetWarpingTarget(Location, WarpNameDash);
+			LastTargetLocation = TargetCharacter->GetActorLocation();
+		}
+	}
 }

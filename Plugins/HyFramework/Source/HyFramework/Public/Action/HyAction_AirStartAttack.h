@@ -20,4 +20,11 @@ public:
 	virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
 	virtual void OnTick_Implementation(float DeltaTime);
 	virtual bool IsStopConditional_Implementation();
+	virtual void OnActionNotify_Implementation();
+
+protected:
+	void SetAirStartWarpTarget();
+
+protected:
+	FName WarpNameAirStart = FName("AirStart");
 };

@@ -576,7 +576,6 @@ struct FCharacterInputData
 		: InputDirection(FVector::ZeroVector)
         , LastInputDirection(FVector::ZeroVector)
 		, InputRotator(FRotator::ZeroRotator)
-		, DashDirection(FVector::ZeroVector)
 	{
         bIsMoveInputing = false;
         InputScale = 0.f;
@@ -610,8 +609,6 @@ struct FCharacterInputData
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
     FRotator InputRotator;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CControl | Movement")
-    FVector DashDirection;
 
     // 회전 속도
     UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "CControl | Movement")

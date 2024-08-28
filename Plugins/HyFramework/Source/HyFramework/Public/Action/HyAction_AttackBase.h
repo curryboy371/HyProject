@@ -21,11 +21,22 @@ public:
 
 	virtual bool IsStopConditional_Implementation();
 
-	virtual void TargetMovementCheck() {};
+	
+	virtual void OnTargetMovement() {}; // TargetMovementCheck에서 타겟이 움직였을때 호출
+protected:
+	void TargetMovementCheck();
+	void SetDashWarpTarget();
 
 
 protected:
 	FVector LastTargetLocation;
-	float TargetMovementCheckInterval = 0.0f;
 	const float MovementCheckDelay = 0.1f;
+
+	float TargetMovementCheckInterval = 0.0f;
+
+	bool bUseCheckTargetMovement; // TargetMovementCheck을 할지 여부
+
+
+	FName WarpNameDash = FName("Dash");
+
 };

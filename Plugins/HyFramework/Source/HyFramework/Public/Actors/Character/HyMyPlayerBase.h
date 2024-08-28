@@ -43,6 +43,8 @@ public:
 
 	void UpdateBlurWeight();
 
+protected:
+	void DebugLocalPlayerDraw();
 public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void CameraZoom(const FInputActionValue& Value);

@@ -290,7 +290,7 @@ void UHyAnimInstance::UpdateJump(const float& DeltaSeconds)
 
     JumpData.bIsJumping = false;
     JumpData.bIsFalling = false;
-    JumpData.bIsInAir = CharacterMovementComp->IsFalling();
+    JumpData.bIsInAir = CharacterMovementComp->IsFalling() || CharacterMovementComp->IsFlying();
     if (JumpData.bIsInAir) 
     {
         CharacterMovementComp->CalcGroundDistance();

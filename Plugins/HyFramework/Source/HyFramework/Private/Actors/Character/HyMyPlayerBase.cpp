@@ -7,6 +7,10 @@
 
 #include "Manager/HySpawnManager.h"
 
+#include "HyCoreDeveloperSettings.h"
+#include "HyCoreFunctionLibrary.h"
+
+
 //Input
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
@@ -194,6 +198,8 @@ void AHyMyPlayerBase::Tick(float DeltaTime)
 
 
 	UpdateBlurWeight();
+
+	DebugLocalPlayerDraw();
 }
 
 void AHyMyPlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -232,6 +238,15 @@ void AHyMyPlayerBase::LocalPlayerSetup()
 		return;
 	}
 
+	//cam
+	if (CameraBoomComp)
+	{
+		FName SocketName = "Camera";
+		if (CameraBoomComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName) == false)
+		{
+			ERR_V("AttachToComponent failed Check Socket Name %s", *SocketName.ToString());
+		}
+	}
 
 	SpawnCompleted(); // Engine에서 생성하는 Character는 SpawnCompleted를 이곳에서 호출
 	SpawnManager->SetLocalPlayer(this);
@@ -368,6 +383,18 @@ void AHyMyPlayerBase::UpdateBlurWeight()
 	}
 }
 
+void AHyMyPlayerBase::DebugLocalPlayerDraw()
+{
+	if (const UHyCoreDeveloperSettings* DevSetting = UHyCoreDeveloperSettings::GetDeveloperSetting())
+	{
+		if (DevSetting->IsDrawEnable())
+		{
+			UHyCoreFunctionLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), DashAttackRange, 32, FColor::Blue);
+		}
+
+	}
+}
+
 void AHyMyPlayerBase::CameraZoom(const FInputActionValue& Value)
 {
 	const float Zoomvalue = Value.Get<float>();
@@ -489,8 +516,6 @@ void AHyMyPlayerBase::SetCameraArmLenth(const float InCameraArmLength, const boo
 	}
 
 	CameraBoomComp->TargetArmLength = InCameraArmLength;
-
-	LOG_V("CameraArmLength %f", InCameraArmLength);
 }
 
 void AHyMyPlayerBase::SetCameraZoomLock(const bool InLock)

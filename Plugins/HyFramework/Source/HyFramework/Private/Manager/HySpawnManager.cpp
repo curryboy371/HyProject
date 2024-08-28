@@ -172,7 +172,7 @@ const bool UHySpawnManager::IsValidCharacterWithLocation(const FGuid& InCharacte
 
 TObjectPtr<class AHyCharacterBase> UHySpawnManager::GetCharacterByGuid(const FGuid& InCharacterGuid)
 {
-	if (IsValidCharacter(InCharacterGuid), false)
+	if (IsValidCharacter(InCharacterGuid, false) == false)
 	{
 		return nullptr;
 	}
