@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Action/HyAction_AirHit.h"
+#include "Action/HyAction_HitAirLaunch.h"
 #include "Actors/Character/HyCharacterBase.h"
 #include "Components/HyCharacterMovementComponent.h"
 
@@ -11,7 +11,7 @@
 
 #include "ActionsTypes.h"
 
-void UHyAction_AirHit::OnActionStarted_Implementation(const FString& InContext)
+void UHyAction_HitAirLaunch::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
 	if (!HyCharacterOwner)
@@ -21,13 +21,13 @@ void UHyAction_AirHit::OnActionStarted_Implementation(const FString& InContext)
 	}
 
 	// Air Hit은 공격자와 마주보도록
-	//FVector LastAttackDir = FVector::ZeroVector;
-	//FRotator InputRotation = FRotator::ZeroRotator;
-	//
-	//LastAttackDir = HyCharacterOwner->GetLastAttackDirection() * -1.f;
-	//InputRotation.Pitch = 0;
-	//InputRotation = FRotationMatrix::MakeFromX(LastAttackDir).Rotator();
-	//HyCharacterOwner->SetActorRotation(InputRotation);
+	FVector LastAttackDir = FVector::ZeroVector;
+	FRotator InputRotation = FRotator::ZeroRotator;
+
+	LastAttackDir = HyCharacterOwner->GetLastAttackDirection() * -1.f;
+	InputRotation.Pitch = 0;
+	InputRotation = FRotationMatrix::MakeFromX(LastAttackDir).Rotator();
+	HyCharacterOwner->SetActorRotation(InputRotation);
 
 	if (UCharacterMovementComponent* CharacterMovement = HyCharacterOwner->GetCharacterMovement())
 	{
@@ -35,13 +35,15 @@ void UHyAction_AirHit::OnActionStarted_Implementation(const FString& InContext)
 		CharacterMovement->GravityScale = 1.0f;
 	}
 
+	HyCharacterOwner->SetWarpingTarget(HyCharacterOwner->GetAirHitWarpLocation(), AirHitWarpName);
+
 	// 다음 액션 저장
 	FGameplayTag KeepDownAction = GET_TAG_SUBSYSTEM()->GetActionTypeByDamageType(GET_TAG_SUBSYSTEM()->HitTagSet.DamagedInAir, ActionTag);
 	FActionExcuteData ExcuteAction = FActionExcuteData(KeepDownAction, EActionPriority::EMedium);
 	HyCharacterOwner->SetStoredAction(ExcuteAction, "", true);
 }
 
-void UHyAction_AirHit::OnActionEnded_Implementation()
+void UHyAction_HitAirLaunch::OnActionEnded_Implementation()
 {
 	Super::OnActionEnded_Implementation();
 	if (!HyCharacterOwner)
@@ -50,14 +52,16 @@ void UHyAction_AirHit::OnActionEnded_Implementation()
 	}
 
 	FVector ZeroVec = FVector::ZeroVector;
+	HyCharacterOwner->SetAirHitWarpLocation(ZeroVec);
+	HyCharacterOwner->ReleaseWarpingTarget(AirHitWarpName);
 }
 
-void UHyAction_AirHit::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
+void UHyAction_HitAirLaunch::OnActionTransition_Implementation(UActionsBaseAction* InPreAction)
 {
 	Super::OnActionTransition_Implementation(InPreAction);
 }
 
-void UHyAction_AirHit::OnTick_Implementation(float DeltaTime)
+void UHyAction_HitAirLaunch::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
 
@@ -65,4 +69,6 @@ void UHyAction_AirHit::OnTick_Implementation(float DeltaTime)
 	{
 		return;
 	}
+
+	HyCharacterOwner->SetWarpingTarget(HyCharacterOwner->GetAirHitWarpLocation(), AirHitWarpName);
 }

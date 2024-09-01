@@ -171,8 +171,10 @@ void AHyCharacterBase::BeginPlay()
 	// DefaultAction Setting, Trigger Excute
 	if (ActionsSystemComp)
 	{
+		ActionsSystemComp->SetDefaultStandActinoTag(QuickActionExcute.Idle);
+		ActionsSystemComp->SetDefaultAirActinoTag(QuickActionExcute.AirIdle);
+
 		FActionExcuteData InitActionData(CharacterDefaultTagSet.ActionTag);
-		ActionsSystemComp->SetDefaultActinoTag(InitActionData);
 		TriggerAction(InitActionData);
 	}
 
@@ -339,6 +341,9 @@ void AHyCharacterBase::CharacterActionTagSetup()
 			QuickActionExcute.Idle = FActionExcuteData(TagSubsystem->ActionTagSet.ActionIdle, EActionPriority::ENone);
 			QuickActionExcute.Move = FActionExcuteData(TagSubsystem->ActionTagSet.ActionMove, EActionPriority::ELow);
 
+			QuickActionExcute.AirIdle = FActionExcuteData(TagSubsystem->ActionTagSet.ActionAirIdle, EActionPriority::ENone);
+
+
 			QuickActionExcute.Jump = FActionExcuteData(TagSubsystem->ActionTagSet.ActionJump, EActionPriority::EMedium);
 			QuickActionExcute.Equip = FActionExcuteData(TagSubsystem->ActionTagSet.ActionEquip, EActionPriority::EMedium);
 			QuickActionExcute.UnEquip = FActionExcuteData(TagSubsystem->ActionTagSet.ActionUnEquip, EActionPriority::EMedium);
@@ -363,6 +368,8 @@ void AHyCharacterBase::CharacterActionTagSetup()
 void AHyCharacterBase::CharacterSetup()
 {
 	// BeginPlay에서 Character를 Setup하는 함수
+	MatchArrowComponenLocation();
+
 	CharacterActionTagSetup();
 
 	CharacterActorComponentSetup();
@@ -370,6 +377,7 @@ void AHyCharacterBase::CharacterSetup()
 	CharacterWidgetSetup();
 
 	SetDelegateFunctions();
+
 
 	// Test Item Add
 	if (UHyTableSubsystem* TableSubSystem = GetGameInstance()->GetSubsystem<UHyTableSubsystem>())
@@ -494,6 +502,7 @@ void AHyCharacterBase::CharacterCombatArrowSetup()
 				ArrowCom->SetupAttachment(CombatArrowParentComp);
 				ArrowCom->SetRelativeLocation(ArrowLocation);
 				ArrowCom->SetRelativeRotation(ArrowRot);
+				ArrowCom->bHiddenInGame = false;
 				CombatArrowComponentMap.Add(Direction, ArrowCom);
 			}
 		}
@@ -539,7 +548,7 @@ void AHyCharacterBase::MatchArrowComponenLocation()
 	{
 		if (CombatArrowPair.Value)
 		{
-			FVector RelativeLoc = CombatArrowPair.Value->GetRelativeLocation() * GetCapsuleComponent()->GetScaledCapsuleRadius() * 2;
+			FVector RelativeLoc = CombatArrowPair.Value->GetRelativeLocation() * GetCapsuleComponent()->GetScaledCapsuleRadius() * 5;
 			CombatArrowPair.Value->SetRelativeLocation(RelativeLoc);
 		}
 	}
@@ -584,6 +593,41 @@ void AHyCharacterBase::SetStencilOutline(bool IsShow, EStencilOutLine StencilTyp
 
 }
 
+bool AHyCharacterBase::GetNextCombatArrowCommand(ECombatDirection& OutArrowDirection)
+{
+	if (CombatArrowQueue.IsEmpty())
+	{
+		return false;
+	}
+
+	CombatArrowQueue.Dequeue(OutArrowDirection);
+	return true;
+}
+
+void AHyCharacterBase::SetCombatArrowCommandQueue()
+{
+	CombatArrowQueue.Empty();
+
+	CombatArrowQueue.Enqueue(ECombatDirection::EBack);
+	CombatArrowQueue.Enqueue(ECombatDirection::ERight);
+	CombatArrowQueue.Enqueue(ECombatDirection::ELeft);
+	CombatArrowQueue.Enqueue(ECombatDirection::EForwardRight);
+	CombatArrowQueue.Enqueue(ECombatDirection::EForwardLeft);
+	CombatArrowQueue.Enqueue(ECombatDirection::EForward);
+}
+
+bool AHyCharacterBase::GetCombatArrowLocation(const ECombatDirection InDirection, FVector& OutCombatArrowLocation)
+{
+	TObjectPtr<UArrowComponent>* CombatArrowComp = CombatArrowComponentMap.Find(InDirection);
+	if (CombatArrowComp && *CombatArrowComp)
+	{
+		OutCombatArrowLocation = (*CombatArrowComp)->GetComponentLocation();
+		return true;
+	}
+
+	return false;
+}
+
 bool AHyCharacterBase::GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation)
 {
 	bool bRes = false;
@@ -619,6 +663,12 @@ void AHyCharacterBase::SetWarpingTarget(const FVector& InTargetLocation, const F
 	}
 
 	ReleaseWarpingTarget(InWarpName);
+
+	if (InTargetLocation == FVector::ZeroVector)
+	{
+		ERR_V("InTargetLocation is ZeroVector.");
+		return;
+	}
 
 	FTransform TargetTransform = GetTransform();
 	TargetTransform.SetLocation(InTargetLocation);
@@ -900,6 +950,13 @@ const bool AHyCharacterBase::FindNearAttackCollider(const float InExtendRatio)
 	return true;
 }
 
+void AHyCharacterBase::SetAirHitWarpLocation(const FVector& InLocation)
+{
+	CharacterCombatDataSet.AirHitLocation = InLocation;
+
+
+}
+
 void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 {
 	if (!InventorySystemComp)
@@ -921,7 +978,12 @@ void AHyCharacterBase::InputAttack(const FInputActionValue& Value)
 
 	if (IsCombatMode())
 	{
-		FindTarget();
+		// 공중에서는 타겟 변경 못하도록
+		if(GET_TAG_SUBSYSTEM()->IsInAirAction(GetCurAction()) == false)
+		{
+			FindTarget();
+		}
+
 		TriggerAttackAction();
 	}
 	else
@@ -1074,7 +1136,6 @@ void AHyCharacterBase::TriggerAttackAction()
 	}
 	else if (HyTagSubSystem->IsInAirAction(GetCurAction()))
 	{
-		FindTarget();
 		TriggerAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAirAttacking, EActionPriority::EMedium, "", true);
 	}
 }
@@ -1322,6 +1383,40 @@ void AHyCharacterBase::EnableAttackCollider(const FAttackCollisionSettings& InAt
 
 }
 
+void AHyCharacterBase::NotifyAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet)
+{
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
+	{
+		ERR_V("Inst is not set.");
+		return;
+	}
+
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if (!SpawnManager)
+	{
+		ERR_V("SpawnManager is not set.");
+		return;
+	}
+
+	if (InAttackCollisionSet.SettingType == EAttackCollisionSetting::ACS_TargetAttack)
+	{
+		if (IsTargetAvailable())
+		{
+			if (TObjectPtr<class AHyCharacterBase> TargetCharacter = SpawnManager->GetCharacterByGuid(TargetGuid))
+			{
+				FVector AtackDirection = TargetCharacter->GetActorLocation() - GetActorLocation();
+
+				FHyDamageEvent DamageEvent;
+				FHitResult HitResult;
+				DamageEvent.HitTag = InAttackCollisionSet.TagName;
+				DamageEvent.AttackDirection = AtackDirection.GetSafeNormal2D();
+				TargetCharacter->TakeDamage(100, DamageEvent, GetController(), this);
+			}
+		}
+	}
+}
+
 void AHyCharacterBase::DisableAttackCollider()
 {
 	if (!CollisionSystemComp)
@@ -1390,15 +1485,23 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 void AHyCharacterBase::SetCharacterCollisionEnable(bool bEnable)
 {
+	// Pawn하고만 충돌 체크 금지
 	if(bEnable)
 	{
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
+		GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
+
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	}
 	else
 	{
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
+		GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
+
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
 	}
 }
 
@@ -1547,6 +1650,25 @@ void AHyCharacterBase::DebugUpdate()
 		{
 			DebugDrawTargetHitDirection();
 
+			for (auto& CombatArrowPair : CombatArrowComponentMap)
+			{
+				if (CombatArrowPair.Value)
+				{
+					CombatArrowPair.Value->bHiddenInGame = false;
+					CombatArrowPair.Value->SetVisibility(true);
+				}
+			}
+		}
+		else
+		{
+			for (auto& CombatArrowPair : CombatArrowComponentMap)
+			{
+				if (CombatArrowPair.Value)
+				{
+					CombatArrowPair.Value->bHiddenInGame = true;
+					CombatArrowPair.Value->SetVisibility(false);
+				}
+			}
 		}
 	}
 }

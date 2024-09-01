@@ -44,6 +44,9 @@ enum class EAttackCollisionSetting : uint8
     // Only perform sweep collisions at notification time
     ACS_SweepOnly UMETA(DisplayName = "Sweep Collision Only"),
 
+    // Force Target Attack
+    ACS_TargetAttack UMETA(DisplayName = "Force Target Attack"),
+
     // Reset all attack collision types
     ACS_Reset UMETA(DisplayName = "Reset All Attack Collision Types"),
 };
@@ -117,6 +120,17 @@ public:
     {
         AttackableUnitCount = 1;
         SettingType = EAttackCollisionSetting::ACS_SetNew;
+        SpasticityTime = 0.0f;
+        ColliderType = EAttackColliderType::ACT_EnableAll;
+        bForceCameraShake = false;
+        bForceSpasticity = false;
+        bPlayHitEffect = true;
+    }
+
+    void ResetNotify()
+    {
+        AttackableUnitCount = 1;
+        SettingType = EAttackCollisionSetting::ACS_TargetAttack;
         SpasticityTime = 0.0f;
         ColliderType = EAttackColliderType::ACT_EnableAll;
         bForceCameraShake = false;

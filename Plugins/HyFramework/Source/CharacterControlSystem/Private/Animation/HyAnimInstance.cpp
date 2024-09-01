@@ -306,7 +306,7 @@ void UHyAnimInstance::UpdateJump(const float& DeltaSeconds)
     }
     else 
     {
-        CharacterMovementComp->SetGroundDistance(0.f);
+        CharacterMovementComp->SetCharacterOnGround();
     }
 
     JumpData.GroundDistance = CharacterMovementComp->GetGroundDistance();

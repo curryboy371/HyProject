@@ -13,9 +13,9 @@
 
 
 
-void UHyAction_DashAttack::OnActionStarted_Implementation(const FString& contextString)
+void UHyAction_DashAttack::OnActionStarted_Implementation(const FString& InContext)
 {
-	Super::OnActionStarted_Implementation(contextString);
+	Super::OnActionStarted_Implementation(InContext);
 
 	if (!HyCharacterOwner)
 	{

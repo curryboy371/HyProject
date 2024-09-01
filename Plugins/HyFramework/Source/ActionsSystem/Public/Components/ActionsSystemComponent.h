@@ -70,7 +70,8 @@ public:
 	void SetStoredActionTag(const FActionExcuteData& InActionExcuteData, bool bForce = false);
 	void SetDefaultStoredActionTag(const bool bForce = false);
 
-	void SetDefaultActinoTag(const FActionExcuteData& InActionExcuteData) { DefaultActionExcuteData = InActionExcuteData; };
+	void SetDefaultStandActinoTag(const FActionExcuteData& InActionExcuteData) { DefaultStandActionExcuteData = InActionExcuteData; };
+	void SetDefaultAirActinoTag(const FActionExcuteData& InActionExcuteData) { DefaultAirActionExcuteData = InActionExcuteData; };
 
 	void ClearPerformingActionState();
 
@@ -171,7 +172,8 @@ protected:
 	FActionExcuteData CurActionExcuteData;
 	FActionExcuteData StoredActionExcuteData;
 
-	FActionExcuteData DefaultActionExcuteData;
+	FActionExcuteData DefaultStandActionExcuteData;
+	FActionExcuteData DefaultAirActionExcuteData;
 
 	bool bIsPerformingAction;
 

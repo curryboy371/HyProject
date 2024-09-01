@@ -3,9 +3,9 @@
 
 #include "Components/ActionsSystemComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "HyCoreMacro.h"
-
 
 // Sets default values for this component's properties
 UActionsSystemComponent::UActionsSystemComponent()
@@ -89,7 +89,7 @@ bool UActionsSystemComponent::TriggerAction(const FActionExcuteData& InActionExc
     // InActionTag 태그로 Action을 트리거하려고 시도하는 함수
     // Priority를 비교하여 Action이 실행될지, 무시될지, 
     // bCanBeStored가 true이고 진행중인 action이 있다면 다음 Action을 위해 저장될지 ( Priority도 비교)
-    // contextString은 `OnActionStarted에서 받아 Flag 처럼 사용함
+    // InContext은 `OnActionStarted에서 받아 Flag 처럼 사용함
 
     bool bSuccessAction = false;
     if (InActionExcuteData == FGameplayTag::EmptyTag)
@@ -332,7 +332,23 @@ void UActionsSystemComponent::SetStoredActionTag(const FActionExcuteData& InActi
 
 void UActionsSystemComponent::SetDefaultStoredActionTag(const bool bForce)
 {
-    SetStoredActionTag(DefaultActionExcuteData, bForce);
+    if (!CharacterOwner)
+    {
+        return;
+    }
+
+    if (UCharacterMovementComponent* CharacterMovement = CharacterOwner->GetCharacterMovement())
+    {
+        if (CharacterMovement->IsFalling() || CharacterMovement->IsFlying())
+        {
+            SetStoredActionTag(DefaultAirActionExcuteData, bForce);
+        }
+        else
+        {
+            SetStoredActionTag(DefaultStandActionExcuteData, bForce);
+        }
+    }
+
 }
 
 void UActionsSystemComponent::ClearPerformingActionState()

@@ -44,6 +44,7 @@ UHyCharacterMovementComponent::UHyCharacterMovementComponent(const FObjectInitia
     CurLocomotionState = ELocomotionState::EIdle;
     CurMovestance = EMovementStance::EIdle;
 
+    GravityScale = DefaultGravityScale;
 
     // Crouch 허용
     GetNavAgentPropertiesRef().bCanCrouch = true;
@@ -245,6 +246,12 @@ void UHyCharacterMovementComponent::BrakeToPreviousState()
     {
         SetLocomotionState(LocomotionStates[Actualindex - 1].State);
     }
+}
+
+void UHyCharacterMovementComponent::SetCharacterOnGround()
+{
+    GroundDistance = 0.0f;
+    GravityScale = DefaultGravityScale;
 }
 
 const bool UHyCharacterMovementComponent::IsDefaultLocomotionState() const

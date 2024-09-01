@@ -21,7 +21,7 @@ void UHyAnimNotifyState_Attack::NotifyBegin(USkeletalMeshComponent* MeshComp, UA
 		return;
 	}
 
-
+	
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 
 	if (ICollisionCharacterInterface* CollisionInterface = Cast<ICollisionCharacterInterface>(MeshComp->GetOwner()))

@@ -413,8 +413,7 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 	}
 
 	FVector AttackDirection = TargetActor->GetActorLocation() - CharacterOwner->GetActorLocation();
-	AttackDirection.Normalize();
-
+	AttackDirection = AttackDirection.GetSafeNormal2D();
 	// Target의 로컬 좌표계에서의 AttackDirection 계산
 	// LocalAttackDirection : Attacker 위치를  기준으로 타겟이 밀려나는 방향 벡터
 	FVector TargetForward = TargetActor->GetActorForwardVector();

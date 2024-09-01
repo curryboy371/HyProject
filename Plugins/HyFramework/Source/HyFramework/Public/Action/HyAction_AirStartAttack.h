@@ -19,6 +19,7 @@ public:
 	virtual void OnActionEnded_Implementation();
 	virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
 	virtual void OnTick_Implementation(float DeltaTime);
+	void SetTargetAirHitWarLocation();
 	virtual bool IsStopConditional_Implementation();
 	virtual void OnActionNotify_Implementation();
 
@@ -27,4 +28,8 @@ protected:
 
 protected:
 	FName WarpNameAirStart = FName("AirStart");
+
+	float FirstTargetDistance = 0.0f;
+
+	bool HasTargetAttack = false;
 };

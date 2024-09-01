@@ -18,7 +18,9 @@
 struct FActionTagSet
 {
 	FGameplayTag NorActionParent;
+	FGameplayTag NorAirActionParent;
 	FGameplayTag ActionIdle;
+	FGameplayTag ActionAirIdle;
 	FGameplayTag ActionSpawn;
 	FGameplayTag ActionMove;
 

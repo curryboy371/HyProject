@@ -10,11 +10,14 @@
 #include "Game/HyGameInstance.h"
 #include "Manager/HySpawnManager.h"
 
-void UHyAction_AttackBase::OnActionStarted_Implementation(const FString& contextString)
+#include "HyCoreFunctionLibrary.h"
+
+
+void UHyAction_AttackBase::OnActionStarted_Implementation(const FString& InContext)
 {
 	bUseCheckTargetMovement = false;
 
-	Super::OnActionStarted_Implementation(contextString);
+	Super::OnActionStarted_Implementation(InContext);
 }
 
 void UHyAction_AttackBase::OnTick_Implementation(float DeltaTime)
@@ -109,10 +112,23 @@ void UHyAction_AttackBase::SetDashWarpTarget()
 
 	if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
 	{
-		FVector Location;
-		if (TargetCharacter->GetClosestCombatArrow(HyCharacterOwner->GetActorLocation(), HyCharacterOwner->DashAttackRange, Location))
+		float TargetDistance = UHyCoreFunctionLibrary::CalcDistanceBetweenCharacter(HyCharacterOwner, TargetCharacter);
+		FVector TargetDir = TargetCharacter->GetActorLocation() - HyCharacterOwner->GetActorLocation();
+		float DistanceLength = TargetDir.Size();
+
+		if (TargetDistance <= 0.0f)
 		{
-			HyCharacterOwner->SetWarpingTarget(Location, WarpNameDash);
+			TargetDistance = 1.f;
+		}
+
+		if (DistanceLength < HyCharacterOwner->DashAttackRange)
+		{
+			
+			FVector NormalDir = TargetDir.GetSafeNormal2D();
+
+			FVector DashLocation = HyCharacterOwner->GetActorLocation() + NormalDir * TargetDistance;
+
+			HyCharacterOwner->SetWarpingTarget(DashLocation, WarpNameDash);
 			LastTargetLocation = TargetCharacter->GetActorLocation();
 		}
 	}

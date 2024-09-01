@@ -129,6 +129,23 @@ public:
     ECameraShakePlaySpace CameraShakePlaySpace;
 };
 
+USTRUCT(BlueprintType)
+struct FCharacterCombatDataSet
+{
+    GENERATED_BODY()
+
+public:
+    FCharacterCombatDataSet()
+    {
+        AirHitLocation = FVector::ZeroVector;
+    }
+
+    UPROPERTY(BlueprintReadOnly, Category = "Combat")
+    FVector AirHitLocation;
+
+};
+
+
 
 #pragma endregion
 

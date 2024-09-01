@@ -43,8 +43,8 @@ protected:
 	bool SweepMulti(const FTraceData& InTraceData, const FCollisionQueryParams& InCollisionParams, const bool bIsLerpSweep, TArray<FHitResult>& OutHitResults);
 
 	bool TakeDamage(const FGameplayTag& InAttackCollisionTag, const FGameplayTag& InHitTag, const FHitResult& InHitResult);
-	void ApplyAttackImpact(FHitResult& HitResult, const FAttackCollisionSettings& InAttackCollisionSettings);
 
+	void ApplyAttackImpact(FHitResult& HitResult, const FAttackCollisionSettings& InAttackCollisionSettings);
 
 	void ResetIgnoreActors();
 

@@ -20,6 +20,8 @@ public:
     virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
     virtual void OnTick_Implementation(float DeltaTime);
 
+    virtual bool IsStopConditional_Implementation();
 
-
+protected:
+    bool CharacterFallStart = false;
 };

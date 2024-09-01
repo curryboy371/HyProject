@@ -1,0 +1,198 @@
+<diagram program="umletino" version="15.1"><zoom_level>8</zoom_level><element><id>UMLPackage</id><coordinates><x>768</x><y>608</y><w>192</w><h>104</h></coordinates><panel_attributes>ActionsSystem
+--
+Plugin-SubModule ( HyFramework )
+--
++HyFXSystem
++HyCore
+--
+FSM 기능을 제공하는 모듈
+상태(action)을 관리하는 ActorComponent
+기본적인 base action class 등을 제공
+bg=orange
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>640</x><y>736</y><w>184</w><h>96</h></coordinates><panel_attributes>InventorySystem
+--
+Plugin-SubModule ( HyFramework )
+--
++HyCore
+--
+Inventory, Item 기능을 제공하는 모듈
+인벤토리를 관리하는 ActorComponent
+Item base class 등을 제공
+bg=orange
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1520</x><y>104</y><w>192</w><h>72</h></coordinates><panel_attributes>HyTable
+--
+Plugin-MainModule ( HyTable )
+--
+.
+--
+Unreal Data 에셋 기반의 테이블 기능 제공
+bg=red
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>880</x><y>736</y><w>240</w><h>104</h></coordinates><panel_attributes>CharacterControlSystem
+--
+Plugin-SubModule ( HyFramework )
+--
++HyCore
+--
+캐릭터의 움직임, 애니메이션과 관련된 기능을 제공
+Animinstnace, AnimLayer class ( animinstnace)
+ChracterMovementComponent 와 같은 
+기본 언리얼 class를 상속하여 기능 구현
+bg=orange
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>288</x><y>800</y><w>240</w><h>80</h></coordinates><panel_attributes>CollisionSystem
+--
+Plugin-SubModule ( HyFramework )
+--
++HyCore
+--
+캐릭터 충돌을 관리하는 시스템
+HyCollisionSystemComponent (ActorComp)
+bg=blue
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>280</x><y>680</y><w>240</w><h>104</h></coordinates><panel_attributes>HyFXSystem
+--
+Plugin-SubModule ( HyFramework )
+--
++HyCore
+--
+FX ( 이펙트, 사운드 ) 등과 관련된 기능 제공
+ 캐릭터 FX를 관리하는 FXComponent (ActorComp)
+ 전역적 FX를 관리하는 FXDispatcher 
+bg=blue
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1232</x><y>696</y><w>200</w><h>96</h></coordinates><panel_attributes>HyUISystem
+--
+Plugin-SubModule ( HyFramework )
+--
++HyCore
+--
+Base Custom UMG, Slate
+Common UI class 등의 기능 제공
+bg=blue
+fg=black
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1520</x><y>520</y><w>208</w><h>104</h></coordinates><panel_attributes>HyCore
+--
+Plugin-SubModule ( HyFramework )
+--
+.
+--
+코어 서브모듈
+Logging System
+Base Class, Interface
+Common Function, Type 등의기능 제공
+bg=gray
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>856</x><y>352</y><w>272</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>320;230;300;210;90;140;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>736</x><y>136</y><w>280</w><h>224</h></coordinates><panel_attributes>HyFramework
+--
+Plugin MainModule ( HyFramework )
+--
++ActionSystem
++CharacterControlSystem
++CollisionSystem
+
++InventorySystem
++HyFXSystem
++HyUISystem
++HyCore
+
++HyTable
++HyNetwork
+--
+Framework Main Module  ( HyFramework Plugin )
+프레임워크 기능을 제공하는 모듈
+bg=red
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>560</x><y>536</y><w>912</w><h>512</h></coordinates><panel_attributes>
+
+
+
+
+
+
+
+
+
+
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>184</x><y>536</y><w>1024</w><h>520</h></coordinates><panel_attributes>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>576</x><y>352</y><w>304</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;230;270;150;360;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1008</x><y>104</y><w>528</w><h>56</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>640;10;10;50</additional_attributes></element><element><id>Text</id><coordinates><x>1216</x><y>800</y><w>376</w><h>80</h></coordinates><panel_attributes>주로 base class를 제공만 하는 모듈
+
+서브모듈의 Base class를 Main모듈에서 상속하여 사용</panel_attributes><additional_attributes></additional_attributes></element><element><id>Text</id><coordinates><x>304</x><y>912</y><w>288</w><h>56</h></coordinates><panel_attributes>주로 서브모듈 자체 class를 그대로 사용하는 모듈
+
+메인 모듈에서 class상속 없이 include하여 함수, 구조체 등을 사용
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Text</id><coordinates><x>816</x><y>928</y><w>160</w><h>72</h></coordinates><panel_attributes>두 기능을 모두 수행하는 모듈</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>344</x><y>232</y><w>272</w><h>192</h></coordinates><panel_attributes>AIControlSystem
+--
+Plugin-SubModule ( HyFramework )
+--
++HyFramework
++ActionSystem
++CharacterControlSystem
++CollisionsSystem
++HyCore
+--
+AI System Sub Module ( HyFramework Plugin )
+AI 기능을 제공하기 위하여 
+Sub모듈이 Main Module과 다른 서브모듈을  참조
+
+BT와 FSM을 혼용하여 AI 구현
+전체적인 AI State관리는 Unreal Behavior Tree로
+세부적인 애니메이션은 ActionsSystem의 Action으로 관리
+bg=yellow
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>416</x><y>136</y><w>336</w><h>320</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>400;10;280;170;280;380;10;360</additional_attributes></element><element><id>Text</id><coordinates><x>360</x><y>48</y><w>248</w><h>56</h></coordinates><panel_attributes>Framework Main Module을 직접 참조
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Text</id><coordinates><x>1576</x><y>56</y><w>216</w><h>80</h></coordinates><panel_attributes>Other Custom Plugin
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>1408</x><y>48</y><w>448</w><h>392</h></coordinates><panel_attributes>
+
+
+
+
+
+
+
+
+
+
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1520</x><y>240</y><w>192</w><h>88</h></coordinates><panel_attributes>HyNetwork
+--
+Plugin-MainModule ( HyNetwork )
+--
++ProtobufCore
+--
+Server와의 네트워크 기능 제공
+Protobuf 기반 패킷 사용
+bg=red
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1008</x><y>136</y><w>528</w><h>128</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>640;140;320;10;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>344</x><y>80</y><w>200</w><h>96</h></coordinates><panel_attributes>Game
+--
+Game-MainModule ( Game Project )
+--
++HyFramework
+--
+본 프로젝트의 메인 모듈으로 
+HyFramework Plugin을 추가하여 
+게임 프레임워크 기능을 사용함
+bg=green
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>408</x><y>136</y><w>344</w><h>152</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>410;10;290;170;270;130;10;50</additional_attributes></element><element><id>Relation</id><coordinates><x>856</x><y>352</y><w>680</w><h>184</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>830;210;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>856</x><y>352</y><w>32</w><h>216</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>20;250;10;10</additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>224</x><y>16</y><w>472</w><h>488</h></coordinates><panel_attributes>
+
+
+
+
+
+
+
+
+
+
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Text</id><coordinates><x>776</x><y>104</y><w>216</w><h>32</h></coordinates><panel_attributes>Framework Main Module</panel_attributes><additional_attributes></additional_attributes></element><element><id>Text</id><coordinates><x>1520</x><y>488</y><w>216</w><h>32</h></coordinates><panel_attributes>Core SubModule</panel_attributes><additional_attributes></additional_attributes></element></diagram>

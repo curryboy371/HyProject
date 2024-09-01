@@ -133,9 +133,15 @@ public:
 
 	// TODO 나중에 인터페이스로 옮기자
 	const bool FindNearAttackCollider(const float InExtendRatio);
-
+	void SetAirHitWarpLocation(const FVector& InLocation);
+	const FVector& GetAirHitWarpLocation() const { return CharacterCombatDataSet.AirHitLocation; }
 
 	// Combat
+
+	bool GetNextCombatArrowCommand(ECombatDirection& OutArrowDirection);
+	void SetCombatArrowCommandQueue();
+
+	bool GetCombatArrowLocation(const ECombatDirection InDirection, FVector& OutCombatArrowLocation);
 	bool GetClosestCombatArrow(const FVector& InAttackerLocation, const float InOwnerAttackRange, FVector& OutCombatArrowLocation);
 	void SetWarpingTarget(const FVector& InTargetLocation, const FName& InWarpName);
 	void ReleaseWarpingTarget(const FName& InWarpName);
@@ -198,6 +204,7 @@ protected:
 protected:
 	// ICollisionCharacterInterface을(를) 통해 상속됨
 	virtual void EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet) override;
+	virtual void NotifyAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet) override;
 	virtual void DisableAttackCollider() override;
 
 
@@ -291,6 +298,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Hy | Character")
 	FCharacterStateData CharacterStateData;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Hy | Character")
+	FCharacterCombatDataSet CharacterCombatDataSet;
+	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Debug")
 	FCharacterDebugData CharacterDebugData;
 	
@@ -307,8 +318,12 @@ protected:
 	FVector LastAttackDirection;
 public:
 	// TODO TEMP
+	TQueue<ECombatDirection> CombatArrowQueue;
+
 	const float DashAttackRange = 700.f;
 	const float EnableTargetRange = 1000.f;
+	const float AirAttackHeight = 750.f;
+
 	float KeepDownTime = 0.0f;
 
 };

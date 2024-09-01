@@ -4,23 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "Action/HyActionBase.h"
-#include "HyAction_Jump.generated.h"
+#include "HyAction_AirIdle.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYFRAMEWORK_API UHyAction_Jump : public UHyActionBase
+class HYFRAMEWORK_API UHyAction_AirIdle : public UHyActionBase
 {
 	GENERATED_BODY()
+	
 public:
+	UHyAction_AirIdle()
+	{
+		HyCharacterMovement = nullptr;
+	}
+
 	virtual void OnActionStarted_Implementation(const FString& InContext = FString());
 	virtual void OnActionSetupCompleted_Implementation(const FString& InContext = FString());
 	virtual void OnActionEnded_Implementation();
 	virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
 	virtual void OnTick_Implementation(float DeltaTime);
 	virtual bool IsStopConditional_Implementation();
-
-	virtual void OnActionNotify_Implementation();
-
+	
+protected:
+	TObjectPtr<class UHyCharacterMovementComponent> HyCharacterMovement;
 };

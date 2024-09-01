@@ -12,6 +12,8 @@
 #include "Components/ActionsSystemComponent.h"
 #include "Components/HyCharacterMovementComponent.h"
 
+#include "HyCoreFunctionLibrary.h"
+
 void UHyAction_AirStartAttack::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
@@ -33,29 +35,11 @@ void UHyAction_AirStartAttack::OnActionStarted_Implementation(const FString& InC
 		return;
 	}
 
-	MontageSectionName = *InContext;
-
-	if (MontageSectionName == "AfterDashStart")
-	{
-		if (HyCharacterOwner->IsTargetAvailable())
-		{
-			if (TObjectPtr<AHyCharacterBase> TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
-			{
-				// TODO 
-				// 
-				// 여기서 타겟에게 강제어택처리 해버리는 것도 고려
-
-				// 워핑을 통한 점프중 타겟과 충돌로 인해 xy 이동이 발생하여 충돌을 꺼줘야함
-				TargetCharacter->SetCharacterCollisionEnable(false);
-			}
-
-		}
-	}
-
-	LOG_V("%s", *HyCharacterOwner->GetActorLocation().ToString());
+	HasTargetAttack = false;
+	FirstTargetDistance = 0.0f;
+	HyCharacterOwner->SetCharacterCollisionEnable(false);
+	HyCharacterOwner->SetCombatArrowCommandQueue();
 	SetAirStartWarpTarget();
-
-
 }
 
 void UHyAction_AirStartAttack::SetAirStartWarpTarget()
@@ -86,11 +70,19 @@ void UHyAction_AirStartAttack::SetAirStartWarpTarget()
 	CharacterMovement->SetMovementMode(EMovementMode::MOVE_Flying);
 	// TODO TEMP
 	FVector Location = HyCharacterOwner->GetActorLocation();
-	Location.Z += 700.f;
-
-	LOG_V("%s", *Location.ToString());
+	Location.Z += HyCharacterOwner->AirAttackHeight;
 
 	HyCharacterOwner->SetWarpingTarget(Location, WarpNameAirStart);
+
+	if (HyCharacterOwner->IsTargetAvailable())
+	{
+		if (TObjectPtr<AHyCharacterBase> TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+		{
+			FVector TargetDist = TargetCharacter->GetActorLocation() - HyCharacterOwner->GetActorLocation();
+			FirstTargetDistance = TargetDist.Length();
+			HasTargetAttack = true;
+		}
+	}
 }
 
 void UHyAction_AirStartAttack::OnActionSetupCompleted_Implementation(const FString& InContext)
@@ -112,8 +104,10 @@ void UHyAction_AirStartAttack::OnActionEnded_Implementation()
 	if (UCharacterMovementComponent* CharacterMovement = HyCharacterOwner->GetCharacterMovement())
 	{
 		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Falling);
+		CharacterMovement->GravityScale = 1.0f;
 	}
 
+	HyCharacterOwner->SetCharacterCollisionEnable(true);
 	HyCharacterOwner->ReleaseWarpingTarget(WarpNameAirStart);
 }
 
@@ -127,6 +121,14 @@ void UHyAction_AirStartAttack::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
 
+	if (HasTargetAttack)
+	{
+		SetTargetAirHitWarLocation();
+	}
+}
+
+void UHyAction_AirStartAttack::SetTargetAirHitWarLocation()
+{
 	UHyInst* Inst = UHyInst::Get();
 	if (!Inst)
 	{
@@ -139,16 +141,14 @@ void UHyAction_AirStartAttack::OnTick_Implementation(float DeltaTime)
 		return;
 	}
 
-	if (GetMontageSectionName() == "AfterDashStart")
+	if (HyCharacterOwner->IsTargetAvailable())
 	{
-		if (HyCharacterOwner->IsTargetAvailable())
+		if (TObjectPtr<AHyCharacterBase> TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
 		{
-			// TODO TEMP
-			FVector Location = HyCharacterOwner->GetActorLocation() + HyCharacterOwner->GetActorForwardVector() * 50.f;
-			if (TObjectPtr<AHyCharacterBase> TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
-			{
-				TargetCharacter->SetActorLocation(Location);
-			}
+			FVector NormalForwardDir = HyCharacterOwner->GetActorForwardVector().GetSafeNormal2D();
+			FVector TargetAirLocation = HyCharacterOwner->GetActorLocation() + NormalForwardDir * FirstTargetDistance;
+			TargetCharacter->SetAirHitWarpLocation(TargetAirLocation);
+			UHyCoreFunctionLibrary::DrawArrow(GetWorld(), HyCharacterOwner->GetActorLocation(), TargetAirLocation, 30, FLinearColor::Yellow, 1.f, 1);
 		}
 	}
 }

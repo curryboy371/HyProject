@@ -11,13 +11,6 @@
 void UHyAction_Spawn::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
-	if (HyCharacterOwner)
-	{
-		if (TObjectPtr<UActionsSystemComponent> ActionSystem = HyCharacterOwner->GetActionsSystemComp())
-		{
-			ActionSystem->SetDefaultActinoTag(HyCharacterOwner->QuickActionExcute.Idle);
-		}
-	}
 }
 
 void UHyAction_Spawn::OnActionSetupCompleted_Implementation(const FString& InContext)

@@ -15,7 +15,7 @@ class HYFRAMEWORK_API UHyAction_DashAttack : public UHyAction_AttackBase
 	GENERATED_BODY()
 	
 public:
-	virtual void OnActionStarted_Implementation(const FString& contextString = "");
+	virtual void OnActionStarted_Implementation(const FString& InContext = "");
 	virtual void OnTick_Implementation(float DeltaTime);
 	virtual void OnActionEnded_Implementation();
 

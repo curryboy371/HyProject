@@ -61,7 +61,9 @@ public class HyFramework : ModuleRules
                 "InventorySystem",
 
 
+				// Other Plugins Modules
                 "HyTable",
+                "HyNetwork",
 
 				// ... add private dependencies that you statically link with here ...	
 			}

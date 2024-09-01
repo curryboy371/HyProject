@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Action/HyActionComboBase.h"
+#include "CollisionTypes.h"
+
 #include "HyAction_AirComboAttack.generated.h"
 
 /**
@@ -20,4 +22,13 @@ public:
 	virtual void OnActionTransition_Implementation(class UActionsBaseAction* InPreAction);
 	virtual void OnTick_Implementation(float DeltaTime);
 	//virtual bool IsStopConditional_Implementation();
+
+	void SetAirDashWarpTarget();
+
+	virtual void OnTargetMovement(); // TargetMovementCheck에서 타겟이 움직였을때 호출
+
+
+protected:
+
+	ECombatDirection CommandDirection;
 };

@@ -29,6 +29,10 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Action.Stand.Normal.Idle"), ActionTagSet.ActionIdle);
     AddTag(FName("Action.Stand.Normal.Move"), ActionTagSet.ActionMove);
 
+    AddTag(FName("Action.InAir.Normal"), ActionTagSet.NorAirActionParent);
+    AddTag(FName("Action.InAir.Normal.Idle"), ActionTagSet.ActionAirIdle);
+
+
     AddTag(FName("Action.Stand.Doing"), ActionTagSet.DoingActionParent);
     AddTag(FName("Action.Stand.Doing.Jump"), ActionTagSet.ActionJump);
     AddTag(FName("Action.Stand.Doing.Equip"), ActionTagSet.ActionEquip);
@@ -114,6 +118,11 @@ const bool UHyTagSubsystem::IsNormalAction(const FGameplayTag& InActionTag) cons
         return true;
     }
 
+    if (InActionTag.MatchesTag(ActionTagSet.NorAirActionParent))
+    {
+        return true;
+    }
+    
     return false;
 }
 

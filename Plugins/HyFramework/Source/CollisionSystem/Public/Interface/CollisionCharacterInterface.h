@@ -25,6 +25,7 @@ class COLLISIONSYSTEM_API ICollisionCharacterInterface
 
 public:
 	virtual void EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet) {};
+	virtual void NotifyAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet) {};
 	virtual void DisableAttackCollider() {};
 
 

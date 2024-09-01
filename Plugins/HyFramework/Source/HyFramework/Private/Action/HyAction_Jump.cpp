@@ -12,10 +12,7 @@
 void UHyAction_Jump::OnActionStarted_Implementation(const FString& InContext)
 {
     Super::OnActionStarted_Implementation(InContext);
-    if (HyCharacterOwner)
-    {
-        HyCharacterOwner->Jump();
-    }
+
 }
 
 void UHyAction_Jump::OnActionSetupCompleted_Implementation(const FString& InContext)
@@ -37,17 +34,25 @@ void UHyAction_Jump::OnTick_Implementation(float DeltaTime)
 {
    	Super::OnTick_Implementation(DeltaTime);
 
-    if (HyCharacterOwner && HyCharacterOwner->GetCharacterMovementComp())
-    {
-        if (HyCharacterOwner->GetCharacterMovementComp()->GetGroundDistance() == 0.0f)
-        {
-            HyCharacterOwner->HandleAction(EActionHandleType::EActionHandle_Stop);
-        }
-    }
+    //if (HyCharacterOwner && HyCharacterOwner->GetCharacterMovementComp())
+    //{
+    //    if (HyCharacterOwner->GetCharacterMovementComp()->GetGroundDistance() == 0.0f)
+    //    {
+    //        HyCharacterOwner->HandleAction(EActionHandleType::EActionHandle_Stop);
+    //    }
+    //}
 	
 }
 
 bool UHyAction_Jump::IsStopConditional_Implementation()
 {
     return true;
+}
+
+void UHyAction_Jump::OnActionNotify_Implementation()
+{
+    if (HyCharacterOwner)
+    {
+        HyCharacterOwner->Jump();
+    }
 }

@@ -13,11 +13,8 @@
 void UHyAction_HitInAir::OnActionStarted_Implementation(const FString& InContext)
 {
 	Super::OnActionStarted_Implementation(InContext);
+	CharacterFallStart = false;
 
-	if (UCharacterMovementComponent* CharacterMovement = HyCharacterOwner->GetCharacterMovement())
-	{
-		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Falling);
-	}
 
 
 }
@@ -40,5 +37,28 @@ void UHyAction_HitInAir::OnTick_Implementation(float DeltaTime)
 {
 	Super::OnTick_Implementation(DeltaTime);
 
+	if (!CharacterFallStart)
+	{
+		if (ActionDuration > 1.f)
+		{
+			CharacterFallStart = true;
 
+			if (UCharacterMovementComponent* CharacterMovement = HyCharacterOwner->GetCharacterMovement())
+			{
+				CharacterMovement->SetMovementMode(EMovementMode::MOVE_Falling);
+			}
+		}
+	}
+}
+
+bool UHyAction_HitInAir::IsStopConditional_Implementation()
+{
+	if (!HyCharacterOwner)
+	{
+		ERR_V("HyCharacterOwner  Is nullptr");
+		return false;
+	}
+
+	HyCharacterOwner->SetPerformingActionPriority(EActionPriority::ELow);
+	return false;
 }

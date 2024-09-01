@@ -8,29 +8,46 @@
 #include "Manager/HySpawnManager.h"
 
 #include "HyTagSubsystem.h"
+#include "HyCoreFunctionLibrary.h"
 
 
-void UHyAction_Dash::OnActionStarted_Implementation(const FString& contextString)
+void UHyAction_Dash::OnActionStarted_Implementation(const FString& InContext)
 {
-	Super::OnActionStarted_Implementation(contextString);
+	Super::OnActionStarted_Implementation(InContext);
 
-	if (!HyCharacterOwner)
+	UHyInst* Inst = UHyInst::Get();
+	if (!Inst)
 	{
 		return;
 	}
 
-	LOG_V("%s", *HyCharacterOwner->GetActorLocation().ToString());
-
-	if (HyCharacterOwner->IsTargetAvailable())
+	UHySpawnManager* SpawnManager = Inst->GetManager<UHySpawnManager>();
+	if (!SpawnManager)
 	{
-		// 다음액션 AirStart
-		if (contextString == "AirStart")
+		return;
+	}
+
+	if (AHyCharacterBase* TargetCharacter = SpawnManager->GetCharacterByGuid(HyCharacterOwner->GetTargetGuidRef()))
+	{
+		float TargetDistance = UHyCoreFunctionLibrary::CalcDistanceBetweenCharacter(HyCharacterOwner, TargetCharacter);
+		FVector TargetDir = TargetCharacter->GetActorLocation() - HyCharacterOwner->GetActorLocation();
+		float DistanceLength = TargetDir.Size();
+		if (TargetDistance <= 0.0f)
 		{
-			HyCharacterOwner->SetStoredAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAirStartAttacking, EActionPriority::EMedium, "AfterDashStart", true);
+			TargetDistance = 1.f;
 		}
 
-		bUseCheckTargetMovement = true;
-		SetDashWarpTarget();
+		if (DistanceLength < HyCharacterOwner->DashAttackRange)
+		{
+			// 다음액션 AirStart
+			if (InContext == "AirStart")
+			{
+				HyCharacterOwner->SetStoredAction(GET_TAG_SUBSYSTEM()->ActionTagSet.ActionAirStartAttacking, EActionPriority::EMedium, "AfterDashStart", true);
+			}
+
+			bUseCheckTargetMovement = true;
+			SetDashWarpTarget();
+		}
 	}
 }
 
