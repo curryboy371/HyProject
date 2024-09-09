@@ -50,6 +50,7 @@ public:
 	void ActionStopImmeditaley(float InBlendOutTime = 0.0f);
 
 	void ActionNotify();
+	void PlayFX();
 
 public:
 	void PlayMontage(const FActionMontageInfo& InMontageInfo, float InStartFrame);

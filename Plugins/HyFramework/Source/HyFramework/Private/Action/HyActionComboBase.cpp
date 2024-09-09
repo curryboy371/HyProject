@@ -3,6 +3,9 @@
 
 #include "Action/HyActionComboBase.h"
 
+#include "HyCoreMacro.h"
+
+
 void UHyActionComboBase::OnActionStarted_Implementation(const FString& InContext)
 {
 	bSuccesfulCombo = false;
@@ -33,6 +36,7 @@ void UHyActionComboBase::OnActionTransition_Implementation(UActionsBaseAction* I
             CurrentComboIndex++;
         }
         bSuccesfulCombo = true;
+
     }
 	else
 	{

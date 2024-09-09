@@ -34,6 +34,9 @@ enum class EActionHandleType : uint8
 
     // 진행중인 액션에 Noti를 넣어주는 기능
     EActionHandle_Noti UMETA(DisplayName = "EActionHandle_Noti"),
+
+    // 진행중인 액션에 FX를 실행하는 기능
+    EActionHandle_FX UMETA(DisplayName = "EActionHandle_SpawnFX"),
 };
 
 

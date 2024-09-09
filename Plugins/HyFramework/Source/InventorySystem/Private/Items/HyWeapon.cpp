@@ -4,9 +4,18 @@
 #include "Items/HyWeapon.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "NiagaraComponent.h"
+
+
+#include "NiagaraFunctionLibrary.h"
 
 #include "Table/Item_TableEntity.h"
 
+#include "GameplayTagContainer.h"
+
+#include "HyCoreMacro.h"
 
 AHyWeapon::AHyWeapon()
 {
@@ -18,6 +27,7 @@ AHyWeapon::AHyWeapon()
         SkeletalMesh->SetupAttachment(RootComp);
         SkeletalMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
         SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
     }
 
     SubWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SubWeaponMesh"));
@@ -27,8 +37,6 @@ AHyWeapon::AHyWeapon()
         SubWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     }
 
-
-
 }
 
 void AHyWeapon::InitializeItem(const FItem_TableEntity* InItemTableInfo)
@@ -36,4 +44,32 @@ void AHyWeapon::InitializeItem(const FItem_TableEntity* InItemTableInfo)
     Super::InitializeItem(InItemTableInfo);
 
 
+}
+
+void AHyWeapon::ActiveTrail(bool bActive, const EHyCharacterRaceType& InCharacterRace)
+{
+    if (TObjectPtr<UNiagaraComponent>* TrailComp = NiagaraCompMap.Find(InCharacterRace))
+    {
+        if (*TrailComp)
+        {
+            (*TrailComp)->Activate(bActive);
+            return;
+        }
+    }
+
+
+    if (TObjectPtr<UNiagaraSystem>* NiagaraParticle = NiagaraTrailMap.Find(InCharacterRace))
+    {
+        TObjectPtr<UNiagaraComponent> NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+            *NiagaraParticle,
+            SkeletalMesh,  // 파티클이 붙을 컴포넌트
+            NAME_None,           // 소켓 이름
+            FVector::ZeroVector, // 위치
+            FRotator::ZeroRotator, // 회전
+            EAttachLocation::KeepRelativeOffset, // 상대 위치 유지
+            false               // 데토네이션 시 시스템 제거 여부
+        );
+
+        NiagaraCompMap.Add(InCharacterRace, NiagaraComponent);
+    }
 }

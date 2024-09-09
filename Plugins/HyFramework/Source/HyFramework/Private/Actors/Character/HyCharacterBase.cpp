@@ -21,6 +21,8 @@
 #include "Components/ActionsSystemComponent.h"
 #include "Components/HyInventorySystemComponent.h"
 #include "Components/HyCollisionSystemComponent.h"
+#include "Components/HyFXSystemComponent.h"
+
 
 #include "Animation/HyAnimInstance.h"
 
@@ -116,6 +118,12 @@ void AHyCharacterBase::ComponenetSetup()
 	if (!InventorySystemComp)
 	{
 		ERR_V("InventorySystemComp is not set.");
+	}
+
+	FXSystemComponent = CreateDefaultSubobject<UHyFXSystemComponent>(TEXT("HyFXSystemComp"));
+	if(!FXSystemComponent)
+	{
+		ERR_V("FXSystemComponent is not set.");
 	}
 
 	HyCharacterMovement = Cast<UHyCharacterMovementComponent>(GetCharacterMovement());
@@ -407,6 +415,7 @@ void AHyCharacterBase::CharacterActorComponentSetup()
 	HyActorComponents.Add(ActionsSystemComp);
 	HyActorComponents.Add(CollisionSystemComp);
 	HyActorComponents.Add(InventorySystemComp);
+	HyActorComponents.Add(FXSystemComponent);
 
 	for(auto & ActorComp : HyActorComponents)
 	{
@@ -760,6 +769,12 @@ void AHyCharacterBase::HandleAction(EActionHandleType InExitType, float BlendOut
 		return;
 	}
 
+	if (!FXSystemComponent)
+	{
+		ERR_V("FXSystemComponent is not set.");
+		return;
+	}
+
 	switch (InExitType)
 	{
 	case EActionHandleType::EActionHandle_Free:
@@ -776,6 +791,10 @@ void AHyCharacterBase::HandleAction(EActionHandleType InExitType, float BlendOut
 		break;
 	case EActionHandleType::EActionHandle_Noti:
 		ActionsSystemComp->ActionNotify();
+		break;
+
+	case EActionHandleType::EActionHandle_FX:
+		ActionsSystemComp->PlayFX();
 		break;
 	default:
 		break;
@@ -1466,12 +1485,15 @@ float AHyCharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		{
 			TargetGuid = DealerCharacter->GetMyGuidRef();
 			OnDamageReceived.Broadcast(HyDamageEvent, DealerCharacter->GetMyGuidRef());
-		}
 
-		//if (CanChangeHit(HyDamageEvent.HitTag, ChangeTag, ChangeStoreTag, ChangeStorePriority))
-		//{
-		//	SetStoredAction(ChangeStoreTag);
-		//}
+			if (TObjectPtr<UHyInventorySystemComponent> InvenComp = DealerCharacter->GetInventorySystemComp())
+			{
+				if (TObjectPtr<AHyWeapon> Waepon = InvenComp->GetEquippedWeapon())
+				{
+					Waepon->ActiveTrail(true, CharacterRaceType);
+				}
+			}
+		}
 
 		// DamageFont
 		//if (FXComponent)

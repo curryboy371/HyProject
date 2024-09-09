@@ -145,14 +145,14 @@ void UActionsSystemComponent::LaunchAction(const FActionExcuteData& InActionExcu
 
         // 한번에 초기화
         CurActionExcuteData = InActionExcuteData;
-
         PerformingAction->Internal_OnActivated(this, ActionState.ActionMontage, InActionExcuteData.ActionContext);
 
 
         if (PerformingAction && PerformingAction->GetActionConfig().bPlayEffectOnActionStart)
         {
-            PerformingAction->PlayEffects();
+            PlayFX();
         }
+
     }
 }
 
@@ -241,6 +241,14 @@ void UActionsSystemComponent::ActionNotify()
 	{
 		PerformingAction->OnActionNotify();
 	}
+}
+
+void UActionsSystemComponent::PlayFX()
+{
+    if (PerformingAction)
+    {
+        PerformingAction->PlayEffects();
+    }
 }
 
 void UActionsSystemComponent::PlayMontage(const FActionMontageInfo& InMontageInfo, float InStartFrame)

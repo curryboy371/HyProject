@@ -17,6 +17,15 @@
 
 #pragma region HyCoreEnum
 
+UENUM(BlueprintType)
+enum class EHyCharacterRaceType : uint8
+{
+    Human = 0,
+    Robot = 1,
+    End,
+};
+
+
 
 UENUM(BlueprintType)
 enum class EHyDirection : uint8

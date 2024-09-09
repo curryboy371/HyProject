@@ -7,6 +7,8 @@
 
 #include "InvenTypes.h"
 
+#include "HyCoreTypes.h"
+
 #include "HyWeapon.generated.h"
 
 /**
@@ -21,6 +23,10 @@ public:
     AHyWeapon();
 
     virtual void InitializeItem(const struct FItem_TableEntity* InItemTableInfo);
+
+
+    UFUNCTION(BlueprintCallable, Category = Hy)
+    void ActiveTrail(bool bActive, const EHyCharacterRaceType& InCharacterRace);
 
 public:
 
@@ -52,4 +58,9 @@ protected:
     UPROPERTY(BlueprintReadOnly, EditAnyWhere, Category = "Hy | Weapon")
     TObjectPtr<class USceneComponent> SubHandleComp;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<EHyCharacterRaceType, TObjectPtr<class UNiagaraSystem>> NiagaraTrailMap;
+
+    UPROPERTY()
+    TMap<EHyCharacterRaceType, TObjectPtr<class UNiagaraComponent>> NiagaraCompMap;
 };

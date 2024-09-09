@@ -56,7 +56,7 @@ bool UHyAction_JumpAttack::IsStopConditional_Implementation()
 		return false;
 	}
 
-	Super::IsStopConditional_Implementation();
+	//Super::IsStopConditional_Implementation();
 
 	// 다음동작이 있는 경우에만 중지
 	return !HyCharacterOwner->IsEmptyStoredAction();

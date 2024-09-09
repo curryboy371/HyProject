@@ -35,6 +35,8 @@ public class InventorySystem : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+                "Niagara",
+
 
 				// Custom Modules
                 "HyCore",

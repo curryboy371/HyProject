@@ -41,6 +41,8 @@ public class CollisionSystem : ModuleRules
 				
 				// Custom Modules
                 "HyCore",
+                "InventorySystem",
+
             }
             );
 		

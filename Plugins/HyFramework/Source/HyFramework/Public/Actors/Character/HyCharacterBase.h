@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "GameFramework/DamageType.h"
 
+#include "HyCoreTypes.h"
 #include "HyTypes.h"
 
 #include "CControlTypes.h"
@@ -232,6 +233,7 @@ public:
 
 	TObjectPtr<class UHyInventorySystemComponent> GetInventorySystemComp() { return InventorySystemComp; }
 	TObjectPtr<class UActionsSystemComponent> GetActionsSystemComp() { return ActionsSystemComp; }
+	TObjectPtr<class UHyFXSystemComponent> GetFXSystemComp() { return FXSystemComponent; }
 	TObjectPtr<class UHyCollisionSystemComponent> GetCollisionSystemComp() { return CollisionSystemComp; }
 	TObjectPtr<class UHyCharacterMovementComponent> GetCharacterMovementComp() { return HyCharacterMovement; }
 
@@ -250,15 +252,15 @@ protected:
 	TObjectPtr<class UHyCollisionSystemComponent> CollisionSystemComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
+	TObjectPtr<class UHyFXSystemComponent> FXSystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class USceneComponent> CombatArrowParentComp;
 
 
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
-	//TObjectPtr<class UHyFXComponent> FXComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hy | Component")
 	TObjectPtr<class USceneComponent> HUDLocationComp;
@@ -310,6 +312,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Character")
 	FGameplayTag CharacterTypeTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hy | Character")
+	EHyCharacterRaceType CharacterRaceType;
 
 	FGuid MyGuid;
 	FGuid TargetGuid;
