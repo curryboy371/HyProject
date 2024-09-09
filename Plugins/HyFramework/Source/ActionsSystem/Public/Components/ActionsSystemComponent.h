@@ -50,6 +50,7 @@ public:
 	void ActionStopImmeditaley(float InBlendOutTime = 0.0f);
 
 	void ActionNotify();
+	void PlayFX();
 
 public:
 	void PlayMontage(const FActionMontageInfo& InMontageInfo, float InStartFrame);
@@ -85,7 +86,7 @@ public:
 	bool CanExecuteAction(const FGameplayTag& InActionTag) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Hy | Actions")
-	void SetEquipActions(const FGameplayTag& InEquipTag);
+	void SetEquipActions(const FGameplayTag& InEquipTag, const bool bCombatMode);
 
 	UFUNCTION(BlueprintCallable, Category = "Hy | Actions")
 	bool GetActionByTag(const FGameplayTag& InActionTag, FActionState& OutActionState) const;

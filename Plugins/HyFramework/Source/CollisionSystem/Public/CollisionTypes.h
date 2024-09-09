@@ -187,12 +187,15 @@ struct FColliderTraceInfo : public FTagBase
 public:
     FColliderTraceInfo()
     {
+        bEnableCollider = true;
         Radius = 0.f;
         Height = 0.f;
 		StartSocket = NAME_None;
 		EndSocket = NAME_None;
 		bCrossFrameAccuracy = false;
 		bIsFirstFrame = true;
+
+        bIsWeaponCollider = false;
     }
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Trace Settings")
@@ -210,6 +213,8 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Trace Settings")
     bool bCrossFrameAccuracy;
 
+    bool bEnableCollider;
+    bool bIsWeaponCollider;
     bool bIsFirstFrame;
 
     FVector PreEndSocketPos;

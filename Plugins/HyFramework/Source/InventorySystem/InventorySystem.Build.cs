@@ -25,6 +25,8 @@ public class InventorySystem : ModuleRules
 				"Core",
                 "GameplayTags",
 
+				// Custom Modules
+
             }
             );
 			
@@ -35,12 +37,15 @@ public class InventorySystem : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+                "Niagara",
+
 
 				// Custom Modules
                 "HyCore",
-                "HyTable",
+                "HyTable", 
+
             }
-			);
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

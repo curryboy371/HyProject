@@ -184,7 +184,4 @@ protected:
 	TArray<FInventoryItem> InventoryItems;
 	FEquipment Equipments;
 
-
-
-
 };

@@ -12,14 +12,13 @@
 
 bool UHyAction_ComboAttack::IsStopConditional_Implementation()
 {
-
 	if (!HyCharacterOwner)
 	{
 		ERR_V("HyCharacterOwner  Is nullptr");
 		return false;
 	}
 
-	Super::IsStopConditional_Implementation();
+	//Super::IsStopConditional_Implementation();
 
 	// 다음동작이 있다면 중지, 없다면 현재 액션의 우선순위를 낮춰 이동 등이 입력될 수 있도록
 	if(HyCharacterOwner->IsEmptyStoredAction())

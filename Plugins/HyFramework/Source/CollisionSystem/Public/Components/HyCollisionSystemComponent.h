@@ -31,6 +31,11 @@ protected:
 	virtual void InitializeHyActorComponent() override;
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Hy | Collision")
+	void SetEquipWeapon(const FGameplayTag& InEquipTag, const bool bCombatMode);
+
+public:
+
 	// 공격 충돌 활성화 및 비활성화 함수
 	void EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet);
 	void DisableAttackCollider();
@@ -52,6 +57,8 @@ protected:
 	void DebugDrawCharacterCapsule();
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inven")
+	TObjectPtr<class UHyInventorySystemComponent> InventorySystemComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Collision")
 	TArray<FColliderTraceInfo> AttackColliderTraces;
@@ -70,4 +77,8 @@ protected:
 
 	bool bOnAttack = false; // 현재 공격중인지 여부
 	bool bSucessHit = false; // 공격이 성공적으로 적에게 맞았는지 여부
+
+
+protected:
+	FGameplayTag CurEquipWeaponTag;
 };

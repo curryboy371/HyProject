@@ -127,7 +127,7 @@ void UHyAnimInstance::SetCharacterReferences()
     }
 }
 
-void UHyAnimInstance::SetEquipLayer(const FGameplayTag& InEquipTag)
+void UHyAnimInstance::SetEquipLayer(const FGameplayTag& InEquipTag, const bool bCombatMode)
 {
     if (FHyAnimEquipLayerSet* FindEquipLayer = EquipLayers.FindByKey(InEquipTag))
     {
@@ -139,7 +139,7 @@ void UHyAnimInstance::SetEquipLayer(const FGameplayTag& InEquipTag)
             }
 
             CharacterStateData.TagName = InEquipTag;
-            CharacterStateData.SetCombatMode(CharacterDefaultTagSet.CombatEquipTag == CharacterStateData.TagName);
+            CharacterStateData.SetCombatMode(bCombatMode);
 
             LinkAnimClassLayers(FindEquipLayer->EquipLayer);
 

@@ -7,6 +7,8 @@
 
 #include "InvenTypes.h"
 
+#include "HyCoreTypes.h"
+
 #include "HyWeapon.generated.h"
 
 /**
@@ -21,6 +23,9 @@ public:
     AHyWeapon();
 
     virtual void InitializeItem(const struct FItem_TableEntity* InItemTableInfo);
+
+    UFUNCTION(BlueprintCallable, Category = Hy)
+    void ActiveTrail(bool bActive, const EHyAttackTrailType InAttackTrailType = EHyAttackTrailType::AttackDefault);
 
 public:
 
@@ -38,6 +43,7 @@ public:
     FORCEINLINE class USceneComponent* GetSubHandleComp() const { return SubHandleComp; };
 
 
+    FORCEINLINE EWeaponMeshType GetWeaponMeshType() const { return WeaponMeshType; }
 
 protected:
     UPROPERTY(BlueprintReadWrite, EditAnyWhere, Category = "Hy | Weapon")
@@ -51,5 +57,16 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, EditAnyWhere, Category = "Hy | Weapon")
     TObjectPtr<class USceneComponent> SubHandleComp;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TObjectPtr<class UNiagaraSystem> NiagaraDefaultTrail;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<EHyAttackTrailType, TObjectPtr<class UNiagaraSystem>> NiagaraTrailMap;
+
+    UPROPERTY()
+    TMap<EHyAttackTrailType, TObjectPtr<class UNiagaraComponent>> NiagaraCompMap;
+
+protected:
 
 };

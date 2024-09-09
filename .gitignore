@@ -76,13 +76,28 @@ DerivedDataCache/*
 
 Binaries/*
 
-Content/__*
-*HLOD0_Instancing.uasset
-
 #Backup
 *.bak
-
+*.zip
 # Temp
 
 Content/GhostSamurai_Bundle/*
 Content/Mage/*
+Content/InfinityBladeWeapons/*
+Content/MsvFx_Niagara_SlashFx_Pack/*
+Content/Man/*
+Content/SCK_Casual01/*
+Content/WaterMaterials/*
+Content/PhotoR_Backgrounds/*
+Content/WinterForestSet/*
+Content/HumanVocalizations/*
+Content/NiagaraDissolveEffectAb/*
+Content/EssentialVFXVol2/*
+Content/AdvancedNiagaraVFX/*
+Content/MechanicalDamageFX/*
+Content/Blood_VFX_Pack/*
+Content/BlinkAndDashVFX/*
+Content/CharacterBodyFX/*
+Content/Character_Appearance_Dissolve/*
+Content/CloseCombatAnimSet/*
+Content/A_Surface_Footstep/*

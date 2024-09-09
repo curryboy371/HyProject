@@ -32,7 +32,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hy | CControl | Layer")
-	void SetEquipLayer(const FGameplayTag& InEquipTag);
+	void SetEquipLayer(const FGameplayTag& InEquipTag, const bool bCombatMode);
 
 protected:
 // Animaion Valus Update Functions 

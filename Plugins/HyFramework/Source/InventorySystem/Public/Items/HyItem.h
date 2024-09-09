@@ -85,6 +85,8 @@ public:
 
 	FORCEINLINE void SetItemOwner(TObjectPtr<class APawn> InOwner) { ItemOwner = InOwner;}
 
+    const FItem_TableEntity& GetItemTableInfo() const { return ItemTableInfo; }
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Hy")
 	TObjectPtr<class APawn> ItemOwner;

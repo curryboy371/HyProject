@@ -51,7 +51,7 @@ public class HyFramework : ModuleRules
 				"Slate",
 				"SlateCore",
                 "DeveloperSettings",
-
+				"Niagara",
 
 
 				// Custom Modules

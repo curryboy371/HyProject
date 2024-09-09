@@ -17,6 +17,22 @@
 
 #pragma region HyCoreEnum
 
+UENUM(BlueprintType)
+enum class EHyAttackTrailType : uint8
+{
+    // Default 공격할 때마다 항상 재생
+    AttackDefault = 0,
+
+    // Human 피격시
+    AttackHuman,
+
+    // Robot 피격시
+    AttackRobot,
+
+    End,
+};
+
+
 
 UENUM(BlueprintType)
 enum class EHyDirection : uint8
@@ -111,22 +127,26 @@ struct FCameraShakeSettings
 
 public:
     FCameraShakeSettings()
-        : CameraShakeType(ECameraShakeType::ECS_None)
+        : CameraShake(nullptr)
         , CameraShakeScale(1.f)
-        , CameraShakePlaySpace(ECameraShakePlaySpace::CameraLocal)
+        , CameraShakeRadius(500.f)
+        //, CameraShakePlaySpace(ECameraShakePlaySpace::CameraLocal)
     {}
 
-    // The type of camera shake to apply
-    UPROPERTY(EditAnywhere, Category = "Camera Shake")
-    ECameraShakeType CameraShakeType;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
+    TSubclassOf<class UCameraShakeBase> CameraShake;
 
     // The scale of the camera shake effect
     UPROPERTY(EditAnywhere, Category = "Camera Shake")
     float CameraShakeScale;
 
-    // The play space for the camera shake
+    // 카메라 흔들림 범위
     UPROPERTY(EditAnywhere, Category = "Camera Shake")
-    ECameraShakePlaySpace CameraShakePlaySpace;
+    float CameraShakeRadius;
+
+    //// The play space for the camera shake
+    //UPROPERTY(EditAnywhere, Category = "Camera Shake")
+    //ECameraShakePlaySpace CameraShakePlaySpace;
 };
 
 USTRUCT(BlueprintType)

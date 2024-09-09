@@ -7,6 +7,7 @@
 
 #include "GameFramework/Character.h"
 
+#include "Components/HyInventorySystemComponent.h"
 
 #include "Components/SphereComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -21,6 +22,14 @@
 
 #include "HyTagSubsystem.h"
 
+#include "Items/HyWeapon.h"
+#include "InvenTypes.h"
+#include "Table/Item_TableEntity.h"
+#include "GameplayTagContainer.h"
+
+#include <Kismet/GameplayStatics.h>
+#include <Kismet/KismetMathLibrary.h>
+
 UHyCollisionSystemComponent::UHyCollisionSystemComponent()
 {
 	CharacterOwner = nullptr;
@@ -34,6 +43,96 @@ void UHyCollisionSystemComponent::InitializeHyActorComponent()
 	Super::InitializeHyActorComponent();
 
 	ColliderTraceSetup();
+}
+
+void UHyCollisionSystemComponent::SetEquipWeapon(const FGameplayTag& InEquipTag, const bool bCombatMode)
+{
+	if (!InventorySystemComp)
+	{
+		ERR_V("Invalid InventorySystemComp");
+		return;
+	}
+
+	// 기존 Weapon Tag제거
+	if (CurEquipWeaponTag != FGameplayTag::EmptyTag)
+	{
+		if (FColliderTraceInfo* UnEquipWeaponInfo = AttackColliderTraceInsts.FindByKey(CurEquipWeaponTag))
+		{
+			UnEquipWeaponInfo->bEnableCollider = false;
+			CurEquipWeaponTag = FGameplayTag::EmptyTag;
+		}
+	}
+
+	if (bCombatMode)
+	{
+		// 새로운 WeaponTag 추가
+		TObjectPtr<AHyWeapon> EquipWeapon = InventorySystemComp->GetEquippedWeapon();
+		if (!EquipWeapon)
+		{
+			ERR_V("Invalid EquipWeapon");
+			return;
+		}
+
+		const FItem_TableEntity& ItemTableInfo = EquipWeapon->GetItemTableInfo();
+
+		FColliderTraceInfo ColliderInfo;
+		ColliderInfo.TagName = ItemTableInfo.WeaponCollider;
+		ColliderInfo.EndSocket = ItemTableInfo.EndSocketName;
+		ColliderInfo.StartSocket = ItemTableInfo.StartSocketName;
+		ColliderInfo.Radius = ItemTableInfo.WeaponRadius;
+		ColliderInfo.Height = ItemTableInfo.WeaponHeight;
+		ColliderInfo.bIsWeaponCollider = true;
+
+		EWeaponMeshType EquipWeaponMeshType = EquipWeapon->GetWeaponMeshType();
+
+		switch (EquipWeaponMeshType)
+		{
+		case EWeaponMeshType::EWeaponMesh_StaticMesh:
+
+			break;
+
+		case EWeaponMeshType::EWeaponMesh_SkeletalMesh:
+		{
+			if (const USkeletalMeshComponent* WeaponSkeletalMesh = EquipWeapon->GetMeshComponent())
+			{
+				if (WeaponSkeletalMesh->DoesSocketExist(ColliderInfo.StartSocket) == false)
+				{
+					ERR_V("Invalid Bone Socket Name %s", *ColliderInfo.StartSocket.ToString());
+					return;
+				}
+
+				if (WeaponSkeletalMesh->DoesSocketExist(ColliderInfo.EndSocket) == false)
+				{
+					ERR_V("Invalid Bone Socket Name %s", *ColliderInfo.EndSocket.ToString());
+					return;
+				}
+
+				if (ColliderInfo.Radius <= 0.f)
+				{
+					ERR_V("Invalid Radius");
+					return;
+				}
+
+				if (ColliderInfo.Height <= 0.f)
+				{
+					ERR_V("Invalid Height");
+					return;
+				}
+
+			}
+		}
+		break;
+
+		default:
+			break;
+		}
+
+		CurEquipWeaponTag = ColliderInfo.TagName;
+		ColliderInfo.bEnableCollider = true;
+		AttackColliderTraceInsts.Add(ColliderInfo);
+
+	}
+
 }
 
 void UHyCollisionSystemComponent::BeginPlay()
@@ -68,6 +167,22 @@ void UHyCollisionSystemComponent::EnableAttackCollider(const FAttackCollisionSet
 	bSucessHit = false;
 	AttackCompletionTags.Empty();
 	ResetIgnoreActors();
+
+
+	if (!InventorySystemComp)
+	{
+		ERR_V("Invalid InventorySystemComp");
+		return;
+	}
+
+	TObjectPtr<AHyWeapon> EquipWeapon = InventorySystemComp->GetEquippedWeapon();
+	if (!EquipWeapon)
+	{
+		ERR_V("Invalid EquipWeapon");
+	}
+
+	EquipWeapon->ActiveTrail(true);
+
 }
 
 void UHyCollisionSystemComponent::DisableAttackCollider()
@@ -75,7 +190,24 @@ void UHyCollisionSystemComponent::DisableAttackCollider()
 	bOnAttack = false;
 	bSucessHit = false;
 	AttackCompletionTags.Empty();
+
+
 	ResetIgnoreActors();
+
+	if (!InventorySystemComp)
+	{
+		ERR_V("Invalid InventorySystemComp");
+		return;
+	}
+
+	TObjectPtr<AHyWeapon> EquipWeapon = InventorySystemComp->GetEquippedWeapon();
+	if (!EquipWeapon)
+	{
+		ERR_V("Invalid EquipWeapon");
+	}
+
+	//EquipWeapon->ActiveTrail(false);
+
 }
 
 void UHyCollisionSystemComponent::ColliderTraceSetup()
@@ -88,6 +220,15 @@ void UHyCollisionSystemComponent::ColliderTraceSetup()
 		ERR_V("Invalid CharacterOwner");
 		return;
 	}
+
+	InventorySystemComp = CharacterOwner->FindComponentByClass<UHyInventorySystemComponent>();
+
+	if (!InventorySystemComp)
+	{
+		ERR_V("Invalid InventorySystemComp");
+		return;
+	}
+
 
 	for (const auto& ColliderInfo : AttackColliderTraces)
 	{
@@ -140,6 +281,12 @@ void UHyCollisionSystemComponent::UpdateTraceSweep()
 		return;
 	}
 
+	if (!InventorySystemComp)
+	{
+		ERR_V("Invalid InventorySystemComp");
+		return;
+	}
+
 	TObjectPtr<USkeletalMeshComponent> MeshComp = CharacterOwner->GetMesh();
 	if(!MeshComp)
 	{
@@ -165,8 +312,56 @@ void UHyCollisionSystemComponent::UpdateTraceSweep()
 
 		if (FColliderTraceInfo* ColliderTraceInfo = AttackColliderTraceInsts.FindByKey(ColliderTag))
 		{
-			const FVector StartLocation = MeshComp->GetSocketLocation(ColliderTraceInfo->StartSocket);
-			const FVector EndLocation = MeshComp->GetSocketLocation(ColliderTraceInfo->EndSocket);
+			if (!ColliderTraceInfo->bEnableCollider)
+			{
+				continue;
+			}
+
+
+			FVector StartLocation;
+			FVector EndLocation;
+
+			if (ColliderTraceInfo->bIsWeaponCollider)
+			{
+				// 새로운 WeaponTag 추가
+				TObjectPtr<AHyWeapon> EquipWeapon = InventorySystemComp->GetEquippedWeapon();
+				if (!EquipWeapon)
+				{
+					ERR_V("Invalid EquipWeapon");
+					continue;
+				}
+
+				EWeaponMeshType EquipWeaponMeshType = EquipWeapon->GetWeaponMeshType();
+
+				switch (EquipWeaponMeshType)
+				{
+				case EWeaponMeshType::EWeaponMesh_StaticMesh:
+					break;
+
+				case EWeaponMeshType::EWeaponMesh_SkeletalMesh:
+				{
+					if (const USkeletalMeshComponent* WeaponSkeletalMesh = EquipWeapon->GetMeshComponent())
+					{
+						StartLocation = WeaponSkeletalMesh->GetSocketLocation(ColliderTraceInfo->StartSocket);
+						EndLocation = WeaponSkeletalMesh->GetSocketLocation(ColliderTraceInfo->EndSocket);
+						
+					}
+					else
+					{
+						ERR_V("Invalid WeaponSkeletalMesh");
+						continue;
+					}
+				}
+				break;
+				}
+			}
+			else
+			{
+				StartLocation = MeshComp->GetSocketLocation(ColliderTraceInfo->StartSocket);
+				EndLocation = MeshComp->GetSocketLocation(ColliderTraceInfo->EndSocket);
+
+			}
+
 
 			FTraceData TraceData(StartLocation, EndLocation, ColliderTraceInfo->Radius, ColliderTraceInfo->Height);
 
@@ -489,6 +684,29 @@ bool UHyCollisionSystemComponent::TakeDamage(const FGameplayTag& InAttackCollisi
 
 void UHyCollisionSystemComponent::ApplyAttackImpact(FHitResult& HitResult, const FAttackCollisionSettings& InAttackCollisionSettings)
 {
+	if (!CharacterOwner)
+	{
+		return;
+	}
+
+	// 첫 타격에서만
+	if (!bSucessHit)
+	{
+		// local player
+		if (CharacterOwner->GetController() == GetWorld()->GetFirstPlayerController())
+		{
+			if (InAttackCollisionSettings.CameraShakeSettings.CameraShake)
+			{
+				const FCameraShakeSettings& CameraSetting = InAttackCollisionSettings.CameraShakeSettings;
+				
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraSetting.CameraShake, HitResult.ImpactPoint, 0.f, CameraSetting.CameraShakeRadius);
+			}
+
+		}
+
+	}
+
+
 }
 
 void UHyCollisionSystemComponent::ResetIgnoreActors()

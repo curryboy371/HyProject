@@ -11,9 +11,14 @@
 
 #include "Animation/AnimMontage.h"
 
+#include "Components/HyFXSystemComponent.h"
+
 
 #include "Kismet/KismetMathLibrary.h"
 #include <Kismet/GameplayStatics.h>
+
+
+#include "HyCoreMacro.h"
 
 
 UActionsBaseAction::UActionsBaseAction()
@@ -236,14 +241,20 @@ void UActionsBaseAction::HandleMontageStarted(class UAnimMontage* InAnimMontage)
 
 void UActionsBaseAction::PlayEffects_Implementation()
 {
-    //UNPGameInstance* NPGameInstance = Cast<UNPGameInstance>(GWorld->GetGameInstance());
-    //if (NPGameInstance)
-    //{
-    //    if (TObjectPtr<UNPFXDispatcher> FXDispatcher = NPGameInstance->GetFXDispatcher())
-    //    {
-    //        FXDispatcher->PlayActionFX(ActionConfig.ActionEffect, CharacterOwner);
-    //    }
-    //}
+    if (!CharacterOwner)
+    {
+        ERR_V("CharacterOwner is nullptr");
+        return;
+    }
+
+    TObjectPtr<UHyFXSystemComponent> HyFXComp = CharacterOwner->FindComponentByClass<UHyFXSystemComponent>();
+    if (!HyFXComp)
+    {
+        ERR_V("HyFXComp is nullptr");
+		return;
+    }
+
+    HyFXComp->PlayAttachedFX(ActionConfig.ActionFX, CharacterOwner);
 }
 
 
