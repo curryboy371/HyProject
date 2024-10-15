@@ -26,6 +26,8 @@ public class HyFXSystem : ModuleRules
 				"Core",
                 "GameplayTags",
 
+                "Niagara",
+				"NiagaraAnimNotifies",
 
 				// Custom Modules
 
@@ -39,7 +41,6 @@ public class HyFXSystem : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
-                "Niagara",
 
 				// Custom Modules
                 "HyCore",

@@ -27,6 +27,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = Hy)
     void ActiveTrail(bool bActive, const EHyAttackTrailType InAttackTrailType = EHyAttackTrailType::AttackDefault);
 
+    TObjectPtr<class UNiagaraComponent> ActiveWeaponTrail(const EHyAttackTrailType InAttackTrailType = EHyAttackTrailType::AttackDefault);
+
 public:
 
     UFUNCTION(BlueprintPure, Category = Hy)

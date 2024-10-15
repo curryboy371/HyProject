@@ -197,6 +197,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void InputCrouch(const FInputActionValue& Value);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputSkill1(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputSkill2(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputSkill3(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputSkill4(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputSkill5(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void InputUlti(const FInputActionValue& Value);
 	
 protected:
 	void TriggerAttackAction();

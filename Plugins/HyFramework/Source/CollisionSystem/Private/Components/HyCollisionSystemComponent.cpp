@@ -30,6 +30,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetMathLibrary.h>
 
+
 UHyCollisionSystemComponent::UHyCollisionSystemComponent()
 {
 	CharacterOwner = nullptr;
@@ -179,10 +180,10 @@ void UHyCollisionSystemComponent::EnableAttackCollider(const FAttackCollisionSet
 	if (!EquipWeapon)
 	{
 		ERR_V("Invalid EquipWeapon");
+		return;
 	}
 
 	EquipWeapon->ActiveTrail(true);
-
 }
 
 void UHyCollisionSystemComponent::DisableAttackCollider()
@@ -204,10 +205,10 @@ void UHyCollisionSystemComponent::DisableAttackCollider()
 	if (!EquipWeapon)
 	{
 		ERR_V("Invalid EquipWeapon");
+		return;
 	}
 
-	//EquipWeapon->ActiveTrail(false);
-
+	EquipWeapon->ActiveTrail(false);
 }
 
 void UHyCollisionSystemComponent::ColliderTraceSetup()

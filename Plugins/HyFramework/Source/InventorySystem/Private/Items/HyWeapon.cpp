@@ -52,6 +52,14 @@ void AHyWeapon::ActiveTrail(bool bActive, const EHyAttackTrailType InAttackTrail
     {
         if (TObjectPtr<UNiagaraSystem>* NiagaraParticle = NiagaraTrailMap.Find(InAttackTrailType))
         {
+            if (TObjectPtr<UNiagaraComponent>* TrailComp = NiagaraCompMap.Find(InAttackTrailType))
+            {
+				if (*TrailComp && !(*TrailComp)->IsActive())
+				{
+                    NiagaraCompMap.Remove(InAttackTrailType);
+				}
+            }
+
             TObjectPtr<UNiagaraComponent> NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
                 *NiagaraParticle,
                 SkeletalMesh,  // 파티클이 붙을 컴포넌트
@@ -71,11 +79,35 @@ void AHyWeapon::ActiveTrail(bool bActive, const EHyAttackTrailType InAttackTrail
         {
             if (*TrailComp)
             {
-                (*TrailComp)->DestroyComponent();
+                (*TrailComp)->Deactivate();
             }
 
             NiagaraCompMap.Remove(InAttackTrailType);
         }
     }
 
+}
+
+TObjectPtr<UNiagaraComponent> AHyWeapon::ActiveWeaponTrail(const EHyAttackTrailType InAttackTrailType)
+{
+    if (TObjectPtr<UNiagaraSystem>* NiagaraParticle = NiagaraTrailMap.Find(InAttackTrailType))
+    {
+        TObjectPtr<UNiagaraComponent> NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+            *NiagaraParticle,
+            SkeletalMesh,  // 파티클이 붙을 컴포넌트
+            ItemTableInfo.EndSocketName,           // 소켓 이름
+            FVector::ZeroVector, // 위치
+            FRotator::ZeroRotator, // 회전
+            EAttachLocation::KeepRelativeOffset, // 상대 위치 유지
+            false               // 데토네이션 시 시스템 제거 여부
+        );
+
+        return NiagaraComponent;
+    }
+    else
+    {
+		ERR_V("Invalid NiagaraTrailMap Key %d", (int32)InAttackTrailType);
+	}
+
+    return nullptr;
 }

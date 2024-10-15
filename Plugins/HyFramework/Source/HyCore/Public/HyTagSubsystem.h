@@ -40,6 +40,8 @@ struct FActionTagSet
 	FGameplayTag ActionDashAttack;
 
 
+
+
 	FGameplayTag ActionAirAttackParent;
 	FGameplayTag ActionAirStartAttacking; // air Start 
 	FGameplayTag ActionAirAttacking; // air Combo
@@ -50,6 +52,12 @@ struct FActionTagSet
 	FGameplayTag ActionAvoid;
 	FGameplayTag ActionDodge;
 
+	FGameplayTag ActionSkill1;
+	FGameplayTag ActionSkill2;
+	FGameplayTag ActionSkill3;
+	FGameplayTag ActionSkill4;
+	FGameplayTag ActionSkill5;
+	FGameplayTag ActionUlti;
 };
 
 struct FActionLocationTagSet

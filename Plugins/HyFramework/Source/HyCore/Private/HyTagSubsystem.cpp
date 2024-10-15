@@ -56,6 +56,15 @@ void UHyTagSubsystem::InitTagSet()
     AddTag(FName("Action.Stand.Skill.Slide"), ActionTagSet.ActionSlide);
     AddTag(FName("Action.Stand.Skill.Avoid"), ActionTagSet.ActionAvoid);
     AddTag(FName("Action.Stand.Skill.Dodge"), ActionTagSet.ActionDodge);
+
+    AddTag(FName("Action.Stand.Skill.Skill1"), ActionTagSet.ActionSkill1);
+    AddTag(FName("Action.Stand.Skill.Skill2"), ActionTagSet.ActionSkill2);
+    AddTag(FName("Action.Stand.Skill.Skill3"), ActionTagSet.ActionSkill3);
+    AddTag(FName("Action.Stand.Skill.Skill4"), ActionTagSet.ActionSkill4);
+    AddTag(FName("Action.Stand.Skill.Skill5"), ActionTagSet.ActionSkill5);
+    AddTag(FName("Action.Stand.Skill.Ulti"), ActionTagSet.ActionUlti);
+
+
     
     AddTag(FName("ItemSlot"), ItemSlotTagSet.SlotParent);
     AddTag(FName("ItemSlot.Weapon"), ItemSlotTagSet.SlotWeapon);

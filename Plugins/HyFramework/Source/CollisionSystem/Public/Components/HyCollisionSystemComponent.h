@@ -81,4 +81,5 @@ protected:
 
 protected:
 	FGameplayTag CurEquipWeaponTag;
+
 };

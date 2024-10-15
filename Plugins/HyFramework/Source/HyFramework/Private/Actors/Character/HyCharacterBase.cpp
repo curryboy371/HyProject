@@ -1399,6 +1399,84 @@ void AHyCharacterBase::InputCrouch(const FInputActionValue& Value)
 	TriggerAction(QuickActionExcute.Crouching);
 }
 
+void AHyCharacterBase::InputSkill1(const FInputActionValue& Value)
+{
+	if (!IsCanAction(EKeyInput::IA_Skill1))
+	{
+		return;
+	}
+
+	const FGameplayTag ActionTag = GET_TAG_SUBSYSTEM()->ActionTagSet.ActionSkill1;
+
+	FActionExcuteData ChangeActionData = FActionExcuteData(ActionTag, EActionPriority::EMedium);
+	TriggerAction(ChangeActionData);
+}
+
+void AHyCharacterBase::InputSkill2(const FInputActionValue& Value)
+{
+	if (!IsCanAction(EKeyInput::IA_Skill2))
+	{
+		return;
+	}
+
+	const FGameplayTag ActionTag = GET_TAG_SUBSYSTEM()->ActionTagSet.ActionSkill2;
+
+	FActionExcuteData ChangeActionData = FActionExcuteData(ActionTag, EActionPriority::EMedium);
+	TriggerAction(ChangeActionData);
+}
+
+void AHyCharacterBase::InputSkill3(const FInputActionValue& Value)
+{
+	if (!IsCanAction(EKeyInput::IA_Skill3))
+	{
+		return;
+	}
+
+	const FGameplayTag ActionTag = GET_TAG_SUBSYSTEM()->ActionTagSet.ActionSkill3;
+
+	FActionExcuteData ChangeActionData = FActionExcuteData(ActionTag, EActionPriority::EMedium);
+	TriggerAction(ChangeActionData);
+}
+
+void AHyCharacterBase::InputSkill4(const FInputActionValue& Value)
+{
+	if (!IsCanAction(EKeyInput::IA_Skill4))
+	{
+		return;
+	}
+
+	const FGameplayTag ActionTag = GET_TAG_SUBSYSTEM()->ActionTagSet.ActionSkill4;
+
+	FActionExcuteData ChangeActionData = FActionExcuteData(ActionTag, EActionPriority::EMedium);
+	TriggerAction(ChangeActionData);
+}
+
+void AHyCharacterBase::InputSkill5(const FInputActionValue& Value)
+{
+	if (!IsCanAction(EKeyInput::IA_Skill5))
+	{
+		return;
+	}
+
+	const FGameplayTag ActionTag = GET_TAG_SUBSYSTEM()->ActionTagSet.ActionSkill5;
+
+	FActionExcuteData ChangeActionData = FActionExcuteData(ActionTag, EActionPriority::EMedium);
+	TriggerAction(ChangeActionData);
+}
+
+void AHyCharacterBase::InputUlti(const FInputActionValue& Value)
+{
+	if (!IsCanAction(EKeyInput::IA_Ulti))
+	{
+		return;
+	}
+
+	const FGameplayTag ActionTag = GET_TAG_SUBSYSTEM()->ActionTagSet.ActionUlti;
+
+	FActionExcuteData ChangeActionData = FActionExcuteData(ActionTag, EActionPriority::EMedium);
+	TriggerAction(ChangeActionData);
+}
+
 void AHyCharacterBase::EnableAttackCollider(const FAttackCollisionSettings& InAttackCollisionSet)
 {
 	if (!CollisionSystemComp)
@@ -1617,6 +1695,11 @@ const bool AHyCharacterBase::IsCanAction(EKeyInput InKeyAction) const
 
 		break;
 	case EKeyInput::IA_Skill1:
+	case EKeyInput::IA_Skill2:
+	case EKeyInput::IA_Skill3:
+	case EKeyInput::IA_Skill4:
+	case EKeyInput::IA_Skill5:
+	case EKeyInput::IA_Ulti:
 		bRes = GET_TAG_SUBSYSTEM()->IsNormalAction(CurActionTag);
 
 		break;

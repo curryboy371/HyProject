@@ -81,6 +81,23 @@ Binaries/*
 *.zip
 # Temp
 
+Marcketplace/*
+
+Content/Ancient_Golem/*
+Content/AnimalVarietyPack/*
+Content/BossyEnemy/*
+Content/CartoonCelShader/*
+Content/CT_Components/*
+Content/DynamicArcherSet/*
+Content/Giant_Golem_AnimSet/*
+Content/GoodSky/*
+Content/M5VFXRPG2/*
+Content/M5VFXVOL2/*
+Content/MassiveGreatSwordAnimset/*
+Content/NiagaraDissolveEdge/*
+Content/OrientalSpearAnimSet/*
+Content/QuadrapedCreatures/*
+
 Content/GhostSamurai_Bundle/*
 Content/Mage/*
 Content/InfinityBladeWeapons/*
@@ -101,3 +118,5 @@ Content/CharacterBodyFX/*
 Content/Character_Appearance_Dissolve/*
 Content/CloseCombatAnimSet/*
 Content/A_Surface_Footstep/*
+
+Content/Marcketplace/*

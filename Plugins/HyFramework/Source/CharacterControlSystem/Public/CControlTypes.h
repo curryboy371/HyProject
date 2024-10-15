@@ -66,6 +66,12 @@ enum class EKeyInput : uint8
 	IA_ChargeAttack,
     IA_Equip,
 	IA_Skill1,
+	IA_Skill2,
+	IA_Skill3,
+	IA_Skill4,
+	IA_Skill5,
+    IA_Ulti,
+
 	IA_Jump,
 	IA_Move,
 	IA_Look,
